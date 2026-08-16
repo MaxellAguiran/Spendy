@@ -1,20 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="sk" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f2554e"/><stop offset="100%" stop-color="#bd1119"/>
+    <linearGradient id="f" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0483c"/><stop offset="100%" stop-color="#9e0f16"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#141110"/>
-  <path d="M18 32c-5-3-8-9-9-14 6 3 10 6 14 10z" fill="#9c1017"/>
-  <path d="M46 32c5-3 8-9 9-14-6 3-10 6-14 10z" fill="#9c1017"/>
-  <path d="M24 20c-3-5-6-8-11-11 2 6 5 10 8 14z" fill="#ffe9cf"/>
-  <path d="M40 20c3-5 6-8 11-11-2 6-5 10-8 14z" fill="#ffe9cf"/>
-  <ellipse cx="32" cy="37" rx="21" ry="19" fill="url(#sk)"/>
-  <path d="M26 19l3-9 3 6 3-6 3 9z" fill="#ffe9cf"/>
-  <ellipse cx="32" cy="47" rx="12" ry="7" fill="#ff9482"/>
-  <path d="M26 49q6 5 12 0" fill="none" stroke="#8e1116" stroke-width="2" stroke-linecap="round"/>
-  <ellipse cx="24" cy="34" rx="4" ry="5" fill="#16161c"/>
-  <ellipse cx="40" cy="34" rx="4" ry="5" fill="#16161c"/>
-  <circle cx="25.5" cy="31.5" r="1.7" fill="#fff"/>
-  <circle cx="41.5" cy="31.5" r="1.7" fill="#fff"/>
+  <rect width="64" height="64" rx="13" fill="#0f0e0e"/>
+  <g transform="translate(32,34) scale(.29) translate(-98,-64)">
+    <path d="M118 52L142 46L192 8L150 62z" fill="#9e0f16"/>
+    <path d="M98 58L120 52L166 6L128 62z" fill="#c2151d"/>
+    <path d="M20 100L64 80L84 60L132 46L176 68L158 112L112 120L46 112z" fill="url(#f)"/>
+    <path d="M84 60L132 46L176 68L124 82z" fill="#ff6152" opacity=".5"/>
+    <path d="M24 102L114 108L108 118L30 110z" fill="#6d0b11"/>
+    <path d="M74 80L100 74L94 90z" fill="#0f0e0e"/>
+  </g>
 </svg>
