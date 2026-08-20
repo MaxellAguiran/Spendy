@@ -13,6 +13,7 @@ PUBLIC_PAGES = [
     "dragon-analytics.html",
     "writing.html",
     "404.html",
+    "labs/monthly-ad-report.html",
     "labs/marketing-allocation.html",
     "labs/churn-risk.html",
     "ibex.html",
@@ -122,6 +123,41 @@ class SiteContractTests(unittest.TestCase):
             parser = parse_page(page)
             self.assertEqual(parser.forms, 0)
             self.assertIn("mailto:maxell.aguiran@gmail.com", " ".join(parser.links))
+
+    def test_current_sales_surfaces_state_the_monthly_ad_report_offer(self):
+        """The sales pages must name the buyer, inputs, monthly decision, and exact deliverable."""
+        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
+        work_page = (ROOT / "dragon-analytics.html").read_text(encoding="utf-8")
+        combined = f"{homepage}\n{work_page}".casefold()
+        for phrase in (
+            "marketing agencies",
+            "meta ads",
+            "google ads",
+            "tiktok ads",
+            "shopify",
+            "fixed monthly ad budget",
+            "cut",
+            "reduce",
+            "keep",
+            "increase",
+            "down to the cent",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, combined)
+        for phrase in ("churn prediction", "customer retention", "accounts to contact"):
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase, combined)
+
+    def test_legacy_labs_are_preserved_but_not_sold_as_current_services(self):
+        """Old examples may remain available without confusing the current offer."""
+        churn = (ROOT / "labs/churn-risk.html").read_text(encoding="utf-8")
+        marketing = (ROOT / "labs/marketing-allocation.html").read_text(encoding="utf-8")
+        self.assertIn('name="robots" content="noindex,follow"', churn)
+        self.assertIn("Older generated analytics demonstration", churn)
+        self.assertIn("Earlier channel-level generated demonstration", marketing)
+        for page in ("index.html", "dragon-analytics.html"):
+            source = (ROOT / page).read_text(encoding="utf-8")
+            self.assertNotIn('href="labs/churn-risk.html"', source)
 
     def test_homepage_case_values_are_rendered_from_checked_evidence(self):
         """Hard-coding favorable case values would bypass the fail-closed renderer."""

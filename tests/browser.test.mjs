@@ -79,7 +79,7 @@ test("representative pages have no horizontal overflow or console errors at requ
     { width: 1280, height: 720 },
     { width: 1440, height: 900 }
   ];
-  const paths = ["index.html", "dragon-analytics.html", "writing.html", "labs/marketing-allocation.html", "labs/churn-risk.html", "ibex.html"];
+  const paths = ["index.html", "dragon-analytics.html", "writing.html", "labs/monthly-ad-report.html", "labs/marketing-allocation.html", "labs/churn-risk.html", "ibex.html"];
   for (const viewport of viewports) {
     const context = await browser.newContext({ viewport });
     for (const path of paths) {
@@ -94,26 +94,25 @@ test("representative pages have no horizontal overflow or console errors at requ
 });
 
 
-test("the homepage first screen tells marketing agencies exactly what Maxell does", async () => {
+test("the first screen explains the paid monthly ad report within five seconds", async () => {
   for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 720 }]) {
     const context = await browser.newContext({ viewport });
     const { page } = await openCheckedPage(context, "index.html");
     await assert.doesNotReject(() => page.locator(".brand span").waitFor({ state: "visible" }));
-    const heroText = await page.locator(".hero-copy").innerText();
-    assert.match(await page.locator("h1").innerText(), /budget optimization and churn prediction for marketing agencies/i);
-    assert.match(heroText, /where client marketing budgets should go/i);
-    assert.match(heroText, /which client accounts may leave/i);
-    assert.match(heroText, /clear budget plan/i);
-    assert.match(heroText, /list of accounts to contact first/i);
-    assert.doesNotMatch(heroText, /founder-led|growing businesses|decision models|operators/i);
-    const actions = await page.locator(".hero-actions a").all();
-    assert.equal(actions.length, 2);
-    assert.deepEqual(await page.locator(".hero-actions a").allInnerTexts(), ["See the budget example", "Talk about your agency"]);
-    for (const action of actions) {
-      assert.equal(await action.isVisible(), true);
-      const box = await action.boundingBox();
-      assert.ok(box.y + box.height <= viewport.height, `Hero action extends below ${viewport.width}×${viewport.height}: ${JSON.stringify(box)}`);
-    }
+    const hero = page.locator(".hero-copy");
+    const text = await hero.innerText();
+    assert.match(text, /marketing agencies/i);
+    assert.match(text, /Meta Ads/i);
+    assert.match(text, /Google Ads/i);
+    assert.match(text, /TikTok Ads/i);
+    assert.match(text, /Shopify/i);
+    assert.match(text, /next month/i);
+    assert.match(text, /break-even/i);
+    assert.match(text, /exact spend for every ad/i);
+    assert.match(text, /fixed monthly ad budget/i);
+    assert.deepEqual(await hero.locator(".hero-actions a").allInnerTexts(), ["See a sample report", "Request a report"]);
+    const firstAction = await hero.locator(".hero-actions a").first().boundingBox();
+    assert.ok(firstAction.y + firstAction.height <= viewport.height);
     await context.close();
   }
 });
@@ -138,8 +137,8 @@ test("public-facing pages explain the work without unexplained analyst jargon", 
 
 test("the homepage presents one flagship case before work, founder evidence, research, and contact", async () => {
   for (const expected of [
-    { viewport: { width: 390, height: 844 }, maxHeight: 6000 },
-    { viewport: { width: 1280, height: 720 }, maxHeight: 4200 }
+    { viewport: { width: 390, height: 844 }, maxHeight: 4800 },
+    { viewport: { width: 1280, height: 720 }, maxHeight: 3600 }
   ]) {
     const context = await browser.newContext({ viewport: expected.viewport });
     const { page } = await openCheckedPage(context, "index.html");
@@ -161,7 +160,9 @@ test("the homepage presents one flagship case before work, founder evidence, res
     assert.ok(structure.positions.about < structure.positions.contact);
     assert.equal(await page.locator(".hero .instrument-card").count(), 0);
     assert.equal(await page.locator(".hero img[src*='dragon-mascot']").count(), 0);
-    assert.equal(await page.locator("#proof [data-featured-case]").count(), 1);
+    assert.equal(await page.locator("#proof [data-ad-report]").count(), 1);
+    assert.ok(await page.locator("a[href='labs/monthly-ad-report.html']").count() > 0);
+    assert.equal(await page.locator("main").getByText(/churn prediction|customer retention/i).count(), 0);
     assert.equal(await page.locator("#proof a[href='labs/churn-risk.html']").count(), 0, "Churn must not compete with the flagship case");
     await context.close();
   }
