@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Marketing Allocation Laboratory | Dragon Analytics</title>
+  <title>Marketing Allocation Worked Example | Dragon Analytics</title>
   <meta name="description" content="A reproducible synthetic marketing-allocation demonstration with lagged response, diminishing returns, chronological holdout, baseline comparison, and downloadable evidence.">
   <link rel="canonical" href="https://maxellaguiran.github.io/labs/marketing-allocation.html">
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"><meta name="theme-color" content="#F7FAF7">
   <meta property="og:type" content="website"><meta property="og:site_name" content="Maxell Aguiran">
-  <meta property="og:title" content="Marketing Allocation Laboratory | Dragon Analytics"><meta property="og:description" content="A transparent synthetic model test: baseline, holdout, diminishing returns, evidence, data, and code."><meta property="og:url" content="https://maxellaguiran.github.io/labs/marketing-allocation.html"><meta property="og:image" content="https://maxellaguiran.github.io/assets/social/marketing-allocation.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Marketing Allocation Laboratory"><meta name="twitter:description" content="A reproducible synthetic demonstration with a chronological holdout."><meta name="twitter:image" content="https://maxellaguiran.github.io/assets/social/marketing-allocation.png">
+  <meta property="og:title" content="Marketing Allocation Worked Example | Dragon Analytics"><meta property="og:description" content="A transparent synthetic model test: baseline, holdout, diminishing returns, evidence, data, and code."><meta property="og:url" content="https://maxellaguiran.github.io/labs/marketing-allocation.html"><meta property="og:image" content="https://maxellaguiran.github.io/assets/social/marketing-allocation.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Marketing Allocation Worked Example"><meta name="twitter:description" content="A reproducible synthetic demonstration with a chronological holdout."><meta name="twitter:image" content="https://maxellaguiran.github.io/assets/social/marketing-allocation.png">
   <link rel="stylesheet" href="../styles.css">
   <script type="application/ld+json">
   {
@@ -30,18 +30,18 @@
 </head>
 <body class="lab-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header"><a class="brand" href="../index.html"><img class="brand-mark" src="../assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Open navigation" data-nav-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><nav class="site-nav" id="site-navigation" aria-label="Primary navigation"><a href="../index.html">Home</a><a href="../dragon-analytics.html">Dragon Analytics</a><a href="../writing.html">Research</a><a href="../dragon-analytics.html#contact">Contact</a></nav></header>
+  <header class="site-header"><a class="brand" href="../index.html"><img class="brand-mark" src="../assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Open navigation" data-nav-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><nav class="site-nav" id="site-navigation" aria-label="Primary navigation"><a href="../dragon-analytics.html">Services</a><a href="../index.html#proof" aria-current="page">Worked examples</a><a href="../writing.html">Research</a><a href="../dragon-analytics.html#contact">Contact</a></nav></header>
 
   <main id="main">
     <section class="container page-hero">
-      <div data-reveal><div class="eyebrow">Analytics laboratory · Marketing allocation</div><h1>Spend where the next unit still earns a response.</h1><p>The decision is a constrained one: redistribute the same weekly budget across four channels after accounting for seasonality, lagged effects, and saturation.</p><div class="action-row"><a class="button" href="#results">Inspect held-out evidence</a><a class="button secondary" href="data/marketing-allocation.csv" download>Download synthetic CSV</a></div></div>
-      <aside class="page-hero-card" data-reveal><div class="instrument-top"><span>Publication gate</span><span>Passed in v1</span></div><ul class="evidence-list"><li>156 deterministic weekly rows</li><li>Final 26 weeks held out chronologically</li><li>Same-week-last-year baseline</li><li>Recommendation conditional on holdout MAE</li></ul></aside>
+      <div data-reveal><div class="eyebrow">Synthetic worked example · Marketing allocation</div><h1>Marketing allocation under diminishing returns.</h1><p>Can the same weekly budget be redistributed more intelligently after accounting for seasonality, lagged effects, and saturation?</p><div class="action-row"><a class="button" href="#results">Inspect held-out evidence</a><a class="button secondary" href="data/marketing-allocation.csv" download>Download synthetic CSV</a></div></div>
+      <aside class="page-hero-card" data-reveal><div class="instrument-top"><span>Evidence summary</span><span>Checked in v1</span></div><ul class="evidence-list"><li>156 deterministic weekly rows</li><li>Final 26 weeks held out chronologically</li><li>Same-week-last-year baseline</li><li>Recommendation conditional on holdout MAE</li></ul></aside>
     </section>
 
     <div class="container lab-disclosure" id="disclosure"><strong>Synthetic demonstration.</strong> This is not a client engagement or a claim of realised business performance.</div>
 
     <section class="section" id="results">
-      <div class="section-heading" data-reveal><div><div class="eyebrow">Held-out results</div><h2>The baseline gets the first chance to win.</h2></div><p>The browser reads the versioned evidence artifact, validates its schema and disclosure, then renders the metrics and charts. Invalid evidence fails closed.</p></div>
+      <div class="section-heading" data-reveal><div><div class="eyebrow">Held-out results</div><h2>Model versus baseline on the final 26 weeks.</h2></div><p>The browser reads the versioned evidence artifact, validates its schema and disclosure, then renders the metrics and charts. Invalid evidence fails closed.</p></div>
       <div class="lab-results" data-evidence-src="data/marketing-allocation.json" aria-live="polite">
         <div class="evidence-loading"><h2>Loading checked evidence…</h2><p>The source JSON and CSV remain directly downloadable if the interactive renderer is unavailable.</p></div>
       </div>
@@ -66,7 +66,7 @@
     <section class="section"><div class="contact-panel" data-reveal><div><div class="eyebrow">Apply the discipline</div><h2>Have an allocation decision of your own?</h2><p>Describe the budget, available history, decision cadence, and what the current baseline looks like.</p></div><div class="contact-actions"><a class="button" href="mailto:maxell.aguiran@gmail.com?subject=Marketing%20allocation%20conversation">Email Maxell</a><a class="button secondary" href="../dragon-analytics.html">How Dragon Analytics works</a></div></div></section>
   </main>
 
-  <footer class="site-footer"><div><div class="footer-brand"><img class="foot-mark" src="../assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran · Dragon Analytics</span></div><div>Synthetic evidence, clearly labelled. © 2026 Maxell Agustin Aguiran.</div></div><nav class="footer-links" aria-label="Footer navigation"><a href="mailto:maxell.aguiran@gmail.com">Email</a><a href="https://github.com/MaxellAguiran">GitHub</a><a href="../dragon-analytics.html">Services</a><a href="churn-risk.html">Churn lab</a></nav></footer>
+  <footer class="site-footer"><div><div class="footer-brand"><img class="foot-mark" src="../assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran · Dragon Analytics</span></div><div>Synthetic evidence, clearly labelled. © 2026 Maxell Agustin Aguiran.</div></div><nav class="footer-links" aria-label="Footer navigation"><a href="mailto:maxell.aguiran@gmail.com">Email</a><a href="https://github.com/MaxellAguiran">GitHub</a><a href="../dragon-analytics.html">Services</a><a href="churn-risk.html">Churn example</a></nav></footer>
   <script type="module" src="../scripts/site.mjs"></script><script type="module" src="../scripts/lab-evidence.mjs"></script>
 </body>
 </html>

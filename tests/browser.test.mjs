@@ -94,32 +94,94 @@ test("representative pages have no horizontal overflow or console errors at requ
 });
 
 
-test("the first mobile viewport identifies Maxell, the service, the wordmark, and an action", async () => {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const { page } = await openCheckedPage(context, "index.html");
-  await assert.doesNotReject(() => page.locator(".brand span").waitFor({ state: "visible" }));
-  assert.match(await page.locator(".hero-copy").innerText(), /Maxell Aguiran/i);
-  assert.match(await page.locator(".hero-copy").innerText(), /predictive analytics|Dragon Analytics/i);
-  const primary = page.locator('.hero-actions a[href="#evidence"]');
-  assert.equal(await primary.isVisible(), true);
-  const box = await primary.boundingBox();
-  assert.ok(box.y < 844, `Primary action begins below the first mobile viewport at y=${box.y}`);
-  await context.close();
+test("the homepage first screen states the two services and keeps both actions fully visible", async () => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 720 }]) {
+    const context = await browser.newContext({ viewport });
+    const { page } = await openCheckedPage(context, "index.html");
+    await assert.doesNotReject(() => page.locator(".brand span").waitFor({ state: "visible" }));
+    const heroText = await page.locator(".hero-copy").innerText();
+    assert.match(heroText, /Maxell Aguiran/i);
+    assert.match(heroText, /marketing spend/i);
+    assert.match(heroText, /customer retention/i);
+    const actions = await page.locator(".hero-actions a").all();
+    assert.equal(actions.length, 2);
+    for (const action of actions) {
+      assert.equal(await action.isVisible(), true);
+      const box = await action.boundingBox();
+      assert.ok(box.y + box.height <= viewport.height, `Hero action extends below ${viewport.width}×${viewport.height}: ${JSON.stringify(box)}`);
+    }
+    await context.close();
+  }
 });
 
 
-test("Dragon Analytics is materially shorter and places contact before FAQ", async () => {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const { page } = await openCheckedPage(context, "dragon-analytics.html");
-  const measurements = await page.evaluate(() => ({
-    height: document.documentElement.scrollHeight,
-    contact: document.getElementById("contact").offsetTop,
-    faq: document.getElementById("faq").offsetTop
-  }));
-  assert.ok(measurements.height < 9000, `Mobile page is still too long: ${measurements.height}px`);
-  assert.ok(measurements.contact < measurements.faq, "Contact must appear before FAQ");
-  assert.ok(measurements.contact < 7500, `Contact appears too late at ${measurements.contact}px`);
-  await context.close();
+test("the homepage presents services before proof in five concise sections", async () => {
+  for (const expected of [
+    { viewport: { width: 390, height: 844 }, maxHeight: 6000 },
+    { viewport: { width: 1280, height: 720 }, maxHeight: 4200 }
+  ]) {
+    const context = await browser.newContext({ viewport: expected.viewport });
+    const { page } = await openCheckedPage(context, "index.html");
+    const structure = await page.evaluate(() => ({
+      height: document.documentElement.scrollHeight,
+      ids: [...document.querySelectorAll("main > section")].map((section) => section.id),
+      positions: Object.fromEntries(["services", "proof", "about", "contact"].map((id) => [id, document.getElementById(id)?.offsetTop]))
+    }));
+    assert.deepEqual(structure.ids, ["", "services", "proof", "about", "contact"]);
+    assert.ok(structure.height < expected.maxHeight, `Homepage is still too long at ${expected.viewport.width}px: ${structure.height}px`);
+    assert.ok(structure.positions.services < structure.positions.proof);
+    assert.ok(structure.positions.proof < structure.positions.about);
+    assert.ok(structure.positions.about < structure.positions.contact);
+    assert.equal(await page.locator(".hero .instrument-card").count(), 0);
+    assert.equal(await page.locator(".hero img[src*='dragon-mascot']").count(), 0);
+    await context.close();
+  }
+});
+
+
+test("Dragon Analytics is a compact service page with a supporting mascot and five FAQs or fewer", async () => {
+  for (const expected of [
+    { viewport: { width: 390, height: 844 }, maxHeight: 6500, maxContact: 5000 },
+    { viewport: { width: 1280, height: 720 }, maxHeight: 4200, maxContact: 3200 }
+  ]) {
+    const context = await browser.newContext({ viewport: expected.viewport });
+    const { page } = await openCheckedPage(context, "dragon-analytics.html");
+    const measurements = await page.evaluate(() => ({
+      height: document.documentElement.scrollHeight,
+      ids: [...document.querySelectorAll("main > section")].map((section) => section.id),
+      contact: document.getElementById("contact").offsetTop,
+      faq: document.getElementById("faq").offsetTop
+    }));
+    assert.deepEqual(measurements.ids, ["", "services", "process", "contact", "faq"]);
+    assert.ok(measurements.height < expected.maxHeight, `Dragon Analytics is still too long at ${expected.viewport.width}px: ${measurements.height}px`);
+    assert.ok(measurements.contact < measurements.faq, "Contact must appear before FAQ");
+    assert.ok(measurements.contact < expected.maxContact, `Contact appears too late at ${measurements.contact}px`);
+    assert.equal(await page.locator(".hero .instrument-card").count(), 0);
+    assert.equal(await page.locator("img[src*='dragon-mascot']").count(), 1);
+    const faqCount = await page.locator("details[data-disclosure]").count();
+    assert.ok(faqCount >= 4 && faqCount <= 5, `Expected 4–5 concise FAQs, found ${faqCount}`);
+    await context.close();
+  }
+});
+
+
+test("the research hub shows the five reports without a second methodology or sales section", async () => {
+  for (const expected of [
+    { viewport: { width: 390, height: 844 }, maxHeight: 4300 },
+    { viewport: { width: 1280, height: 720 }, maxHeight: 3000 }
+  ]) {
+    const context = await browser.newContext({ viewport: expected.viewport });
+    const { page } = await openCheckedPage(context, "writing.html");
+    const structure = await page.evaluate(() => ({
+      height: document.documentElement.scrollHeight,
+      ids: [...document.querySelectorAll("main > section")].map((section) => section.id)
+    }));
+    assert.deepEqual(structure.ids, ["", "reports"]);
+    assert.ok(structure.height < expected.maxHeight, `Research hub is still too long at ${expected.viewport.width}px: ${structure.height}px`);
+    assert.equal(await page.locator("#reports a[href$='.html']").count(), 5);
+    assert.equal(await page.locator(".page-hero-card").count(), 0);
+    await context.close();
+  }
 });
 
 

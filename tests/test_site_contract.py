@@ -33,6 +33,7 @@ class ContractParser(HTMLParser):
         self.og_image = []
         self.h1_count = 0
         self.links = []
+        self.ids = set()
         self.forms = 0
         self.json_ld = []
         self._json_depth = 0
@@ -40,6 +41,8 @@ class ContractParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attributes = dict(attrs)
+        if attributes.get("id"):
+            self.ids.add(attributes["id"])
         if tag == "title":
             self.title_count += 1
         elif tag == "meta" and attributes.get("name") == "description":
@@ -95,13 +98,16 @@ class SiteContractTests(unittest.TestCase):
             parser = parse_page(page)
             for link in parser.links:
                 parts = urlsplit(link)
-                if parts.scheme in {"http", "https", "mailto"} or link.startswith("#"):
+                if parts.scheme in {"http", "https", "mailto"}:
                     continue
                 candidate = (ROOT / page).parent / unquote(parts.path)
                 if not parts.path:
                     candidate = ROOT / page
                 with self.subTest(page=page, link=link):
                     self.assertTrue(candidate.resolve().is_file(), f"Missing {candidate}")
+                    if parts.fragment and candidate.suffix == ".html":
+                        target = parse_page(candidate.resolve().relative_to(ROOT))
+                        self.assertIn(unquote(parts.fragment), target.ids, f"Missing fragment in {candidate}")
 
     def test_no_private_project_or_platform_names_are_published(self):
         """Accidentally exposing a private project name must fail."""
@@ -124,8 +130,8 @@ class SiteContractTests(unittest.TestCase):
         churn = json.loads((ROOT / "labs/data/churn-risk.json").read_text())
         self.assertIn(f"${marketing['baseline']['metrics']['mae']:,.0f}", homepage)
         self.assertIn(f"${marketing['model']['metrics']['mae']:,.0f}", homepage)
+        self.assertIn(f"{churn['baseline']['metrics']['brierScore']:.3f}", homepage)
         self.assertIn(f"{churn['model']['metrics']['brierScore']:.3f}", homepage)
-        self.assertIn(f"{churn['model']['metrics']['topDecileLift']:.2f}×", homepage)
 
     def test_articles_expose_article_json_ld_and_source_review_state(self):
         """Removing article identity or disguising unverified source links must fail."""
