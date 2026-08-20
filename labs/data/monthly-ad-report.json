@@ -1,0 +1,309 @@
+{
+  "ads": [
+    {
+      "action": "Cut",
+      "adId": "SYN-META-01",
+      "adName": "Generated prospecting concept A",
+      "breakEvenRoas": 1.45,
+      "changeCents": -1155597,
+      "currentSpendCents": 1283692,
+      "forecastHigh": 1.1143,
+      "forecastLow": 0.9376,
+      "forecastRoas": 1.0259,
+      "platform": "Meta Ads",
+      "recommendedSpendCents": 128095
+    },
+    {
+      "action": "Cut",
+      "adId": "SYN-META-02",
+      "adName": "Generated prospecting concept B",
+      "breakEvenRoas": 1.45,
+      "changeCents": -960011,
+      "currentSpendCents": 1095813,
+      "forecastHigh": 1.3625,
+      "forecastLow": 1.1857,
+      "forecastRoas": 1.2741,
+      "platform": "Meta Ads",
+      "recommendedSpendCents": 135802
+    },
+    {
+      "action": "Reduce",
+      "adId": "SYN-META-03",
+      "adName": "Generated retargeting concept A",
+      "breakEvenRoas": 1.45,
+      "changeCents": 77076,
+      "currentSpendCents": 966158,
+      "forecastHigh": 1.5207,
+      "forecastLow": 1.344,
+      "forecastRoas": 1.4324,
+      "platform": "Meta Ads",
+      "recommendedSpendCents": 1043234
+    },
+    {
+      "action": "Increase",
+      "adId": "SYN-META-04",
+      "adName": "Generated retargeting concept B",
+      "breakEvenRoas": 1.45,
+      "changeCents": 1521545,
+      "currentSpendCents": 842702,
+      "forecastHigh": 1.7604,
+      "forecastLow": 1.5837,
+      "forecastRoas": 1.6721,
+      "platform": "Meta Ads",
+      "recommendedSpendCents": 2364247
+    },
+    {
+      "action": "Cut",
+      "adId": "SYN-GOOG-01",
+      "adName": "Generated search group A",
+      "breakEvenRoas": 1.45,
+      "changeCents": -1330688,
+      "currentSpendCents": 1486028,
+      "forecastHigh": 1.163,
+      "forecastLow": 0.9863,
+      "forecastRoas": 1.0747,
+      "platform": "Google Ads",
+      "recommendedSpendCents": 155340
+    },
+    {
+      "action": "Cut",
+      "adId": "SYN-GOOG-02",
+      "adName": "Generated search group B",
+      "breakEvenRoas": 1.45,
+      "changeCents": -1184978,
+      "currentSpendCents": 1353972,
+      "forecastHigh": 1.3715,
+      "forecastLow": 1.1948,
+      "forecastRoas": 1.2832,
+      "platform": "Google Ads",
+      "recommendedSpendCents": 168994
+    },
+    {
+      "action": "Keep",
+      "adId": "SYN-GOOG-03",
+      "adName": "Generated shopping group A",
+      "breakEvenRoas": 1.45,
+      "changeCents": 900153,
+      "currentSpendCents": 1171953,
+      "forecastHigh": 1.5425,
+      "forecastLow": 1.3658,
+      "forecastRoas": 1.4542,
+      "platform": "Google Ads",
+      "recommendedSpendCents": 2072106
+    },
+    {
+      "action": "Increase",
+      "adId": "SYN-GOOG-04",
+      "adName": "Generated shopping group B",
+      "breakEvenRoas": 1.45,
+      "changeCents": 1827567,
+      "currentSpendCents": 1005742,
+      "forecastHigh": 1.7673,
+      "forecastLow": 1.5906,
+      "forecastRoas": 1.679,
+      "platform": "Google Ads",
+      "recommendedSpendCents": 2833309
+    },
+    {
+      "action": "Cut",
+      "adId": "SYN-TIKT-01",
+      "adName": "Generated short-form concept A",
+      "breakEvenRoas": 1.45,
+      "changeCents": -826927,
+      "currentSpendCents": 920091,
+      "forecastHigh": 1.1294,
+      "forecastLow": 0.9527,
+      "forecastRoas": 1.041,
+      "platform": "TikTok Ads",
+      "recommendedSpendCents": 93164
+    },
+    {
+      "action": "Cut",
+      "adId": "SYN-TIKT-02",
+      "adName": "Generated short-form concept B",
+      "breakEvenRoas": 1.45,
+      "changeCents": -773512,
+      "currentSpendCents": 884199,
+      "forecastHigh": 1.3754,
+      "forecastLow": 1.1987,
+      "forecastRoas": 1.287,
+      "platform": "TikTok Ads",
+      "recommendedSpendCents": 110687
+    },
+    {
+      "action": "Keep",
+      "adId": "SYN-TIKT-03",
+      "adName": "Generated creator concept A",
+      "breakEvenRoas": 1.45,
+      "changeCents": 614679,
+      "currentSpendCents": 790273,
+      "forecastHigh": 1.5506,
+      "forecastLow": 1.3739,
+      "forecastRoas": 1.4622,
+      "platform": "TikTok Ads",
+      "recommendedSpendCents": 1404952
+    },
+    {
+      "action": "Increase",
+      "adId": "SYN-TIKT-04",
+      "adName": "Generated creator concept B",
+      "breakEvenRoas": 1.45,
+      "changeCents": 1290693,
+      "currentSpendCents": 699377,
+      "forecastHigh": 1.7843,
+      "forecastLow": 1.6076,
+      "forecastRoas": 1.6959,
+      "platform": "TikTok Ads",
+      "recommendedSpendCents": 1990070
+    }
+  ],
+  "artifactHashes": {
+    "datasetSha256": "91bf6df6a2ba81420522d75eccd98f7caa95604cd83b3f0bdb596437debe6d55",
+    "generatorSha256": "888ff23c7822a26bb4ed532de35f310b13ec8e82820efaf718a2cb5f354368d4"
+  },
+  "baseline": {
+    "metrics": {
+      "mae": 0.067369,
+      "rmse": 0.082109
+    },
+    "name": "Each ad's trailing 30-day average ROAS"
+  },
+  "breakEven": {
+    "definition": "Generated attributed revenue divided by ad spend; break-even is 1.45.",
+    "roas": 1.45
+  },
+  "budget": {
+    "currentTotalCents": 12500000,
+    "recommendedTotalCents": 12500000,
+    "reconciliationDifferenceCents": 0,
+    "suppliedMonthlyBudgetCents": 12500000
+  },
+  "chartSeries": [
+    {
+      "id": "ad-budget-comparison",
+      "labels": [
+        "SYN-META-01",
+        "SYN-META-02",
+        "SYN-META-03",
+        "SYN-META-04",
+        "SYN-GOOG-01",
+        "SYN-GOOG-02",
+        "SYN-GOOG-03",
+        "SYN-GOOG-04",
+        "SYN-TIKT-01",
+        "SYN-TIKT-02",
+        "SYN-TIKT-03",
+        "SYN-TIKT-04"
+      ],
+      "series": [
+        {
+          "name": "Current",
+          "values": [
+            1283692,
+            1095813,
+            966158,
+            842702,
+            1486028,
+            1353972,
+            1171953,
+            1005742,
+            920091,
+            884199,
+            790273,
+            699377
+          ]
+        },
+        {
+          "name": "Recommended",
+          "values": [
+            128095,
+            135802,
+            1043234,
+            2364247,
+            155340,
+            168994,
+            2072106,
+            2833309,
+            93164,
+            110687,
+            1404952,
+            1990070
+          ]
+        }
+      ]
+    }
+  ],
+  "currency": "USD",
+  "dataset": {
+    "download": "data/monthly-ad-report.csv",
+    "fields": [
+      "date",
+      "ad_id",
+      "ad_name",
+      "platform",
+      "cohort",
+      "spend_cents",
+      "impressions",
+      "clicks",
+      "conversions",
+      "attributed_revenue_cents",
+      "observed_roas",
+      "baseline_forecast_roas",
+      "model_forecast_roas"
+    ],
+    "platforms": [
+      "Meta Ads",
+      "Google Ads",
+      "TikTok Ads"
+    ],
+    "rows": 2880,
+    "unit": "generated ad-day"
+  },
+  "disclosure": "synthetic-demonstration",
+  "forecastMonth": "2026-09",
+  "generatedAt": "2026-08-21T00:00:00Z",
+  "limitations": [
+    "The data is generated and is less irregular than live advertising and sales exports.",
+    "Attributed revenue does not prove causal incrementality.",
+    "Forecasts are estimates and can fail when offers, tracking, prices, inventory, or markets change.",
+    "The allocation is constrained to the supplied budget and observed generated spend range."
+  ],
+  "metrics": {
+    "evidenceGatePassed": true,
+    "maeReductionPercent": 31.01,
+    "primary": "mae"
+  },
+  "model": {
+    "features": [
+      "trend",
+      "weekly pattern",
+      "monthly pattern",
+      "spend saturation",
+      "platform",
+      "ad identity"
+    ],
+    "interval": {
+      "coverageTarget": 0.9,
+      "halfWidth": 0.088362
+    },
+    "metrics": {
+      "mae": 0.046476,
+      "rmse": 0.057495
+    },
+    "name": "Regularized ad-level response regression",
+    "reason": "Held-out model MAE beat the declared simple comparison.",
+    "recommendationStatus": "shown"
+  },
+  "report": "monthly-ad-forecast",
+  "schema": "ad-report-evidence/v1",
+  "seed": 19247,
+  "split": {
+    "developmentDays": 210,
+    "developmentEnd": "2026-08-01",
+    "developmentStart": "2026-01-04",
+    "holdoutDays": 30,
+    "holdoutEnd": "2026-08-31",
+    "holdoutStart": "2026-08-02",
+    "strategy": "chronological"
+  }
+}
