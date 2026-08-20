@@ -1,448 +1,98 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dragon Analytics | Predictive Analytics Consulting</title>
-<meta name="description" content="Predictive analytics consulting. Budget allocation and return on ad spend for performance marketing agencies, and churn prediction for marketing firms. Models validated on held-out data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<meta name="theme-color" content="#0f0e0e">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Dragon Analytics | Predictive Analytics Consulting">
-<meta property="og:description" content="Forecasting models for decisions that turn on data you already hold. Validated, documented, handed over.">
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dragon Analytics | Predictive Analytics by Maxell Aguiran</title>
+  <meta name="description" content="Evidence-led predictive analytics for marketing allocation, churn risk, and adjacent business forecasting decisions.">
+  <link rel="canonical" href="https://maxellaguiran.github.io/dragon-analytics.html">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#F7FAF7">
+  <meta property="og:type" content="website"><meta property="og:site_name" content="Maxell Aguiran">
+  <meta property="og:title" content="Dragon Analytics | Evidence Before Confidence">
+  <meta property="og:description" content="Predictive models for marketing allocation and churn risk, tested against real baselines and handed over as usable instruments.">
+  <meta property="og:url" content="https://maxellaguiran.github.io/dragon-analytics.html">
+  <meta property="og:image" content="https://maxellaguiran.github.io/assets/social/dragon-analytics.png">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Dragon Analytics | Evidence Before Confidence"><meta name="twitter:description" content="Predictive analytics for decisions people can actually operate."><meta name="twitter:image" content="https://maxellaguiran.github.io/assets/social/dragon-analytics.png">
+  <link rel="preload" href="assets/fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/dragon-mascot.webp" as="image" type="image/webp">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="index.html"><img class="brand-mark" src="assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Open navigation" data-nav-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <nav class="site-nav" id="site-navigation" aria-label="Primary navigation"><a href="index.html">Home</a><a href="#laboratories">Laboratories</a><a href="writing.html">Research</a><a href="#contact">Contact</a></nav>
+  </header>
 
-<header class="site-header">
-  <a class="brand" href="index.html">
-    <img class="brand-mark" src="assets/dragon-mark.svg" alt="">
-    Dragon Analytics
-  </a>
-  <nav>
-    <a href="index.html">Home</a>
-    <a class="nav-min" href="#services">Services</a>
-    <a class="nav-min" href="#method">Method</a>
-    <a class="nav-min" href="writing.html">Research</a>
-    <a class="nav-cta" href="#contact">Get in touch</a>
-  </nav>
-</header>
-
-<main id="top">
-
-  <section class="da-hero">
-    <div class="da-hero-inner">
-      <div>
-        <div class="da-lockup">
-          <img class="mark" src="assets/dragon-mark.svg" alt="">
-          <div>
-            <b><span class="red">Dragon</span> Analytics</b>
-            <small>Data · Insight · Impact</small>
-          </div>
-        </div>
-
-        <h1>Models that show where the money goes — and <em>how much to trust</em> the answer.</h1>
-        <p class="lede">Dragon Analytics is my predictive analytics consultancy. You bring a decision that turns on data you already hold. I build the model that answers it, test it against outcomes it has never seen, and hand it over as something your team runs without me.</p>
-        <p class="lede">Engagements are fixed in scope and priced before work starts. Most run three to six weeks.</p>
-
-        <div class="hero-actions">
-          <a class="button" href="#contact">Start a conversation <span class="arrow" aria-hidden="true">→</span></a>
-          <a class="button ghost" href="#method">How I validate models</a>
-        </div>
+  <main id="main">
+    <section class="hero">
+      <div class="hero-copy" data-reveal>
+        <div class="eyebrow">Dragon Analytics · Predictive analytics consulting</div>
+        <h1>Models that earn the right to change a decision.</h1>
+        <p>Dragon Analytics helps teams decide where the next unit of budget should go and which customer relationships may need attention—using chronological tests, explicit baselines, calibrated uncertainty, and a handover your team can inspect.</p>
+        <div class="hero-actions"><a class="button" href="#contact">Describe your decision</a><a class="button secondary" href="#laboratories">Inspect the laboratories</a></div>
+        <div class="signal-note"><span class="signal-dot" aria-hidden="true"></span><span>A working contact action is available here, before the methodology. No form submission is required.</span></div>
       </div>
-
-      <div>
-        <div class="panel">
-          <div class="panel-head">
-            <span class="panel-title">Budget allocation model</span>
-            <span class="panel-tag">Sample output</span>
-          </div>
-          <div class="panel-legend">
-            <span><i style="background:#4a4241"></i>Current split</span>
-            <span><i style="background:#d92b2b"></i>Recommended</span>
-          </div>
-          <div class="panel-row">
-            <span class="ch">Paid search</span>
-            <span class="bars"><span class="bar now" style="width:100%"></span><span class="bar rec" style="width:81%"></span></span>
-            <span class="delta down">−19%</span>
-          </div>
-          <div class="panel-row">
-            <span class="ch">Paid social</span>
-            <span class="bars"><span class="bar now" style="width:67%"></span><span class="bar rec" style="width:93%"></span></span>
-            <span class="delta up">+39%</span>
-          </div>
-          <div class="panel-row">
-            <span class="ch">Display</span>
-            <span class="bars"><span class="bar now" style="width:43%"></span><span class="bar rec" style="width:26%"></span></span>
-            <span class="delta down">−39%</span>
-          </div>
-          <div class="panel-row">
-            <span class="ch">Retail media</span>
-            <span class="bars"><span class="bar now" style="width:29%"></span><span class="bar rec" style="width:38%"></span></span>
-            <span class="delta up">+33%</span>
-          </div>
-          <div class="panel-foot">
-            Projected return on ad spend <b>3.1× → 3.6×</b> · 80% interval 3.3–3.9× · validated on 6 held-out months
-          </div>
-        </div>
-        <p class="panel-caption">Illustrative output, not a client result. Note the interval and the validation line — every model I deliver carries both.</p>
+      <div class="hero-visual" data-reveal>
+        <div class="mascot-frame"><img src="assets/dragon-mascot.webp" width="859" height="940" alt="A composed deep-forest dragon drawn in editorial ink and watercolor" fetchpriority="high"></div>
+        <aside class="instrument-card"><div class="instrument-top"><span>Decision standard</span><span>4 gates</span></div><ul class="clean-list"><li>Beat a baseline</li><li>Hold out unseen data</li><li>State uncertainty</li><li>Hand over the instrument</li></ul></aside>
       </div>
-    </div>
+    </section>
 
-    <div class="da-strip">
-      <div class="da-metrics">
-        <div><b>Where spend actually returns</b><span>Channel contribution and the return on the next dollar, not the average one</span></div>
-        <div><b>Which accounts are leaving</b><span>Account-level risk scores ranked by revenue at stake</span></div>
-        <div><b>What the range really is</b><span>Forecasts delivered with intervals, so you can size the bet</span></div>
+    <section class="section" id="laboratories">
+      <div class="section-heading" data-reveal><div><div class="eyebrow">Public laboratories</div><h2>See the method before you trust the pitch.</h2></div><p>Both demonstrations are synthetic, deterministic, and downloadable. They claim no realised client performance.</p></div>
+      <div class="lab-grid">
+        <a class="lab-card" href="labs/marketing-allocation.html" data-reveal><div class="disclosure-label">Synthetic demonstration</div><div><h3>Marketing allocation</h3><p>Lagged effects, seasonality, saturation, and a final chronological holdout. The allocation is shown only because the model beat the declared year-ago baseline.</p></div><div class="mini-chart" role="img" aria-label="The model error is roughly half the baseline error."><span class="mini-bar" style="height:92%"></span><span class="mini-bar is-strong" style="height:46%"></span></div><div class="card-footer"><span>Data, evidence &amp; code</span><span>Open lab →</span></div></a>
+        <a class="lab-card" href="labs/churn-risk.html" data-reveal><div class="disclosure-label">Synthetic demonstration</div><div><h3>Churn risk</h3><p>Calibrated probabilities, untouched accounts, top-decile lift, revenue exposure, lead time, and the cost of outreach—not an accuracy headline.</p></div><div class="mini-chart" role="img" aria-label="Precision declines as outreach capacity expands."><span class="mini-bar is-strong" style="height:96%"></span><span class="mini-bar is-strong" style="height:82%"></span><span class="mini-bar" style="height:58%"></span><span class="mini-bar" style="height:41%"></span></div><div class="card-footer"><span>Data, evidence &amp; code</span><span>Open lab →</span></div></a>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ DEFINITION ============ -->
-  <section class="section">
-    <div class="section-heading">
-      <div class="eyebrow">The short version</div>
-      <h2>What predictive analytics is, without the mystique.</h2>
-    </div>
-
-    <div class="explainer">
-      <h4>Definition</h4>
-      <p>Using patterns in data you already hold to estimate what happens next — then checking that estimate against outcomes the model never saw, so you know how far to trust it.</p>
-      <p>The second half is the part that matters, and the part most often skipped. A model can be made to fit last year perfectly and still be worthless next quarter. The only meaningful test is whether it predicts data it was not trained on.</p>
-      <p>An example. Accounts that cancelled last year mostly stopped opening emails around eight weeks beforehand. That pattern becomes a signal. Its value is not that it sounds plausible — it is that when you hold back a year of accounts the model never saw, it still flags the ones that left.</p>
-    </div>
-
-    <p class="lead-note">You do not need to follow the mathematics to judge the work. You need to know what was compared, what was held back, and how wide the range is. I put those three things in front of you every time.</p>
-  </section>
-
-  <!-- ============ SERVICES ============ -->
-  <section id="services" class="section" style="padding-top:0">
-    <div class="section-heading">
-      <div class="eyebrow">Services</div>
-      <h2>Two problems I go deep on.</h2>
-      <p>These are where my models are strongest today. Adjacent work — forecasting, pricing, lead scoring — is still worth a conversation.</p>
-    </div>
-
-    <div class="focus-grid">
-      <div class="focus">
-        <div class="focus-kicker">For performance marketing agencies</div>
-        <h3>Budget allocation and return on ad spend</h3>
-        <p>Last-click reporting systematically over-credits search and under-credits whatever created the demand in the first place. I model what each channel actually contributes — including the delayed effect of impressions nobody clicked — and estimate what the <em>next</em> dollar returns in each, which is the number that should drive the budget.</p>
-        <ul>
-          <li>Channel contribution with adstock and diminishing-returns curves</li>
-          <li>Marginal return per channel, not blended averages</li>
-          <li>Incrementality testing against natural experiments in past spend</li>
-          <li>Validation on held-out periods before anything is recommended</li>
-          <li>A scenario tool: enter a budget, get the split and a forecast range</li>
-        </ul>
+    <section class="section" id="services">
+      <div class="section-heading" data-reveal><div><div class="eyebrow">Focused services</div><h2>Start with the operating decision.</h2></div><p>The engagement is scoped around what must change, what evidence existed beforehand, and the cost of a false signal.</p></div>
+      <div class="service-grid">
+        <article class="service-card" data-reveal><span class="number">01</span><h3>Marketing allocation &amp; marginal return</h3><p><strong>Decision:</strong> where should the next unit of spend go?</p><p>Model channel response with carryover and diminishing return, compare current and constrained allocations, and test the forecast on later weeks the model did not fit.</p><p><strong>Handover:</strong> reproducible data transformation, model evidence, response curves, allocation scenarios, and documented failure conditions.</p></article>
+        <article class="service-card" data-reveal><span class="number">02</span><h3>Churn prediction &amp; revenue at risk</h3><p><strong>Decision:</strong> which accounts should receive limited retention attention?</p><p>Estimate calibrated risk, compare with a constant-rate or simple-rule baseline, and evaluate precision at the actual outreach capacity.</p><p><strong>Handover:</strong> scored accounts, calibration evidence, lead-time view, exposure estimate, intervention assumptions, and false-positive costs.</p></article>
       </div>
+      <p class="research-note">Adjacent forecasting work is considered when there is a clear decision, sufficient point-in-time history, and a safe way to evaluate the result. A model is not proposed merely because data exists.</p>
+    </section>
 
-      <div class="focus">
-        <div class="focus-kicker">For marketing firms and retained services</div>
-        <h3>Churn prediction and retention</h3>
-        <p>Churn is usually visible in behaviour weeks before the cancellation email. I build an account-level model that scores the probability of leaving, ranks accounts by revenue at risk rather than risk alone, and surfaces which signals drive each score so the team knows what to do rather than just who to worry about.</p>
-        <ul>
-          <li>Account-level churn probability, tested on accounts held back from training</li>
-          <li>Ranking by expected revenue at risk, so effort follows value</li>
-          <li>Driver attribution behind every score</li>
-          <li>Customer lifetime value, to size what a save is worth</li>
-          <li>A monthly scored list your team can act on directly</li>
-        </ul>
+    <section class="section" id="standard">
+      <div class="section-heading" data-reveal><div><div class="eyebrow">Evidence standard</div><h2>What every model has to survive.</h2></div><p>These gates are part of the deliverable, not small print added after a favorable result.</p></div>
+      <div class="principles-grid">
+        <article class="principle" data-reveal><strong>Chronology</strong><p>Later outcomes do not inform earlier training decisions.</p></article><article class="principle" data-reveal><strong>Baseline</strong><p>A transparent rule gets the first chance to win.</p></article><article class="principle" data-reveal><strong>Calibration</strong><p>Probability quality matters when actions have different costs.</p></article><article class="principle" data-reveal><strong>Limits</strong><p>Failure conditions and unsupported extrapolations are named.</p></article><article class="principle" data-reveal><strong>Reproducibility</strong><p>Inputs, outputs, versions, and hashes remain inspectable.</p></article>
       </div>
-    </div>
+    </section>
 
-    <div class="explainer">
-      <h4>Two terms, defined once</h4>
-      <p><span class="term">Return on ad spend (ROAS)</span> — revenue generated for each unit of currency spent on advertising. Spend $1, get $4 back, and ROAS is 4. The useful version is <em>marginal</em> ROAS: what the next dollar returns, not what the average dollar did.</p>
-      <p><span class="term">Churn</span> — the rate at which customers stop paying. Five departures from a hundred accounts in a month is 5% monthly churn. Compounded across a year, that is roughly half the book.</p>
-    </div>
-  </section>
-
-  <!-- ============ METHOD ============ -->
-  <section id="method" class="section" style="padding-top:0">
-    <div class="section-heading">
-      <div class="eyebrow">Method</div>
-      <h2>How I make sure the model is worth using.</h2>
-      <p>Four rules I hold to on every engagement. They are also how you should judge any analytics work, including mine.</p>
-    </div>
-
-    <div class="method">
-      <div class="method-item">
-        <div class="n">01</div>
-        <h4>Beat a real baseline</h4>
-        <p>Every model is scored against the rule you use today. If it cannot beat your current approach, it does not ship and you do not pay for it.</p>
+    <section class="section" id="engagement">
+      <div class="section-heading" data-reveal><div><div class="eyebrow">Four-step engagement</div><h2>From decision to operating instrument.</h2></div><p>Scope and commercial terms are agreed only after the data and decision are understood. No outcome or shipping guarantee is implied here.</p></div>
+      <div class="engagement-grid">
+        <article class="engagement-step" data-reveal><span>01 · Frame</span><h3>Name the decision</h3><p>Define the action, timing, capacity, and cost of being wrong.</p></article><article class="engagement-step" data-reveal><span>02 · Audit</span><h3>Test the evidence</h3><p>Check data availability, point-in-time integrity, leakage risk, and a credible baseline.</p></article><article class="engagement-step" data-reveal><span>03 · Validate</span><h3>Build and hold out</h3><p>Fit only on development data; evaluate on later or untouched evidence.</p></article><article class="engagement-step" data-reveal><span>04 · Handover</span><h3>Make it operable</h3><p>Deliver the instrument, documentation, uncertainty, and conditions for rechecking it.</p></article>
       </div>
-      <div class="method-item">
-        <div class="n">02</div>
-        <h4>Test on unseen data</h4>
-        <p>Results are measured on periods and accounts held back from training. Fitting the past well proves nothing on its own.</p>
-      </div>
-      <div class="method-item">
-        <div class="n">03</div>
-        <h4>State the uncertainty</h4>
-        <p>Forecasts come as ranges with a stated confidence level. A single decimal implies a precision that the data almost never supports.</p>
-      </div>
-      <div class="method-item">
-        <div class="n">04</div>
-        <h4>Hand it over</h4>
-        <p>You get the model, the documentation and the assumptions in writing. The goal is that your team runs it without me, not that you keep paying me to press the button.</p>
-      </div>
-    </div>
+    </section>
 
-    <div class="capabilities" style="margin-top:26px">
-      <span>Regression &amp; time-series forecasting</span>
-      <span>Gradient-boosted classifiers</span>
-      <span>Survival analysis</span>
-      <span>Adstock &amp; saturation curves</span>
-      <span>Cross-validation &amp; backtesting</span>
-      <span>Python · SQL · scikit-learn · pandas</span>
-    </div>
-  </section>
+    <section class="section" id="contact">
+      <div class="contact-panel" data-reveal><div><div class="eyebrow">Conversation, not intake theatre</div><h2>Describe the decision you are trying to make.</h2><p>Include what is decided today, what history exists, and what a useful output would let your team do differently. If the available evidence cannot support a responsible model, I will say so.</p></div><div class="contact-actions"><a class="button" href="mailto:maxell.aguiran@gmail.com?subject=Dragon%20Analytics%20project">Email Maxell</a><button class="button secondary" type="button" data-copy-email="maxell.aguiran@gmail.com" aria-describedby="copy-status-dragon">Copy email</button><div class="copy-status" id="copy-status-dragon" role="status" aria-live="polite"></div></div></div>
+    </section>
 
-  <!-- ============ HOW IT RUNS ============ -->
-  <section class="section" style="padding-top:0">
-    <div class="section-heading">
-      <div class="eyebrow">Engagement</div>
-      <h2>Four steps, priced before we start.</h2>
-    </div>
-
-    <div class="process">
-      <div class="process-step">
-        <div class="step-n">1</div>
-        <h4>Scoping call</h4>
-        <p>You describe the decision. I ask what data exists and what the current approach is. Free, and no obligation either way.</p>
+    <section class="section" id="faq">
+      <div class="section-heading is-stacked" data-reveal><div class="eyebrow">Concise FAQ</div><h2>Questions worth answering before the work starts.</h2></div>
+      <div class="faq-list" data-reveal>
+        <details data-disclosure><summary>What information do you need?</summary><p>Enough historical, point-in-time data to recreate what was knowable when each decision would have been made. The exact fields depend on the decision.</p></details>
+        <details data-disclosure><summary>How much data is enough?</summary><p>There is no universal row count. Frequency, regime changes, event rarity, seasonality, and the size of the intended holdout matter more than a headline total.</p></details>
+        <details data-disclosure><summary>What if the baseline wins?</summary><p>The simpler baseline remains the recommended instrument. A complex model is not a deliverable merely because it was built.</p></details>
+        <details data-disclosure><summary>Can you guarantee an outcome?</summary><p>No. Forecast quality can be evaluated; realised business outcomes also depend on execution, market conditions, intervention design, and factors outside a model.</p></details>
+        <details data-disclosure><summary>Do you work with sensitive data?</summary><p>Data handling, minimisation, access, and retention must be agreed before transfer. This static website collects no project data.</p></details>
+        <details data-disclosure><summary>Will my team be able to use the result?</summary><p>That is an explicit goal of the handover: understandable inputs, repeatable scoring or scenarios, documented thresholds, and known failure conditions.</p></details>
+        <details data-disclosure><summary>Do you take adjacent forecasting projects?</summary><p>Sometimes. The project still needs a concrete decision, evaluation design, and enough history to separate signal from a persuasive story.</p></details>
+        <details data-disclosure><summary>How do we begin?</summary><p>Send a short email describing the decision, timing, available history, and operational constraint. No long form or platform account is required.</p></details>
       </div>
-      <div class="process-step">
-        <div class="step-n">2</div>
-        <h4>Data review</h4>
-        <p>I check whether your data can actually support the question. If it cannot, I tell you before you commit any budget.</p>
-      </div>
-      <div class="process-step">
-        <div class="step-n">3</div>
-        <h4>Build and validate</h4>
-        <p>Feature work, modelling, and testing against held-out data and your existing baseline. You see the validation, not just the answer.</p>
-      </div>
-      <div class="process-step">
-        <div class="step-n">4</div>
-        <h4>Handover</h4>
-        <p>Delivered as something operational — a scored export, a scheduled pipeline, or a simple interface — with the assumptions documented.</p>
-      </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- ============ EXAMPLES ============ -->
-  <section id="examples" class="section" style="padding-top:0">
-    <div class="section-heading">
-      <div class="eyebrow">Example engagements</div>
-      <h2>What the work looks like end to end.</h2>
-    </div>
-
-    <p class="illustrative-note">These describe scope, method and the measures I would agree in advance. They are not accounts of past clients, and the figures are not results. Dragon Analytics is a new practice, and I would rather show you the method than borrow someone else's numbers.</p>
-
-    <article class="case">
-      <span class="case-tag">Example · Performance marketing agency · 4–6 weeks</span>
-      <h3>Reallocating a multi-channel budget toward spend that actually converts</h3>
-      <div class="case-body">
-        <div>
-          <h5>The situation</h5>
-          <p>An agency manages spend across paid search, paid social and display for a roster of e-commerce clients. Budget splits are inherited from last quarter and defended with last-click attribution, which over-credits search and under-credits the upper-funnel activity that generated the demand. The client's real question — "if we move $50,000, what happens?" — has no defensible answer.</p>
-          <h5>Approach</h5>
-          <ul>
-            <li>Consolidate platform spend, impression and conversion data against the client's own order records</li>
-            <li>Fit a contribution model with adstock and diminishing-returns curves per channel</li>
-            <li>Estimate the marginal return of the next dollar in each channel</li>
-            <li>Validate against holdout periods and any past budget shifts that act as natural experiments</li>
-            <li>Deliver a scenario tool producing a recommended split and a forecast interval</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Deliverables</h5>
-          <ul>
-            <li>A ranked view of where spend has hit saturation and is earning less per dollar</li>
-            <li>A recommended split with an interval rather than a single point estimate</li>
-            <li>A defensible position for the monthly client review</li>
-            <li>A model that re-runs as new spend data arrives</li>
-          </ul>
-          <h5>Agreed measures</h5>
-          <p>Set before work begins and reviewed once the reallocation has run long enough to judge.</p>
-        </div>
-      </div>
-      <div class="case-outcome">
-        <div><b>Blended and marginal ROAS</b><span>Against the pre-engagement baseline</span></div>
-        <div><b>Non-incremental spend identified</b><span>Budget in saturated or non-contributing placements</span></div>
-        <div><b>Forecast error</b><span>Predicted versus realised return after go-live</span></div>
-      </div>
-    </article>
-
-    <article class="case">
-      <span class="case-tag">Example · Marketing firm · 3–5 weeks</span>
-      <h3>Identifying accounts at risk while there is still time to intervene</h3>
-      <div class="case-body">
-        <div>
-          <h5>The situation</h5>
-          <p>A firm on monthly retainers learns of churn when the cancellation arrives. Retention effort is spread evenly across the book, so accounts quietly preparing to leave receive no more attention than accounts that were never at risk. The pattern is only visible in hindsight.</p>
-          <h5>Approach</h5>
-          <ul>
-            <li>Assemble account history: tenure, billing and scope changes, communication cadence, delivered campaign performance</li>
-            <li>Define churn precisely, and fix how far ahead the model must predict it</li>
-            <li>Train a classifier producing a churn probability per account, evaluated on accounts held back entirely from training</li>
-            <li>Rank by expected revenue at risk rather than probability alone</li>
-            <li>Surface driver attribution behind each score</li>
-          </ul>
-        </div>
-        <div>
-          <h5>Deliverables</h5>
-          <ul>
-            <li>A monthly scored list, highest expected loss first</li>
-            <li>The two or three signals driving each account's score</li>
-            <li>A retention playbook mapped to the recurring risk patterns</li>
-            <li>Lifetime value estimates to size what a save is worth</li>
-          </ul>
-          <h5>Agreed measures</h5>
-          <p>Precision and lead time are fixed in advance, then reviewed against what actually happened.</p>
-        </div>
-      </div>
-      <div class="case-outcome">
-        <div><b>Retained revenue</b><span>Value of at-risk accounts saved versus baseline churn</span></div>
-        <div><b>Precision at the top of the list</b><span>Share of flagged accounts genuinely at risk</span></div>
-        <div><b>Lead time</b><span>Weeks of warning before the churn event</span></div>
-      </div>
-    </article>
-  </section>
-
-  <!-- ============ FAQ ============ -->
-  <section id="questions" class="section" style="padding-top:0">
-    <div class="section-heading">
-      <div class="eyebrow">Questions</div>
-      <h2>What people ask before we start.</h2>
-    </div>
-
-    <div class="faq">
-      <div class="faq-item">
-        <h4>English is not my first language.</h4>
-        <p>Not an issue. I define terms once and keep sentences short as a matter of course — that is good technical communication, not special treatment. Ask me to rephrase anything and I will.</p>
-      </div>
-      <div class="faq-item">
-        <h4>Do I need a data team, or technical staff?</h4>
-        <p>No. If you have one, I work alongside them and hand over something they can maintain. If you do not, I build for the tools you already use and document it so an operations manager can run it.</p>
-      </div>
-      <div class="faq-item">
-        <h4>What data do I actually need?</h4>
-        <p>Usually less than expected. Platform exports plus your own order or billing records are often enough to start. The data review in step two exists precisely to answer this before you commit budget.</p>
-      </div>
-      <div class="faq-item">
-        <h4>How do I know the model is any good?</h4>
-        <p>Because you see it tested against a baseline you already understand, on data it was never trained on. If it does not beat your current approach on that test, I say so — that is a legitimate outcome, and you are not billed for a model that does not ship.</p>
-      </div>
-      <div class="faq-item">
-        <h4>How long does an engagement take?</h4>
-        <p>Typically three to six weeks from scoping call to handover. Narrower questions can be considerably faster.</p>
-      </div>
-      <div class="faq-item">
-        <h4>How is it priced?</h4>
-        <p>Fixed price per engagement, agreed before any work begins, so there is no open-ended meter running. The scoping call is free.</p>
-      </div>
-      <div class="faq-item">
-        <h4>What if my problem is not one you handle?</h4>
-        <p>I will tell you quickly and not charge for finding out, and where I know someone better suited I will point you to them.</p>
-      </div>
-      <div class="faq-item">
-        <h4>How is my data handled?</h4>
-        <p>I request only what the question requires, it is never shared, and I will sign a confidentiality agreement before you send anything.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ CONTACT ============ -->
-  <section id="contact" class="contact">
-    <div class="contact-inner">
-      <div class="contact-copy">
-        <div class="eyebrow">Contact</div>
-        <h2>Describe the decision you are stuck on.</h2>
-        <p>A few sentences on the problem and what data you hold is enough to start. Plain description is genuinely more useful to me than a polished brief — I would rather hear the actual situation than a tidied version of it.</p>
-        <p>I read every message myself and reply within two working days. If I am not the right person for it, I will say so directly.</p>
-      </div>
-
-      <form class="da-form" id="daForm" novalidate>
-        <div>
-          <label for="f-name">Name</label>
-          <input id="f-name" name="name" type="text" placeholder="Your name" required>
-        </div>
-        <div>
-          <label for="f-email">Email</label>
-          <input id="f-email" name="email" type="email" placeholder="you@company.com" required>
-        </div>
-        <div>
-          <label for="f-company">Company <span class="hint">Optional</span></label>
-          <input id="f-company" name="company" type="text" placeholder="Company or agency">
-        </div>
-        <div>
-          <label for="f-type">Area</label>
-          <select id="f-type" name="type">
-            <option>Budget allocation / return on ad spend</option>
-            <option>Churn prediction and retention</option>
-            <option>Forecasting</option>
-            <option>Something else / not yet sure</option>
-          </select>
-        </div>
-        <div class="full">
-          <label for="f-message">The problem
-            <span class="hint">What decision are you trying to make, what data do you hold today, and what would a good outcome look like?</span>
-          </label>
-          <textarea id="f-message" name="message" placeholder="We spend around $20,000 a month across search and social, and we cannot defend the split to the client..." required></textarea>
-        </div>
-        <div class="full">
-          <button class="button" type="submit">Send enquiry <span aria-hidden="true">→</span></button>
-          <p class="form-note">This opens your email client with the message drafted. Nothing is sent until you send it there.</p>
-        </div>
-      </form>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <img class="foot-mark" src="assets/dragon-mark.svg" alt="">
-  © 2026 Dragon Analytics · Maxell Agustin Aguiran
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="writing.html">Research</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</footer>
-
-<script>
-(function () {
-  // Change this address to route enquiries elsewhere.
-  var TO = 'maxell.aguiran@gmail.com';
-  var form = document.getElementById('daForm');
-  if (!form) return;
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!form.reportValidity()) return;
-
-    var v = function (id) { return (document.getElementById(id).value || '').trim(); };
-    var name = v('f-name'), email = v('f-email'),
-        company = v('f-company'), type = v('f-type'), message = v('f-message');
-
-    var subject = 'Dragon Analytics enquiry — ' + (company || name);
-    var body = [
-      'Name: ' + name,
-      'Email: ' + email,
-      'Company: ' + (company || '-'),
-      'Area: ' + type,
-      '',
-      'Problem:',
-      message
-    ].join('\n');
-
-    window.location.href = 'mailto:' + TO +
-      '?subject=' + encodeURIComponent(subject) +
-      '&body=' + encodeURIComponent(body);
-  });
-})();
-</script>
-
+  <footer class="site-footer"><div><div class="footer-brand"><img class="foot-mark" src="assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran · Dragon Analytics</span></div><div>Predictive analytics and evidence-led company research. © 2026 Maxell Agustin Aguiran.</div></div><nav class="footer-links" aria-label="Footer navigation"><a href="mailto:maxell.aguiran@gmail.com">Email</a><a href="https://github.com/MaxellAguiran">GitHub</a><a href="writing.html">Research</a><a href="index.html">Home</a></nav></footer>
+  <script type="module" src="scripts/site.mjs"></script>
 </body>
 </html>

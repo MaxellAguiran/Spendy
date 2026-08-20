@@ -1,0 +1,201 @@
+{
+  "artifactHashes": {
+    "datasetSha256": "6fd0cf1761fc11e60c421d7fdfc1508409bf97e548b72fc76154d3b1b06204dd",
+    "generatorSha256": "b06f7f7744b5ee6df1b52696465bb563f0af78ecdc610ec63a4e549c3b12d691"
+  },
+  "baseline": {
+    "metrics": {
+      "brierScore": 0.111621,
+      "logLoss": 0.382589
+    },
+    "name": "Constant development-cohort churn rate",
+    "rate": 0.13025
+  },
+  "chartSeries": [
+    {
+      "id": "calibration",
+      "labels": [
+        "0.0\u20130.1",
+        "0.1\u20130.2",
+        "0.2\u20130.3",
+        "0.3\u20130.4",
+        "0.4\u20130.5",
+        "0.5\u20130.6",
+        "0.6\u20130.7",
+        "0.7\u20130.8",
+        "0.8\u20130.9",
+        "0.9\u20131.0"
+      ],
+      "series": [
+        {
+          "name": "Mean predicted risk",
+          "values": [
+            0.073,
+            0.139,
+            0.2386,
+            0.3416,
+            0.4088,
+            0.5318,
+            0.65,
+            0.75,
+            0.85,
+            0.95
+          ]
+        },
+        {
+          "name": "Observed churn rate",
+          "values": [
+            0.0711,
+            0.1234,
+            0.2586,
+            0.4348,
+            1.0,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "title": "Holdout calibration"
+    },
+    {
+      "id": "capacity",
+      "labels": [
+        "5%",
+        "10%",
+        "20%",
+        "30%"
+      ],
+      "series": [
+        {
+          "name": "Precision",
+          "values": [
+            0.36,
+            0.3,
+            0.26,
+            0.24
+          ]
+        },
+        {
+          "name": "Lift",
+          "values": [
+            2.812,
+            2.344,
+            2.031,
+            1.875
+          ]
+        }
+      ],
+      "title": "Precision and lift at outreach capacity"
+    },
+    {
+      "id": "lead-time",
+      "labels": [
+        "7\u201330 days",
+        "31\u201360 days",
+        "61\u201390 days",
+        "91\u2013180 days"
+      ],
+      "series": [
+        {
+          "name": "Accounts",
+          "values": [
+            3,
+            22,
+            48,
+            55
+          ]
+        }
+      ],
+      "title": "Lead-time distribution among held-out churn events"
+    },
+    {
+      "id": "loss-comparison",
+      "labels": [
+        "Brier score",
+        "Log loss"
+      ],
+      "series": [
+        {
+          "name": "Baseline",
+          "values": [
+            0.111621,
+            0.382589
+          ]
+        },
+        {
+          "name": "Model",
+          "values": [
+            0.105029,
+            0.356757
+          ]
+        }
+      ],
+      "title": "Baseline versus model probabilistic loss"
+    }
+  ],
+  "dataset": {
+    "download": "data/churn-risk.csv",
+    "fields": [
+      "account_id",
+      "cohort",
+      "tenure_months",
+      "usage_change_90d",
+      "communication_gap_days",
+      "billing_change",
+      "delivered_performance_index",
+      "support_contacts_90d",
+      "monthly_revenue",
+      "churned_120d",
+      "lead_time_days",
+      "model_probability"
+    ],
+    "rows": 5000,
+    "unit": "synthetic account"
+  },
+  "disclosure": "synthetic-demonstration",
+  "generatedAt": "2026-08-20T00:00:00Z",
+  "lab": "churn-risk",
+  "limitations": [
+    "Synthetic account behavior is more regular than a live product and is not evidence of client retention.",
+    "Risk discrimination does not establish that any intervention will prevent churn.",
+    "Expected revenue at risk is probability-weighted exposure, not retained or realised revenue.",
+    "False-positive outreach can impose service cost and customer fatigue.",
+    "Calibration must be rechecked after material product, pricing, or customer-mix changes."
+  ],
+  "metrics": {
+    "brierReductionPercent": 5.9,
+    "evidenceGatePassed": true,
+    "holdoutPrevalence": 0.128,
+    "primary": "brierScore"
+  },
+  "model": {
+    "features": [
+      "tenure_months",
+      "usage_change_90d",
+      "communication_gap_days",
+      "billing_change",
+      "delivered_performance_index",
+      "support_contacts_90d",
+      "monthly_revenue"
+    ],
+    "metrics": {
+      "brierScore": 0.105029,
+      "expectedMonthlyRevenueAtRisk": 226166.52,
+      "logLoss": 0.356757,
+      "topDecileLift": 2.344,
+      "topDecilePrecision": 0.3
+    },
+    "name": "Regularized logistic risk model"
+  },
+  "schema": "lab-evidence/v1",
+  "seed": 4403,
+  "split": {
+    "assignment": "Account IDs SYN-04001 through SYN-05000 were untouched during fitting.",
+    "developmentAccounts": 4000,
+    "holdoutAccounts": 1000,
+    "strategy": "account-held-out"
+  }
+}

@@ -1,0 +1,364 @@
+{
+  "artifactHashes": {
+    "datasetSha256": "85b89ab5661b43b811ebf27488f52c04dd3d864a8a509a068cd823aa67362e08",
+    "generatorSha256": "b06f7f7744b5ee6df1b52696465bb563f0af78ecdc610ec63a4e549c3b12d691"
+  },
+  "baseline": {
+    "metrics": {
+      "mae": 15557.89,
+      "rmse": 18244.33
+    },
+    "name": "Same week one year earlier"
+  },
+  "chartSeries": [
+    {
+      "id": "allocation",
+      "labels": [
+        "Search",
+        "Social",
+        "Email",
+        "Partner"
+      ],
+      "series": [
+        {
+          "name": "Current",
+          "values": [
+            16240.28,
+            12152.8,
+            4359.8,
+            8528.96
+          ]
+        },
+        {
+          "name": "Recommended",
+          "values": [
+            9008.98,
+            6684.04,
+            11397.89,
+            14190.93
+          ]
+        }
+      ],
+      "title": "Current versus recommended weekly allocation"
+    },
+    {
+      "id": "response-curves",
+      "labels": [
+        "0",
+        "5000",
+        "10000",
+        "15000",
+        "20000",
+        "25000",
+        "30000"
+      ],
+      "series": [
+        {
+          "name": "Search",
+          "values": [
+            0.0,
+            6075.73,
+            10275.09,
+            13487.58,
+            16089.88,
+            18277.21,
+            20163.89
+          ]
+        },
+        {
+          "name": "Social",
+          "values": [
+            0.0,
+            13571.75,
+            22411.21,
+            28978.47,
+            34205.99,
+            38548.84,
+            42263.56
+          ]
+        },
+        {
+          "name": "Email",
+          "values": [
+            0.0,
+            28798.99,
+            42722.56,
+            51991.98,
+            58950.99,
+            64524.55,
+            69173.76
+          ]
+        },
+        {
+          "name": "Partner",
+          "values": [
+            0.0,
+            26330.82,
+            41733.36,
+            52661.64,
+            61138.27,
+            68064.18,
+            73919.96
+          ]
+        }
+      ],
+      "title": "Estimated channel response and diminishing returns"
+    },
+    {
+      "id": "held-out-revenue",
+      "labels": [
+        "2026-02-23",
+        "2026-03-02",
+        "2026-03-09",
+        "2026-03-16",
+        "2026-03-23",
+        "2026-03-30",
+        "2026-04-06",
+        "2026-04-13",
+        "2026-04-20",
+        "2026-04-27",
+        "2026-05-04",
+        "2026-05-11",
+        "2026-05-18",
+        "2026-05-25",
+        "2026-06-01",
+        "2026-06-08",
+        "2026-06-15",
+        "2026-06-22",
+        "2026-06-29",
+        "2026-07-06",
+        "2026-07-13",
+        "2026-07-20",
+        "2026-07-27",
+        "2026-08-03",
+        "2026-08-10",
+        "2026-08-17"
+      ],
+      "series": [
+        {
+          "name": "Actual",
+          "values": [
+            381619.52,
+            377105.76,
+            387681.44,
+            385346.73,
+            391905.94,
+            386384.81,
+            374311.28,
+            388623.93,
+            377306.26,
+            362496.41,
+            362889.19,
+            368184.67,
+            372259.54,
+            370772.71,
+            365841.88,
+            361699.38,
+            388368.68,
+            372047.42,
+            377585.61,
+            381369.52,
+            382446.83,
+            380100.52,
+            391184.5,
+            390557.4,
+            409199.61,
+            408122.28
+          ]
+        },
+        {
+          "name": "Model",
+          "values": [
+            380483.93,
+            379749.68,
+            377490.57,
+            380202.96,
+            377507.11,
+            375142.28,
+            373211.34,
+            374711.61,
+            373013.76,
+            371391.69,
+            369004.32,
+            368770.84,
+            369275.83,
+            373470.64,
+            370707.93,
+            372662.88,
+            373531.98,
+            370226.99,
+            370168.99,
+            376111.97,
+            374898.08,
+            376067.83,
+            378960.25,
+            383976.97,
+            386758.32,
+            389224.34
+          ]
+        },
+        {
+          "name": "Lower interval",
+          "values": [
+            365951.43,
+            365217.18,
+            362958.07,
+            365670.46,
+            362974.61,
+            360609.77,
+            358678.84,
+            360179.11,
+            358481.26,
+            356859.19,
+            354471.82,
+            354238.34,
+            354743.33,
+            358938.14,
+            356175.43,
+            358130.38,
+            358999.47,
+            355694.49,
+            355636.49,
+            361579.47,
+            360365.58,
+            361535.33,
+            364427.75,
+            369444.47,
+            372225.82,
+            374691.84
+          ]
+        },
+        {
+          "name": "Upper interval",
+          "values": [
+            395016.43,
+            394282.18,
+            392023.07,
+            394735.46,
+            392039.61,
+            389674.78,
+            387743.84,
+            389244.11,
+            387546.26,
+            385924.19,
+            383536.82,
+            383303.34,
+            383808.33,
+            388003.14,
+            385240.43,
+            387195.38,
+            388064.48,
+            384759.5,
+            384701.49,
+            390644.47,
+            389430.58,
+            390600.33,
+            393492.75,
+            398509.47,
+            401290.82,
+            403756.84
+          ]
+        }
+      ],
+      "title": "Held-out weekly revenue"
+    },
+    {
+      "id": "error-comparison",
+      "labels": [
+        "Mean absolute error",
+        "Root mean squared error"
+      ],
+      "series": [
+        {
+          "name": "Baseline",
+          "values": [
+            15557.89,
+            18244.33
+          ]
+        },
+        {
+          "name": "Model",
+          "values": [
+            7777.87,
+            9598.15
+          ]
+        }
+      ],
+      "title": "Holdout error comparison"
+    }
+  ],
+  "dataset": {
+    "download": "data/marketing-allocation.csv",
+    "fields": [
+      "week",
+      "cohort",
+      "search_spend",
+      "social_spend",
+      "email_spend",
+      "partner_spend",
+      "seasonality",
+      "organic_demand",
+      "lagged_effect",
+      "noise",
+      "revenue"
+    ],
+    "frequency": "weekly",
+    "rows": 156
+  },
+  "disclosure": "synthetic-demonstration",
+  "generatedAt": "2026-08-20T00:00:00Z",
+  "lab": "marketing-allocation",
+  "limitations": [
+    "The data-generating process is synthetic and less irregular than a live market.",
+    "Channel response is estimated inside the observed spend range; extrapolation is not supported.",
+    "The recommendation assumes the historical response process and budget constraints remain stable.",
+    "Revenue attribution is simulated and does not prove incrementality in a real campaign."
+  ],
+  "metrics": {
+    "evidenceGatePassed": true,
+    "maeReductionPercent": 50.0,
+    "primary": "mae"
+  },
+  "model": {
+    "features": [
+      "trend",
+      "annual seasonality",
+      "channel adstock",
+      "diminishing returns"
+    ],
+    "interval": {
+      "coverageTarget": 0.9,
+      "halfWidth": 14532.5
+    },
+    "metrics": {
+      "mae": 7777.87,
+      "rmse": 9598.15
+    },
+    "name": "Regularized lagged-response regression",
+    "recommendation": {
+      "currentWeeklyAllocation": {
+        "email": 4359.8,
+        "partner": 8528.96,
+        "search": 16240.28,
+        "social": 12152.8
+      },
+      "reason": "Holdout model MAE beat the declared baseline.",
+      "recommendedWeeklyAllocation": {
+        "email": 11397.89,
+        "partner": 14190.93,
+        "search": 9008.98,
+        "social": 6684.04
+      },
+      "status": "shown"
+    }
+  },
+  "schema": "lab-evidence/v1",
+  "seed": 7319,
+  "split": {
+    "developmentRows": 130,
+    "holdoutEnd": "2026-08-17",
+    "holdoutRows": 26,
+    "holdoutStart": "2026-02-23",
+    "strategy": "chronological"
+  }
+}

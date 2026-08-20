@@ -1,0 +1,12 @@
+[
+  {"output":"home.png","kicker":"Maxell Aguiran","title":"Forecast what happens next. Know when not to pretend.","subtitle":"Predictive analytics · Evidence-led research","mascot":true},
+  {"output":"dragon-analytics.png","kicker":"Dragon Analytics","title":"Evidence before confidence.","subtitle":"Marketing allocation · Churn risk · Usable handovers","mascot":true},
+  {"output":"research.png","kicker":"Equity research by Maxell Aguiran","title":"The thesis is only as good as what could break it.","subtitle":"Primary evidence · Valuation · Scenarios · Falsifiers"},
+  {"output":"marketing-allocation.png","kicker":"Synthetic analytics laboratory","title":"Spend where the next unit still earns a response.","subtitle":"Baseline · Chronological holdout · Diminishing return","signal":"allocation"},
+  {"output":"churn-risk.png","kicker":"Synthetic analytics laboratory","title":"Prioritise risk without pretending probability is revenue.","subtitle":"Calibration · Held-out accounts · Finite outreach","signal":"churn"},
+  {"output":"ibex.png","kicker":"IBEX · Equity research","title":"The Price Has Caught Up With The Thesis","subtitle":"Hold · $40 target · 28 July 2026"},
+  {"output":"firstservice.png","kicker":"FirstService · Equity research","title":"A Cyclical Setback Is Being Priced As Structural Damage","subtitle":"Buy · $182 target · 24 July 2026"},
+  {"output":"tamboran.png","kicker":"Tamboran Resources · Equity research","title":"The Beetaloo Is Real, But The Stock Prices In Success","subtitle":"Hold · $23 target · 28 July 2026"},
+  {"output":"rex.png","kicker":"REX American Resources · Equity research","title":"A Debt-Free Ethanol Operator Priced For A Cycle That May Not Last","subtitle":"Hold · $34 target · 27 July 2026"},
+  {"output":"nordic-american-tankers.png","kicker":"Nordic American Tankers · Equity research","title":"The Dividend Looks Safe Today; The Fleet Cycle Does Not","subtitle":"Hold · $4.50 target · 24 July 2026"}
+]
