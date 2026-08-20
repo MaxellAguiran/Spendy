@@ -94,22 +94,21 @@ test("representative pages have no horizontal overflow or console errors at requ
 });
 
 
-test("the homepage first screen explicitly names both services, the audience, and the deliverables", async () => {
+test("the homepage first screen tells marketing agencies exactly what Maxell does", async () => {
   for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 720 }]) {
     const context = await browser.newContext({ viewport });
     const { page } = await openCheckedPage(context, "index.html");
     await assert.doesNotReject(() => page.locator(".brand span").waitFor({ state: "visible" }));
     const heroText = await page.locator(".hero-copy").innerText();
-    assert.match(await page.locator("h1").innerText(), /budget optimization and churn prediction for founder-led businesses/i);
-    assert.match(heroText, /split their marketing budget/i);
-    assert.match(heroText, /customers are most likely to leave/i);
-    assert.match(heroText, /clear spending plan/i);
-    assert.match(heroText, /ranked call list/i);
-    assert.match(heroText, /checks behind it/i);
-    assert.match(heroText, /needed to run it again/i);
+    assert.match(await page.locator("h1").innerText(), /budget optimization and churn prediction for marketing agencies/i);
+    assert.match(heroText, /where client marketing budgets should go/i);
+    assert.match(heroText, /which client accounts may leave/i);
+    assert.match(heroText, /clear budget plan/i);
+    assert.match(heroText, /list of accounts to contact first/i);
+    assert.doesNotMatch(heroText, /founder-led|growing businesses|decision models|operators/i);
     const actions = await page.locator(".hero-actions a").all();
     assert.equal(actions.length, 2);
-    assert.deepEqual(await page.locator(".hero-actions a").allInnerTexts(), ["See budget optimization example", "Discuss your decision"]);
+    assert.deepEqual(await page.locator(".hero-actions a").allInnerTexts(), ["See the budget example", "Talk about your agency"]);
     for (const action of actions) {
       assert.equal(await action.isVisible(), true);
       const box = await action.boundingBox();
