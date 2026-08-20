@@ -94,19 +94,22 @@ test("representative pages have no horizontal overflow or console errors at requ
 });
 
 
-test("the homepage first screen speaks to operators and keeps both actions fully visible", async () => {
+test("the homepage first screen states the owner value proposition and keeps both actions fully visible", async () => {
   for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 720 }]) {
     const context = await browser.newContext({ viewport });
     const { page } = await openCheckedPage(context, "index.html");
     await assert.doesNotReject(() => page.locator(".brand span").waitFor({ state: "visible" }));
     const heroText = await page.locator(".hero-copy").innerText();
-    assert.match(heroText, /Maxell Aguiran/i);
-    assert.match(heroText, /expensive decision/i);
-    assert.match(heroText, /operators/i);
-    assert.match(heroText, /next unit of budget/i);
+    assert.match(heroText, /decision analytics for founder-led businesses/i);
+    assert.match(heroText, /better marketing and retention decisions/i);
+    assert.match(heroText, /without building an analytics team/i);
+    assert.match(heroText, /next budget dollar/i);
     assert.match(heroText, /customer relationships/i);
+    assert.match(heroText, /tested recommendation/i);
+    assert.match(heroText, /model your team can reuse/i);
     const actions = await page.locator(".hero-actions a").all();
     assert.equal(actions.length, 2);
+    assert.deepEqual(await page.locator(".hero-actions a").allInnerTexts(), ["See a budget decision", "Discuss your decision"]);
     for (const action of actions) {
       assert.equal(await action.isVisible(), true);
       const box = await action.boundingBox();

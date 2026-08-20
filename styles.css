@@ -357,8 +357,8 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 .nav-conversation { margin-left: .35rem; background: var(--ink); color: var(--surface) !important; }
 .nav-conversation:hover { background: var(--green-dark) !important; color: var(--surface) !important; }
 
-.founder-hero { grid-template-columns: minmax(0,1.12fr) minmax(300px,.72fr); gap: clamp(2rem,5vw,4.5rem); padding-block: clamp(2.8rem,4.3vw,3rem); }
-.founder-hero h1 { max-width: 13ch; }
+.founder-hero { grid-template-columns: minmax(0,1.4fr) minmax(300px,.64fr); gap: clamp(2rem,4vw,3.5rem); padding-block: clamp(2.8rem,4.3vw,3rem); }
+.founder-hero h1 { max-width: none; }
 .founder-hero .hero-copy > p { max-width: 68ch; }
 .decision-brief { align-self: center; padding: 1.35rem; border: 1px solid var(--line-dark); border-radius: var(--radius-small); background: var(--surface); box-shadow: var(--shadow-small); }
 .decision-brief-top { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: .85rem; border-bottom: 1px solid var(--line); color: var(--green-dark); font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
@@ -590,12 +590,14 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 
 @media (max-width: 520px) {
   .section { padding-block: 2rem; }
-  .founder-hero, .work-hero { padding-block: 2rem; }
+  .founder-hero { gap: 1.2rem; padding-block: 1.5rem; }
+  .work-hero { padding-block: 2rem; }
   .founder-hero .hero-copy > p, .work-hero .hero-copy > p { font-size: 1rem; line-height: 1.62; }
   .founder-hero .hero-proofline { display: none; }
+  .founder-hero .decision-brief { padding: .9rem; }
   .decision-brief dl > div { grid-template-columns: 70px 1fr; }
-  .decision-brief-top { padding-bottom: .6rem; }
-  .decision-brief dl > div { padding-block: .55rem; }
+  .founder-hero .decision-brief-top { padding-bottom: .45rem; }
+  .founder-hero .decision-brief dl > div { padding-block: .4rem; }
   .case-shell { width: min(calc(100% - 1.4rem),var(--content)); }
   .case-shell { padding-block: 2.5rem; }
   .case-intro { margin-bottom: 1rem; }
