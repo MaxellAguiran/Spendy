@@ -123,15 +123,14 @@ class SiteContractTests(unittest.TestCase):
             self.assertEqual(parser.forms, 0)
             self.assertIn("mailto:maxell.aguiran@gmail.com", " ".join(parser.links))
 
-    def test_homepage_lab_metrics_match_generated_evidence(self):
-        """Changing display metrics without regenerating evidence must fail."""
+    def test_homepage_case_values_are_rendered_from_checked_evidence(self):
+        """Hard-coding favorable case values would bypass the fail-closed renderer."""
         homepage = (ROOT / "index.html").read_text(encoding="utf-8")
         marketing = json.loads((ROOT / "labs/data/marketing-allocation.json").read_text())
-        churn = json.loads((ROOT / "labs/data/churn-risk.json").read_text())
-        self.assertIn(f"${marketing['baseline']['metrics']['mae']:,.0f}", homepage)
-        self.assertIn(f"${marketing['model']['metrics']['mae']:,.0f}", homepage)
-        self.assertIn(f"{churn['baseline']['metrics']['brierScore']:.3f}", homepage)
-        self.assertIn(f"{churn['model']['metrics']['brierScore']:.3f}", homepage)
+        self.assertIn('data-evidence-src="labs/data/marketing-allocation.json"', homepage)
+        self.assertNotIn(f"${marketing['baseline']['metrics']['mae']:,.0f}", homepage)
+        self.assertNotIn(f"${marketing['model']['metrics']['mae']:,.0f}", homepage)
+        self.assertNotIn(f">{marketing['metrics']['maeReductionPercent']:.0f}%<", homepage)
 
     def test_articles_expose_article_json_ld_and_source_review_state(self):
         """Removing article identity or disguising unverified source links must fail."""

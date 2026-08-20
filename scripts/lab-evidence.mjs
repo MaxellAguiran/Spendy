@@ -96,6 +96,7 @@ function validateLabSemantics(artifact, errors) {
     const modelBrier = finiteMetric(artifact.model.metrics, "brierScore", "Model Brier score", errors, { min: 0, max: 1 });
     const reduction = finiteMetric(artifact.metrics, "brierReductionPercent", "Brier reduction", errors);
     finiteMetric(artifact.model.metrics, "topDecileLift", "Top-decile lift", errors, { min: 0 });
+    finiteMetric(artifact.model.metrics, "topDecilePrecision", "Top-decile precision", errors, { min: 0, max: 1 });
     finiteMetric(artifact.model.metrics, "expectedMonthlyRevenueAtRisk", "Expected monthly revenue at risk", errors, { min: 0 });
     if (baselineBrier !== null && modelBrier !== null) {
       validateGate(artifact.metrics.evidenceGatePassed, modelBrier < baselineBrier, "Brier score", errors);
@@ -226,17 +227,17 @@ function percent(value, digits = 1) {
 function metricCards(artifact) {
   if (artifact.lab === "marketing-allocation") {
     return [
-      ["Holdout baseline MAE", money(artifact.baseline.metrics.mae, true)],
-      ["Holdout model MAE", money(artifact.model.metrics.mae, true)],
-      ["Error reduction", `${formatNumber(artifact.metrics.maeReductionPercent, { maximumFractionDigits: 1 })}%`],
-      ["Recommendation gate", artifact.metrics.evidenceGatePassed ? "Passed" : "Withheld"]
+      ["Baseline prediction error · MAE", money(artifact.baseline.metrics.mae, true)],
+      ["Model prediction error · MAE", money(artifact.model.metrics.mae, true)],
+      ["Relative error reduction", `${formatNumber(artifact.metrics.maeReductionPercent, { maximumFractionDigits: 1 })}%`],
+      ["Recommendation status", artifact.metrics.evidenceGatePassed ? "Released" : "Withheld"]
     ];
   }
   return [
-    ["Baseline Brier score", formatNumber(artifact.baseline.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
-    ["Model Brier score", formatNumber(artifact.model.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
-    ["Top-decile lift", `${formatNumber(artifact.model.metrics.topDecileLift, { maximumFractionDigits: 2 })}×`],
-    ["Revenue at risk", money(artifact.model.metrics.expectedMonthlyRevenueAtRisk, true)]
+    ["Baseline probability error · Brier score", formatNumber(artifact.baseline.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
+    ["Model probability error · Brier score", formatNumber(artifact.model.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
+    ["Precision among the first 100 accounts", percent(artifact.model.metrics.topDecilePrecision, 0)],
+    ["Revenue exposed—not revenue retained", money(artifact.model.metrics.expectedMonthlyRevenueAtRisk, true)]
   ];
 }
 
@@ -250,7 +251,7 @@ function chartSummary(artifact, chart) {
     "held-out-revenue": "Actual and predicted revenue are shown only for the final chronological holdout; the outer series form the model's 90% interval.",
     "error-comparison": "Lower is better. The model is compared with the same-week-one-year-earlier baseline on identical held-out weeks.",
     calibration: "A calibrated model places predicted risk near the observed event rate. Sparse high-risk bins should be interpreted cautiously.",
-    capacity: "Precision and lift decline as a larger share of accounts is contacted, making outreach capacity part of the decision.",
+    capacity: "Precision declines as a larger share of accounts is contacted, making outreach capacity part of the decision. Lift remains available in the evidence table below.",
     "lead-time": "Lead time describes how far in advance the synthetic risk signals appear among held-out churn events; it does not prove intervention success.",
     "loss-comparison": "Lower is better. Brier score is the primary probabilistic metric; log loss is shown as a second view of probability quality."
   };
@@ -371,9 +372,12 @@ function renderBarSvg(chart) {
       const groupStart = left + labelIndex * groupWidth;
       const totalBarsWidth = chart.series.length * barWidth + (chart.series.length - 1) * 5;
       const x = groupStart + (groupWidth - totalBarsWidth) / 2 + seriesIndex * (barWidth + 5);
+      const fill = chart.id === "allocation"
+        ? (series.name === "Current" ? "#C45A49" : "#197A55")
+        : (seriesIndex === 0 ? "#8EAA9B" : seriesIndex === 1 ? "#197A55" : "#C45A49");
       const bar = svgElement("rect", {
         x, y: top + height - barHeight, width: barWidth, height: barHeight,
-        rx: 4, fill: seriesIndex === 0 ? "#8EAA9B" : seriesIndex === 1 ? "#197A55" : "#C45A49"
+        rx: 4, fill
       });
       svg.append(bar);
     });
@@ -387,18 +391,21 @@ function renderBarSvg(chart) {
 
 
 function renderChart(artifact, chart) {
+  const visualChart = chart.id === "capacity"
+    ? { ...chart, title: "Precision at outreach capacity", series: chart.series.filter((series) => series.name === "Precision") }
+    : chart;
   const article = document.createElement("article");
   article.className = "evidence-chart";
   article.dataset.chart = chart.id;
   const heading = document.createElement("h3");
-  heading.textContent = chart.title;
+  heading.textContent = visualChart.title;
   const canvas = document.createElement("div");
   canvas.className = "chart-canvas";
   const barCharts = new Set(["allocation", "error-comparison", "lead-time", "loss-comparison"]);
-  canvas.append(barCharts.has(chart.id) ? renderBarSvg(chart) : renderLineSvg(chart));
+  canvas.append(barCharts.has(chart.id) ? renderBarSvg(visualChart) : renderLineSvg(visualChart));
   const legend = document.createElement("div");
   legend.className = "chart-legend";
-  chart.series.forEach((series) => {
+  visualChart.series.forEach((series) => {
     const key = document.createElement("span");
     key.className = "legend-key";
     key.textContent = series.name;
@@ -453,10 +460,20 @@ export function renderLabEvidence(container, artifact) {
     card.append(small, strong);
     stats.append(card);
   });
-  const charts = document.createElement("div");
-  charts.className = "chart-grid";
-  artifact.chartSeries.forEach((chart) => charts.append(renderChart(artifact, chart)));
-  container.append(stats, charts);
+  const businessOrder = artifact.lab === "marketing-allocation"
+    ? ["allocation", "response-curves", "held-out-revenue", "error-comparison"]
+    : ["capacity", "calibration", "lead-time", "loss-comparison"];
+  const rank = new Map(businessOrder.map((id, index) => [id, index]));
+  const orderedCharts = [...artifact.chartSeries]
+    .sort((left, right) => (rank.get(left.id) ?? businessOrder.length) - (rank.get(right.id) ?? businessOrder.length));
+  const primaryChart = document.createElement("div");
+  primaryChart.className = "chart-grid primary-chart-grid";
+  const supportingCharts = document.createElement("div");
+  supportingCharts.className = "chart-grid";
+  orderedCharts.forEach((chart, index) => {
+    (index === 0 ? primaryChart : supportingCharts).append(renderChart(artifact, chart));
+  });
+  container.append(primaryChart, stats, supportingCharts);
   setupChartDraw(container);
 }
 
@@ -481,5 +498,5 @@ export async function loadLabEvidence(container) {
 
 
 if (typeof document !== "undefined") {
-  document.querySelectorAll("[data-evidence-src]").forEach((container) => loadLabEvidence(container));
+  document.querySelectorAll("[data-evidence-src]:not([data-featured-case])").forEach((container) => loadLabEvidence(container));
 }

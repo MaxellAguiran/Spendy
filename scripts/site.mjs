@@ -1,7 +1,5 @@
 document.documentElement.classList.add("js");
 
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 
 function setupNavigation() {
   const toggle = document.querySelector("[data-nav-toggle]");
@@ -28,29 +26,6 @@ function setupNavigation() {
   window.addEventListener("resize", () => {
     if (window.innerWidth > 760) setOpen(false);
   });
-}
-
-
-function setupReveals() {
-  const items = [...document.querySelectorAll("[data-reveal]")];
-  if (!items.length || reduceMotion || !("IntersectionObserver" in window)) {
-    items.forEach((item) => item.classList.add("is-revealed"));
-    return;
-  }
-
-  const fold = window.innerHeight * 0.92;
-  items.forEach((item) => {
-    if (item.getBoundingClientRect().top > fold) item.classList.add("is-pending");
-  });
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.remove("is-pending");
-      entry.target.classList.add("is-revealed");
-      observer.unobserve(entry.target);
-    });
-  }, { rootMargin: "0px 0px -8%", threshold: 0.08 });
-  items.filter((item) => item.classList.contains("is-pending")).forEach((item) => observer.observe(item));
 }
 
 
@@ -124,7 +99,6 @@ function setupDisclosures() {
 
 
 setupNavigation();
-setupReveals();
 setupCopyEmail();
 setupReadingProgress();
 setupDisclosures();

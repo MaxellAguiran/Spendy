@@ -1,9 +1,9 @@
 [
-  {"output":"home.png","kicker":"Maxell Aguiran · Predictive analytics","title":"Marketing allocation and churn models that earn trust.","subtitle":"Clear baselines · Held-out tests · Usable handovers","mascot":true},
-  {"output":"dragon-analytics.png","kicker":"Dragon Analytics","title":"Two focused analytics services.","subtitle":"Marketing allocation · Churn risk · Decision-ready handovers","mascot":true},
+  {"output":"home.png","kicker":"Maxell Aguiran · Dragon Analytics","title":"Make the next expensive decision with less guesswork.","subtitle":"Decision models for founders and operators"},
+  {"output":"dragon-analytics.png","kicker":"Dragon Analytics · Work with Maxell","title":"Bring me the decision, not a request for AI.","subtitle":"Marketing allocation · Customer retention","mascot":true},
   {"output":"research.png","kicker":"Equity research by Maxell Aguiran","title":"Five reports with explicit valuation and falsifiers.","subtitle":"Primary evidence · Scenarios · What would change the thesis"},
-  {"output":"marketing-allocation.png","kicker":"Synthetic worked example","title":"Marketing allocation under diminishing returns.","subtitle":"Chronological holdout · Baseline comparison · Uncertainty","signal":"allocation"},
-  {"output":"churn-risk.png","kicker":"Synthetic worked example","title":"Churn risk at a finite outreach capacity.","subtitle":"Calibration · Held-out accounts · Intervention limits","signal":"churn"},
+  {"output":"marketing-allocation.png","kicker":"Synthetic worked example","title":"Can the same weekly budget work harder?","subtitle":"Fixed budget · Chronological holdout · Baseline comparison","signal":"allocation"},
+  {"output":"churn-risk.png","kicker":"Synthetic worked example","title":"Which accounts deserve the first outreach?","subtitle":"Finite capacity · Held-out accounts · False-positive cost","signal":"churn"},
   {"output":"ibex.png","kicker":"IBEX · Equity research","title":"The Price Has Caught Up With The Thesis","subtitle":"Hold · $40 target · 28 July 2026"},
   {"output":"firstservice.png","kicker":"FirstService · Equity research","title":"A Cyclical Setback Is Being Priced As Structural Damage","subtitle":"Buy · $182 target · 24 July 2026"},
   {"output":"tamboran.png","kicker":"Tamboran Resources · Equity research","title":"The Beetaloo Is Real, But The Stock Prices In Success","subtitle":"Hold · $23 target · 28 July 2026"},

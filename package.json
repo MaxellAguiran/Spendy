@@ -5,7 +5,7 @@
   "scripts": {
     "generate:labs": "python3 tools/generate_lab_evidence.py --output-dir labs/data",
     "generate:social": "node tools/generate_social_cards.mjs",
-    "test:unit": "node --test tests/lab-evidence.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'",
+    "test:unit": "node --test tests/lab-evidence.test.mjs tests/featured-case.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'",
     "test:browser": "node --test tests/browser.test.mjs",
     "validate:html": "html-validate '*.html' 'labs/*.html'",
     "audit:lighthouse": "node tools/run_lighthouse.mjs",

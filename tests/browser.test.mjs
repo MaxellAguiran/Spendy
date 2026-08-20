@@ -94,15 +94,17 @@ test("representative pages have no horizontal overflow or console errors at requ
 });
 
 
-test("the homepage first screen states the two services and keeps both actions fully visible", async () => {
+test("the homepage first screen speaks to operators and keeps both actions fully visible", async () => {
   for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 720 }]) {
     const context = await browser.newContext({ viewport });
     const { page } = await openCheckedPage(context, "index.html");
     await assert.doesNotReject(() => page.locator(".brand span").waitFor({ state: "visible" }));
     const heroText = await page.locator(".hero-copy").innerText();
     assert.match(heroText, /Maxell Aguiran/i);
-    assert.match(heroText, /marketing spend/i);
-    assert.match(heroText, /customer retention/i);
+    assert.match(heroText, /expensive decision/i);
+    assert.match(heroText, /operators/i);
+    assert.match(heroText, /next unit of budget/i);
+    assert.match(heroText, /customer relationships/i);
     const actions = await page.locator(".hero-actions a").all();
     assert.equal(actions.length, 2);
     for (const action of actions) {
@@ -115,7 +117,7 @@ test("the homepage first screen states the two services and keeps both actions f
 });
 
 
-test("the homepage presents services before proof in five concise sections", async () => {
+test("the homepage presents one flagship case before work, founder evidence, research, and contact", async () => {
   for (const expected of [
     { viewport: { width: 390, height: 844 }, maxHeight: 6000 },
     { viewport: { width: 1280, height: 720 }, maxHeight: 4200 }
@@ -125,21 +127,29 @@ test("the homepage presents services before proof in five concise sections", asy
     const structure = await page.evaluate(() => ({
       height: document.documentElement.scrollHeight,
       ids: [...document.querySelectorAll("main > section")].map((section) => section.id),
-      positions: Object.fromEntries(["services", "proof", "about", "contact"].map((id) => [id, document.getElementById(id)?.offsetTop]))
+      positions: Object.fromEntries(["proof", "services", "about", "research", "contact"].map((id) => [id, document.getElementById(id)?.offsetTop]))
     }));
-    assert.deepEqual(structure.ids, ["", "services", "proof", "about", "contact"]);
+    assert.deepEqual(structure.ids, ["", "proof", "services", "about", "research", "contact"]);
     assert.ok(structure.height < expected.maxHeight, `Homepage is still too long at ${expected.viewport.width}px: ${structure.height}px`);
-    assert.ok(structure.positions.services < structure.positions.proof);
     assert.ok(structure.positions.proof < structure.positions.about);
+    assert.ok(structure.positions.proof < structure.positions.services);
+    assert.ok(structure.positions.services < structure.positions.about);
+    assert.ok(structure.positions.about < structure.positions.research);
+    assert.ok(structure.positions.research < structure.positions.contact);
+    if (expected.viewport.width === 1280) {
+      assert.ok(structure.positions.proof < 760, `The flagship case does not approach the first desktop viewport: ${structure.positions.proof}px`);
+    }
     assert.ok(structure.positions.about < structure.positions.contact);
     assert.equal(await page.locator(".hero .instrument-card").count(), 0);
     assert.equal(await page.locator(".hero img[src*='dragon-mascot']").count(), 0);
+    assert.equal(await page.locator("#proof [data-featured-case]").count(), 1);
+    assert.equal(await page.locator("#proof a[href='labs/churn-risk.html']").count(), 0, "Churn must not compete with the flagship case");
     await context.close();
   }
 });
 
 
-test("Dragon Analytics is a compact service page with a supporting mascot and five FAQs or fewer", async () => {
+test("Dragon Analytics is a compact work-with-me page with decision, stop conditions, contact, and five FAQs or fewer", async () => {
   for (const expected of [
     { viewport: { width: 390, height: 844 }, maxHeight: 6500, maxContact: 5000 },
     { viewport: { width: 1280, height: 720 }, maxHeight: 4200, maxContact: 3200 }
@@ -152,16 +162,82 @@ test("Dragon Analytics is a compact service page with a supporting mascot and fi
       contact: document.getElementById("contact").offsetTop,
       faq: document.getElementById("faq").offsetTop
     }));
-    assert.deepEqual(measurements.ids, ["", "services", "process", "contact", "faq"]);
+    assert.deepEqual(measurements.ids, ["", "marketing", "churn", "process", "fit", "contact", "faq"]);
     assert.ok(measurements.height < expected.maxHeight, `Dragon Analytics is still too long at ${expected.viewport.width}px: ${measurements.height}px`);
     assert.ok(measurements.contact < measurements.faq, "Contact must appear before FAQ");
     assert.ok(measurements.contact < expected.maxContact, `Contact appears too late at ${measurements.contact}px`);
     assert.equal(await page.locator(".hero .instrument-card").count(), 0);
     assert.equal(await page.locator("img[src*='dragon-mascot']").count(), 1);
+    assert.match(await page.locator("h1").innerText(), /bring me the decision/i);
+    assert.doesNotMatch(await page.locator("main").innerText(), /two focused analytics services/i);
+    assert.equal(await page.locator("#marketing dt").allTextContents().then((labels) => labels.includes("Stop condition")), true);
+    assert.equal(await page.locator("#churn dt").allTextContents().then((labels) => labels.includes("Stop condition")), true);
     const faqCount = await page.locator("details[data-disclosure]").count();
     assert.ok(faqCount >= 4 && faqCount <= 5, `Expected 4–5 concise FAQs, found ${faqCount}`);
     await context.close();
   }
+});
+
+
+test("the flagship allocation renderer exposes checked values and keyboard-operable views", async () => {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const { page } = await openCheckedPage(context, "index.html");
+  const caseStudy = page.locator("[data-featured-case]");
+  await page.waitForFunction(() => document.querySelector("[data-featured-case]")?.dataset.state === "ready");
+  assert.equal(await caseStudy.locator("[data-allocation-channel]").count(), 4);
+  assert.equal(await caseStudy.locator("[data-case-value='current-total']").innerText(), "$41,282");
+  assert.equal(await caseStudy.locator("[data-case-value='recommended-total']").innerText(), "$41,282");
+  assert.match(await caseStudy.locator("[data-case-value='baseline-mae']").innerText(), /15,558/);
+  assert.match(await caseStudy.locator("[data-case-value='model-mae']").innerText(), /7,778/);
+  assert.equal(await caseStudy.getByRole("button").count(), 3);
+  const current = caseStudy.getByRole("button", { name: "Current" });
+  await current.focus();
+  await page.keyboard.press("Enter");
+  assert.equal(await current.getAttribute("aria-pressed"), "true");
+  assert.equal(await caseStudy.locator("[data-series='recommended']:visible").count(), 0);
+  const compare = caseStudy.getByRole("button", { name: "Compare" });
+  await compare.click();
+  assert.equal(await compare.getAttribute("aria-pressed"), "true");
+  assert.ok(await caseStudy.locator("[data-series='recommended']:visible").count() > 0);
+  assert.match(await caseStudy.locator("[data-case-narration]").innerText(), /same|unchanged/i);
+  await context.close();
+});
+
+
+test("the flagship allocation renderer fails closed on invalid or unavailable evidence", async () => {
+  for (const routeHandler of [
+    (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema: "lab-evidence/v2" }) }),
+    (route) => route.abort()
+  ]) {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+    const page = await context.newPage();
+    await page.route("**/labs/data/marketing-allocation.json", routeHandler);
+    await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
+    await page.getByRole("heading", { name: "Evidence unavailable" }).waitFor();
+    assert.equal(await page.locator("[data-series='recommended']:visible").count(), 0);
+    assert.equal(await page.locator("[data-case-value='recommended-total']:visible").count(), 0);
+    assert.equal(await page.locator("a[href='labs/data/marketing-allocation.json']:visible").count(), 1);
+    assert.ok(await page.locator("a[href='labs/data/marketing-allocation.csv']:visible").count() >= 1);
+    assert.equal(await page.locator("a[href='labs/data/marketing-allocation-methodology.md']:visible").count(), 1);
+    await context.close();
+  }
+});
+
+
+test("worked-example heroes translate the decision before technical metrics", async () => {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  for (const [path, heading, businessPhrase] of [
+    ["labs/marketing-allocation.html", "Can the same weekly budget work harder?", /fixed|unchanged/i],
+    ["labs/churn-risk.html", "Which accounts deserve the first outreach?", /capacity|false-positive/i]
+  ]) {
+    const { page } = await openCheckedPage(context, path);
+    assert.equal(await page.locator("h1").innerText(), heading);
+    assert.match(await page.locator(".page-hero").innerText(), businessPhrase);
+    const firstMetric = await page.locator(".stat span").first().innerText();
+    assert.match(firstMetric, /prediction error|probability error/i);
+    await page.close();
+  }
+  await context.close();
 });
 
 
@@ -219,13 +295,24 @@ test("mobile navigation, FAQ disclosure, copy feedback, and focus treatment are 
 
 test("lab artifacts render checked metrics, narrated charts, and accessible tables", async () => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
-  for (const path of ["labs/marketing-allocation.html", "labs/churn-risk.html"]) {
+  for (const [path, firstChart] of [
+    ["labs/marketing-allocation.html", /current versus recommended/i],
+    ["labs/churn-risk.html", /precision at outreach capacity/i]
+  ]) {
     const { page } = await openCheckedPage(context, path);
     await page.locator(".stat").first().waitFor();
     assert.equal(await page.locator(".stat").count(), 4);
     assert.equal(await page.locator(".evidence-chart").count(), 4);
+    assert.match(await page.locator(".evidence-chart h3").first().innerText(), firstChart);
     assert.equal(await page.locator(".chart-summary").count(), 4);
     assert.equal(await page.locator(".data-table-wrap table").count(), 4);
+    if (path.includes("marketing-allocation")) {
+      const fills = await page.locator(".evidence-chart").first().locator("rect").evaluateAll((bars) => bars.slice(0, 2).map((bar) => bar.getAttribute("fill")));
+      assert.deepEqual(fills, ["#C45A49", "#197A55"], "Current allocation must be terracotta and recommended allocation green");
+    }
+    if (path.includes("churn-risk")) {
+      assert.match(await page.locator(".evidence-chart").first().locator("table").textContent(), /lift/i, "Lift must remain available in the accessible evidence table");
+    }
     for (const chart of await page.locator(".evidence-chart").all()) {
       assert.ok(await chart.locator("svg text").count() >= 3, "Each visual chart needs visible scale or category labels");
     }
@@ -254,6 +341,10 @@ test("essential content stays usable without JavaScript and with a failed mascot
     await page.goto(`${baseUrl}/${path}`, { waitUntil: "load" });
     assert.equal(await page.locator("h1").isVisible(), true);
     assert.equal(await page.locator("a.button").first().isVisible(), true);
+    if (path === "index.html") {
+      assert.match(await page.locator("#proof").innerText(), /Can the same weekly budget work harder/i);
+      assert.match(await page.locator("#proof").innerText(), /Synthetic worked example/i);
+    }
     if (path.startsWith("labs/")) assert.equal(await page.locator("noscript .evidence-unavailable").isVisible(), true);
     await page.close();
   }

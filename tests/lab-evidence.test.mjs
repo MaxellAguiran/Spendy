@@ -121,6 +121,7 @@ test("rejects a churn gate that claims a worse Brier score beat the baseline", (
   artifact.model.metrics = {
     brierScore: 0.13,
     topDecileLift: 1.1,
+    topDecilePrecision: 0.2,
     expectedMonthlyRevenueAtRisk: 1000
   };
   artifact.metrics = {
@@ -132,4 +133,25 @@ test("rejects a churn gate that claims a worse Brier score beat the baseline", (
   const result = validateLabEvidence(artifact);
   assert.equal(result.ok, false);
   assert.match(result.errors.join(" "), /gate.*Brier|Brier.*gate/i);
+});
+
+
+test("rejects churn evidence without precision at the declared top-decile capacity", () => {
+  const artifact = validArtifact();
+  artifact.lab = "churn-risk";
+  artifact.baseline.metrics = { brierScore: 0.13 };
+  artifact.model.metrics = {
+    brierScore: 0.1,
+    topDecileLift: 2,
+    expectedMonthlyRevenueAtRisk: 1000
+  };
+  artifact.metrics = {
+    primary: "brierScore",
+    evidenceGatePassed: true,
+    brierReductionPercent: 23.1
+  };
+  delete artifact.model.recommendation;
+  const result = validateLabEvidence(artifact);
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(" "), /precision/i);
 });
