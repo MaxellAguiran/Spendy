@@ -101,12 +101,12 @@ test("the homepage first screen explicitly names both services, the audience, an
     await assert.doesNotReject(() => page.locator(".brand span").waitFor({ state: "visible" }));
     const heroText = await page.locator(".hero-copy").innerText();
     assert.match(await page.locator("h1").innerText(), /budget optimization and churn prediction for founder-led businesses/i);
-    assert.match(heroText, /allocate recurring marketing spend/i);
-    assert.match(heroText, /customers at risk of churn/i);
-    assert.match(heroText, /budget allocation plan/i);
-    assert.match(heroText, /ranked churn-risk outreach list/i);
-    assert.match(heroText, /validation evidence/i);
-    assert.match(heroText, /reproducible inputs/i);
+    assert.match(heroText, /split their marketing budget/i);
+    assert.match(heroText, /customers are most likely to leave/i);
+    assert.match(heroText, /clear spending plan/i);
+    assert.match(heroText, /ranked call list/i);
+    assert.match(heroText, /checks behind it/i);
+    assert.match(heroText, /needed to run it again/i);
     const actions = await page.locator(".hero-actions a").all();
     assert.equal(actions.length, 2);
     assert.deepEqual(await page.locator(".hero-actions a").allInnerTexts(), ["See budget optimization example", "Discuss your decision"]);
@@ -117,6 +117,23 @@ test("the homepage first screen explicitly names both services, the audience, an
     }
     await context.close();
   }
+});
+
+
+test("public-facing pages explain the work without unexplained analyst jargon", async () => {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const forbidden = /\b(?:artifact|baseline|holdout|held-out|model|MAE|Brier|calibration|cohort|falsifier|incrementality|extrapolation|adstock|regression|log loss|false positives?|marginal returns?|response curves?|reproducible|chronological|probability quality|top-decile|EV\/EBITDA|DCF|valuation|thesis|scenarios?)\b/i;
+  for (const path of ["index.html", "dragon-analytics.html", "labs/marketing-allocation.html", "labs/churn-risk.html", "writing.html", "404.html"]) {
+    const { page } = await openCheckedPage(context, path);
+    if (path.startsWith("labs/")) await page.locator(".stat").first().waitFor();
+    const visibleMainText = await page.locator("main").innerText();
+    assert.doesNotMatch(visibleMainText, forbidden, `${path} exposes unexplained jargon`);
+    if (path.startsWith("labs/")) {
+      assert.ok(await page.locator("details.technical-note").count() >= 1, `${path} must keep exact definitions in an optional technical note`);
+    }
+    await page.close();
+  }
+  await context.close();
 });
 
 
@@ -173,8 +190,8 @@ test("Dragon Analytics is a compact work-with-me page with decision, stop condit
     assert.equal(await page.locator("img[src*='dragon-mascot']").count(), 1);
     assert.match(await page.locator("h1").innerText(), /bring me the decision/i);
     assert.doesNotMatch(await page.locator("main").innerText(), /two focused analytics services/i);
-    assert.equal(await page.locator("#marketing dt").allTextContents().then((labels) => labels.includes("Stop condition")), true);
-    assert.equal(await page.locator("#churn dt").allTextContents().then((labels) => labels.includes("Stop condition")), true);
+    assert.equal(await page.locator("#marketing dt").allTextContents().then((labels) => labels.includes("When I stop")), true);
+    assert.equal(await page.locator("#churn dt").allTextContents().then((labels) => labels.includes("When I stop")), true);
     const faqCount = await page.locator("details[data-disclosure]").count();
     assert.ok(faqCount >= 4 && faqCount <= 5, `Expected 4–5 concise FAQs, found ${faqCount}`);
     await context.close();
@@ -231,13 +248,13 @@ test("worked-example heroes translate the decision before technical metrics", as
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   for (const [path, heading, businessPhrase] of [
     ["labs/marketing-allocation.html", "Can the same weekly budget work harder?", /fixed|unchanged/i],
-    ["labs/churn-risk.html", "Which accounts deserve the first outreach?", /capacity|false-positive/i]
+    ["labs/churn-risk.html", "Which accounts deserve the first outreach?", /100 customers|wrong people/i]
   ]) {
     const { page } = await openCheckedPage(context, path);
     assert.equal(await page.locator("h1").innerText(), heading);
     assert.match(await page.locator(".page-hero").innerText(), businessPhrase);
     const firstMetric = await page.locator(".stat span").first().innerText();
-    assert.match(firstMetric, /prediction error|probability error/i);
+    assert.match(firstMetric, /average .*error/i);
     await page.close();
   }
   await context.close();
@@ -300,7 +317,7 @@ test("lab artifacts render checked metrics, narrated charts, and accessible tabl
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   for (const [path, firstChart] of [
     ["labs/marketing-allocation.html", /current versus recommended/i],
-    ["labs/churn-risk.html", /precision at outreach capacity/i]
+    ["labs/churn-risk.html", /likely leavers found as the call list grows/i]
   ]) {
     const { page } = await openCheckedPage(context, path);
     await page.locator(".stat").first().waitFor();
@@ -314,7 +331,7 @@ test("lab artifacts render checked metrics, narrated charts, and accessible tabl
       assert.deepEqual(fills, ["#C45A49", "#197A55"], "Current allocation must be terracotta and recommended allocation green");
     }
     if (path.includes("churn-risk")) {
-      assert.match(await page.locator(".evidence-chart").first().locator("table").textContent(), /lift/i, "Lift must remain available in the accessible evidence table");
+      assert.match(await page.locator(".evidence-chart").first().locator("table").textContent(), /compared with random outreach/i, "The lift comparison must remain available in plain language");
     }
     for (const chart of await page.locator(".evidence-chart").all()) {
       assert.ok(await chart.locator("svg text").count() >= 3, "Each visual chart needs visible scale or category labels");
@@ -346,7 +363,7 @@ test("essential content stays usable without JavaScript and with a failed mascot
     assert.equal(await page.locator("a.button").first().isVisible(), true);
     if (path === "index.html") {
       assert.match(await page.locator("#proof").innerText(), /Can the same weekly budget work harder/i);
-      assert.match(await page.locator("#proof").innerText(), /Synthetic worked example/i);
+      assert.match(await page.locator("#proof").innerText(), /Example built from generated data/i);
     }
     if (path.startsWith("labs/")) assert.equal(await page.locator("noscript .evidence-unavailable").isVisible(), true);
     await page.close();

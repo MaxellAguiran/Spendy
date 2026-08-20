@@ -139,9 +139,9 @@ function renderSummary(view) {
     const status = summary.querySelector("[data-case-summary-status]");
     const test = summary.querySelector("[data-case-summary-test]");
     if (status) status.textContent = view.recommendationStatus === "shown"
-      ? "Released · checked model beat baseline"
-      : "Withheld · model did not beat baseline";
-    if (test) test.textContent = `${view.developmentRows} weeks to fit · ${view.holdoutRows} held out`;
+      ? "Recommendation shown · the analysis beat the simple comparison"
+      : "No recommendation · the analysis did not beat the simple comparison";
+    if (test) test.textContent = `Learned from ${view.developmentRows} earlier weeks · checked against ${view.holdoutRows} later weeks`;
   });
 }
 
@@ -212,11 +212,11 @@ function setAllocationView(root, viewName, evidence) {
   const narration = root.querySelector("[data-case-narration]");
   if (!narration) return;
   if (viewName === "current") {
-    narration.textContent = `Current view: ${formatMoney(evidence.currentTotal)} is distributed across the four channels.`;
+    narration.textContent = `Current view: this is how the ${formatMoney(evidence.currentTotal)} weekly budget is split across four channels today.`;
   } else if (viewName === "recommended") {
-    narration.textContent = `Recommended view: the same ${formatMoney(evidence.currentTotal)} weekly budget is redistributed; no additional spend is assumed.`;
+    narration.textContent = `Suggested view: the same ${formatMoney(evidence.currentTotal)} weekly budget is split differently; the total does not increase.`;
   } else {
-    narration.textContent = `Compare view: the same ${formatMoney(evidence.currentTotal)} weekly budget is redistributed; terracotta is current and green is recommended.`;
+    narration.textContent = `Compare view: the same ${formatMoney(evidence.currentTotal)} weekly budget is split two ways. Brown-orange bars show today’s split; green bars show the suggested split.`;
   }
 }
 
@@ -253,7 +253,7 @@ function renderFeaturedUnavailable(root, errors) {
   if (unavailable) {
     unavailable.hidden = false;
     const details = unavailable.querySelector("[data-case-errors]");
-    if (details) details.textContent = errors.join(" ");
+    if (details) details.textContent = "The file may be missing, incomplete, or inconsistent.";
   }
   renderSummaryUnavailable();
 }

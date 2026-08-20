@@ -143,9 +143,9 @@ class SiteContractTests(unittest.TestCase):
             self.assertIn("data-reading-progress", source)
             self.assertIn('class="article-toc"', source)
 
-    def test_labs_disclose_synthetic_status_before_results(self):
-        """A chart appearing before the non-client disclosure must fail."""
-        required = "This is not a client engagement or a claim of realised business performance."
+    def test_labs_disclose_generated_non_client_status_before_results(self):
+        """A chart appearing before the plain-language non-client disclosure must fail."""
+        required = "Example built from generated data—not client work."
         for page in ("labs/marketing-allocation.html", "labs/churn-risk.html"):
             source = (ROOT / page).read_text(encoding="utf-8")
             self.assertIn(required, source)
@@ -160,7 +160,8 @@ class SiteContractTests(unittest.TestCase):
         for page in ("labs/marketing-allocation.html", "labs/churn-risk.html"):
             objects = [json.loads(value) for value in parse_page(page).json_ld]
             dataset = next(value for value in objects if value.get("@type") == "Dataset")
-            self.assertIn("synthetic", dataset["description"].casefold())
+            self.assertIn("generated", dataset["description"].casefold())
+            self.assertIn("non-client", dataset["description"].casefold())
             self.assertIn("not a client engagement", dataset["isBasedOn"].casefold())
 
     def test_sitemap_robots_and_social_card_dimensions_are_launch_ready(self):

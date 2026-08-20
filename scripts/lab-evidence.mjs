@@ -175,12 +175,13 @@ export function evidenceUnavailable(container, errors = []) {
   const heading = document.createElement("h2");
   heading.textContent = "Evidence unavailable";
   const copy = document.createElement("p");
-  copy.textContent = "The evidence artifact did not pass its publication contract, so no result has been rendered.";
+  copy.textContent = "The evidence file failed its checks, so no result is shown.";
   panel.append(heading, copy);
   if (errors.length) {
     const details = document.createElement("details");
+    details.className = "technical-note";
     const summary = document.createElement("summary");
-    summary.textContent = "Technical validation details";
+    summary.textContent = "Why the check failed";
     const list = document.createElement("ul");
     errors.forEach((error) => {
       const item = document.createElement("li");
@@ -227,17 +228,17 @@ function percent(value, digits = 1) {
 function metricCards(artifact) {
   if (artifact.lab === "marketing-allocation") {
     return [
-      ["Baseline prediction error · MAE", money(artifact.baseline.metrics.mae, true)],
-      ["Model prediction error · MAE", money(artifact.model.metrics.mae, true)],
-      ["Relative error reduction", `${formatNumber(artifact.metrics.maeReductionPercent, { maximumFractionDigits: 1 })}%`],
-      ["Recommendation status", artifact.metrics.evidenceGatePassed ? "Released" : "Withheld"]
+      ["Simple comparison average dollar error", money(artifact.baseline.metrics.mae, true)],
+      ["Analysis average dollar error", money(artifact.model.metrics.mae, true)],
+      ["Error reduced by", `${formatNumber(artifact.metrics.maeReductionPercent, { maximumFractionDigits: 1 })}%`],
+      ["Suggested plan", artifact.metrics.evidenceGatePassed ? "Shown" : "Not shown"]
     ];
   }
   return [
-    ["Baseline probability error · Brier score", formatNumber(artifact.baseline.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
-    ["Model probability error · Brier score", formatNumber(artifact.model.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
-    ["Precision among the first 100 accounts", percent(artifact.model.metrics.topDecilePrecision, 0)],
-    ["Revenue exposed—not revenue retained", money(artifact.model.metrics.expectedMonthlyRevenueAtRisk, true)]
+    ["Simple comparison average risk error", formatNumber(artifact.baseline.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
+    ["Analysis average risk error", formatNumber(artifact.model.metrics.brierScore, { minimumFractionDigits: 3, maximumFractionDigits: 3 })],
+    ["Likely leavers among the first 100 customers", percent(artifact.model.metrics.topDecilePrecision, 0)],
+    ["Revenue currently at risk—not saved revenue", money(artifact.model.metrics.expectedMonthlyRevenueAtRisk, true)]
   ];
 }
 
@@ -245,17 +246,59 @@ function metricCards(artifact) {
 function chartSummary(artifact, chart) {
   const summaries = {
     allocation: artifact.metrics.evidenceGatePassed
-      ? "The constrained recommendation redistributes the same weekly budget only after the holdout gate passed. It is a model scenario, not realised return."
-      : "The recommendation is withheld because the model did not beat the declared baseline.",
-    "response-curves": "Every channel curve flattens as spend rises, expressing diminishing marginal response inside the observed range.",
-    "held-out-revenue": "Actual and predicted revenue are shown only for the final chronological holdout; the outer series form the model's 90% interval.",
-    "error-comparison": "Lower is better. The model is compared with the same-week-one-year-earlier baseline on identical held-out weeks.",
-    calibration: "A calibrated model places predicted risk near the observed event rate. Sparse high-risk bins should be interpreted cautiously.",
-    capacity: "Precision declines as a larger share of accounts is contacted, making outreach capacity part of the decision. Lift remains available in the evidence table below.",
-    "lead-time": "Lead time describes how far in advance the synthetic risk signals appear among held-out churn events; it does not prove intervention success.",
-    "loss-comparison": "Lower is better. Brier score is the primary probabilistic metric; log loss is shown as a second view of probability quality."
+      ? "The same weekly budget is split differently only after the analysis works better than the simple comparison on later weeks. This is an estimate, not a real return."
+      : "No new budget split is shown because the analysis did not beat the simple comparison.",
+    "response-curves": "Each line flattens as spending rises. That shows where another dollar is estimated to help less than the one before it, within the spending levels shown.",
+    "held-out-revenue": "What happened and what the analysis estimated are shown only for the final later weeks. The outer lines show a likely range, not a promise.",
+    "error-comparison": "Lower is better. Both approaches are checked against the same later weeks.",
+    calibration: "Predicted risks should stay close to the share of customers who actually left. Groups with few high-risk customers need extra caution.",
+    capacity: "The share of likely leavers found falls as the call list grows. The table also shows how this compares with contacting customers at random.",
+    "lead-time": "This shows how much warning appeared before customers left in the generated example. It does not prove that contacting them would make them stay.",
+    "loss-comparison": "Lower is better. Both numbers measure how far the predicted risks were from what actually happened."
   };
-  return summaries[chart.id] || `${chart.title} is rendered from the checked evidence artifact.`;
+  return summaries[chart.id] || "This chart is built directly from the checked evidence file.";
+}
+
+
+const CHART_TITLES = {
+  allocation: "Current versus recommended weekly allocation",
+  "response-curves": "When extra spending stops paying off",
+  "held-out-revenue": "What happened in the later test weeks",
+  "error-comparison": "Average dollar error",
+  calibration: "Do predicted risks match what happened?",
+  capacity: "Likely leavers found as the call list grows",
+  "lead-time": "How much warning the team gets",
+  "loss-comparison": "Average risk error"
+};
+
+
+const SERIES_LABELS = {
+  Actual: "What happened",
+  Model: "Analysis estimate",
+  "Lower interval": "Lower likely range",
+  "Upper interval": "Upper likely range",
+  Baseline: "Simple comparison",
+  "Mean predicted risk": "Predicted risk",
+  "Observed churn rate": "Customers who left",
+  Precision: "Likely leavers found",
+  Lift: "Compared with random outreach",
+  Accounts: "Customers"
+};
+
+
+const AXIS_LABELS = {
+  "Brier score": "Average risk gap",
+  "Log loss": "Penalty for confident errors"
+};
+
+
+function plainChart(chart) {
+  return {
+    ...chart,
+    title: CHART_TITLES[chart.id] || chart.title,
+    labels: chart.labels.map((label) => AXIS_LABELS[label] || label),
+    series: chart.series.map((series) => ({ ...series, name: SERIES_LABELS[series.name] || series.name }))
+  };
 }
 
 
@@ -271,13 +314,13 @@ function renderTable(chart) {
   const details = document.createElement("details");
   details.dataset.disclosure = "";
   const summary = document.createElement("summary");
-  summary.textContent = "View accessible data table";
+  summary.textContent = "View the numbers in a table";
   const table = document.createElement("table");
   const caption = document.createElement("caption");
   caption.textContent = chart.title;
   const head = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  ["Period or band", ...chart.series.map((series) => series.name)].forEach((label) => {
+  ["Week or group", ...chart.series.map((series) => series.name)].forEach((label) => {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = label;
@@ -391,9 +434,10 @@ function renderBarSvg(chart) {
 
 
 function renderChart(artifact, chart) {
+  const displayChart = plainChart(chart);
   const visualChart = chart.id === "capacity"
-    ? { ...chart, title: "Precision at outreach capacity", series: chart.series.filter((series) => series.name === "Precision") }
-    : chart;
+    ? { ...displayChart, series: [displayChart.series[0]] }
+    : displayChart;
   const article = document.createElement("article");
   article.className = "evidence-chart";
   article.dataset.chart = chart.id;
@@ -414,7 +458,7 @@ function renderChart(artifact, chart) {
   const narration = document.createElement("p");
   narration.className = "chart-summary";
   narration.textContent = chartSummary(artifact, chart);
-  article.append(heading, canvas, legend, narration, renderTable(chart));
+  article.append(heading, canvas, legend, narration, renderTable(displayChart));
   return article;
 }
 
