@@ -187,6 +187,11 @@ class SiteContractTests(unittest.TestCase):
             self.assertIn(required, source)
             self.assertLess(source.index(required), source.index('id="results"'))
 
+        report = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
+        report_disclosure = "Generated example using synthetic advertising and sales data. It shows the report format and testing standard—not client performance."
+        self.assertIn(report_disclosure, report)
+        self.assertLess(report.index(report_disclosure), report.index("data-report-content"))
+
     def test_profile_article_and_dataset_structured_data_match_visible_page_types(self):
         """Mislabeling a lab as client work or losing the canonical author entity must fail."""
         homepage_objects = [json.loads(value) for value in parse_page("index.html").json_ld]
@@ -199,6 +204,12 @@ class SiteContractTests(unittest.TestCase):
             self.assertIn("generated", dataset["description"].casefold())
             self.assertIn("non-client", dataset["description"].casefold())
             self.assertIn("not a client engagement", dataset["isBasedOn"].casefold())
+        report_objects = [json.loads(value) for value in parse_page("labs/monthly-ad-report.html").json_ld]
+        report_dataset = next(value for value in report_objects if value.get("@type") == "Dataset")
+        report_description = report_dataset["description"].casefold()
+        self.assertIn("generated", report_description)
+        self.assertIn("synthetic", report_description)
+        self.assertIn("not client performance", report_description)
 
     def test_sitemap_robots_and_social_card_dimensions_are_launch_ready(self):
         """A missing canonical route, root sitemap reference, or wrongly sized preview must fail."""

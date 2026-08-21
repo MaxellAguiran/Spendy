@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Monthly Ad Forecast and Budget Report | Dragon Analytics</title>
+  <meta name="description" content="See a generated monthly report that forecasts individual ads against break-even and allocates one fixed advertising budget down to the cent.">
+  <link rel="canonical" href="https://maxellaguiran.github.io/labs/monthly-ad-report.html">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <meta name="theme-color" content="#F7FAF7">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Maxell Aguiran">
+  <meta property="og:title" content="Which ads should receive next month's fixed budget?">
+  <meta property="og:description" content="A generated ad-level forecast and exact monthly budget plan for marketing agencies.">
+  <meta property="og:url" content="https://maxellaguiran.github.io/labs/monthly-ad-report.html">
+  <meta property="og:image" content="https://maxellaguiran.github.io/assets/social/monthly-ad-report.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Which ads should receive next month's fixed budget?">
+  <meta name="twitter:description" content="Cut, Reduce, Keep, or Increase—with an exact generated spend plan for each ad.">
+  <meta name="twitter:image" content="https://maxellaguiran.github.io/assets/social/monthly-ad-report.png">
+  <link rel="preload" href="../assets/fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": "Generated monthly ad forecast and budget report data",
+    "description": "Deterministic synthetic advertising and sales data for a generated report demonstration. It shows the testing and delivery format, not client performance.",
+    "url": "https://maxellaguiran.github.io/labs/monthly-ad-report.html",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "creator": {
+      "@type": "Person",
+      "name": "Maxell Agustin Aguiran",
+      "url": "https://maxellaguiran.github.io/"
+    },
+    "isBasedOn": "A deterministic synthetic data-generating process, not a client engagement or client performance.",
+    "distribution": [
+      {
+        "@type": "DataDownload",
+        "encodingFormat": "text/csv",
+        "contentUrl": "https://maxellaguiran.github.io/labs/data/monthly-ad-report.csv"
+      },
+      {
+        "@type": "DataDownload",
+        "encodingFormat": "application/json",
+        "contentUrl": "https://maxellaguiran.github.io/labs/data/monthly-ad-report.json"
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="lab-page report-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html"><img class="brand-mark" src="../assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Open navigation" data-nav-toggle><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <nav class="site-nav" id="site-navigation" aria-label="Primary navigation"><a href="../index.html#services">Work</a><a href="../index.html#proof" aria-current="page">Sample report</a><a href="../writing.html">Research</a><a href="../index.html#about">About</a><a class="nav-conversation" href="../index.html#contact">Request a report</a></nav>
+  </header>
+
+  <main id="main">
+    <section class="container page-hero report-hero">
+      <div>
+        <div class="eyebrow">Generated monthly report · Marketing agencies</div>
+        <h1>Which ads should receive next month's fixed budget?</h1>
+        <p>Start with one fixed monthly budget. Forecast which individual ads may move below or above break-even, then decide what to cut, reduce, keep, or increase.</p>
+        <div class="action-row"><a class="button" href="#results">See the ad plan</a><a class="button secondary" href="data/monthly-ad-report.csv" download>Download the generated data</a></div>
+      </div>
+      <aside class="report-hero-summary" aria-label="Report contents">
+        <strong>One report for the coming month</strong>
+        <ul><li>Meta Ads, Google Ads, and TikTok Ads</li><li>Shopify-style sales outcomes</li><li>Break-even forecast for every generated ad</li><li>Exact per-ad spend that preserves the supplied total</li></ul>
+      </aside>
+    </section>
+
+    <div class="container generated-disclosure" id="disclosure">Generated example using synthetic advertising and sales data. It shows the report format and testing standard—not client performance.</div>
+
+    <section class="section report-results" id="results">
+      <div class="section-heading">
+        <div><div class="eyebrow">The monthly decision</div><h2>Cut, Reduce, Keep, or Increase—without changing the total budget.</h2></div>
+        <p>The forecast is an estimate. The allocation is exact because every line item is reconciled to the supplied budget in cents.</p>
+      </div>
+
+      <div class="report-shell" data-ad-report data-evidence-src="data/monthly-ad-report.json" data-dataset-src="data/monthly-ad-report.csv" data-state="loading" aria-live="polite">
+        <div class="report-status" data-report-loading role="status"><strong>Checking the report…</strong><span>No recommendation appears until the evidence and generated data pass their checks.</span></div>
+        <div class="report-status evidence-unavailable" data-report-unavailable role="status" hidden>
+          <h2>Evidence unavailable</h2>
+          <p>No recommendation is shown because the report did not pass its checks.</p>
+          <p data-report-errors></p>
+          <div class="evidence-links"><a href="data/monthly-ad-report.json">Evidence JSON</a><a href="data/monthly-ad-report.csv">Generated CSV</a><a href="data/monthly-ad-report-methodology.md">Methodology</a></div>
+        </div>
+
+        <div data-report-content hidden>
+          <div class="report-totals" role="group" aria-label="Budget reconciliation">
+            <div><span>Supplied monthly budget</span><strong data-report-value="supplied-budget"></strong></div>
+            <div><span>Recommended total</span><strong data-report-value="recommended-total"></strong></div>
+            <div><span>Difference</span><strong data-report-value="budget-difference"></strong></div>
+          </div>
+
+          <div class="report-table-wrap">
+            <table class="report-table">
+              <caption>Current and recommended monthly spend by generated ad</caption>
+              <thead><tr><th scope="col">Platform</th><th scope="col">Ad</th><th scope="col">Current spend</th><th scope="col">Forecast relative to break-even</th><th scope="col">Action</th><th scope="col">Next-month recommended spend</th></tr></thead>
+              <tbody data-report-rows></tbody>
+            </table>
+          </div>
+
+          <div class="report-chart-panel">
+            <div class="report-chart-heading">
+              <div><span>Fixed-budget comparison</span><h3>Current and recommended monthly spend</h3></div>
+              <div class="allocation-controls" role="group" aria-label="Budget view"><button type="button" data-budget-view="current" aria-pressed="false">Current</button><button type="button" data-budget-view="recommended" aria-pressed="false">Recommended</button><button type="button" data-budget-view="compare" aria-pressed="true">Compare</button></div>
+            </div>
+            <div class="ad-budget-chart" data-chart="ad-budget-comparison" role="group" aria-label="Current and recommended monthly spend by generated ad"></div>
+            <p class="allocation-narration" data-report-narration></p>
+          </div>
+        </div>
+
+        <noscript><div class="report-status evidence-unavailable"><h2>The checked report needs JavaScript</h2><p>The decision, testing rule, generated-data disclosure, and downloads remain available. No favorable values are shown without validation.</p><div class="evidence-links"><a href="data/monthly-ad-report.json">Evidence JSON</a><a href="data/monthly-ad-report.csv">Generated CSV</a><a href="data/monthly-ad-report-methodology.md">Methodology</a></div></div></noscript>
+      </div>
+    </section>
+
+    <section class="section report-check" id="check">
+      <div class="lean-heading"><div><div class="eyebrow">How the forecast earns a place</div><h2>Learn from 210 earlier days. Check once against 30 later days.</h2></div><p>A simple trailing average gets the first chance to win. If the new forecast misses by more, the ad actions and budget recommendation are withheld.</p></div>
+      <div class="report-evidence-grid">
+        <div><span>Simple comparison average error · MAE</span><strong data-report-value="baseline-mae">Loaded from checked evidence</strong></div>
+        <div><span>Model average error · MAE</span><strong data-report-value="model-mae">Loaded from checked evidence</strong></div>
+        <div><span>Error reduction</span><strong data-report-value="error-reduction">Loaded from checked evidence</strong></div>
+      </div>
+      <details class="technical-note" data-disclosure><summary>Technical definition</summary><p>Mean absolute error (MAE) is the average absolute difference between forecast and observed revenue-to-spend ratio during the later 30-day check. Lower is better. The regularized regression uses trend, weekly and monthly patterns, spend saturation, platform, and generated ad identity.</p></details>
+    </section>
+
+    <section class="section" id="limits">
+      <div class="limitations-grid">
+        <div><div class="eyebrow">Limits</div><h2>What this generated report does not prove.</h2><ul class="clean-list"><li>Attributed sales do not prove that ad spend caused the result.</li><li>A generated forecast does not guarantee future performance.</li><li>The example does not support spending outside the generated range.</li><li>Platform, offer, tracking, price, inventory, and market changes can break the pattern.</li></ul></div>
+        <div class="method-panel download-list"><h3>Download and inspect</h3><a href="data/monthly-ad-report.csv" download><span>Generated ad and sales data</span><span>CSV ↓</span></a><a href="data/monthly-ad-report.json"><span>Checked evidence</span><span>JSON →</span></a><a href="data/monthly-ad-report-methodology.md"><span>How it was built</span><span>MD →</span></a><a href="https://github.com/MaxellAguiran/MaxellAguiran.github.io/blob/main/tools/generate_ad_report.py"><span>Source code</span><span>GitHub →</span></a></div>
+      </div>
+    </section>
+
+    <section class="section"><div class="contact-panel"><div><div class="eyebrow">Request a report</div><h2>Bring next month's fixed ad budget.</h2><p>Include the platforms, available Shopify or sales history, approximate number of active ads, historical date range, total monthly budget, and how you define break-even.</p></div><div class="contact-actions"><a class="button" href="mailto:maxell.aguiran@gmail.com?subject=Monthly%20ad%20forecast%20report">Email Maxell</a><a class="button secondary" href="../dragon-analytics.html">How the report works</a></div></div></section>
+  </main>
+
+  <footer class="site-footer"><div><div class="footer-brand"><img class="foot-mark" src="../assets/dragon-mark.svg" width="32" height="32" alt=""><span>Maxell Aguiran · Dragon Analytics</span></div><div>Monthly ad forecasting and exact budget plans for marketing agencies. © 2026 Maxell Agustin Aguiran.</div></div><nav class="footer-links" aria-label="Footer navigation"><a href="mailto:maxell.aguiran@gmail.com">Email</a><a href="https://github.com/MaxellAguiran">GitHub</a><a href="../writing.html">Research</a><a href="../dragon-analytics.html">Work</a></nav></footer>
+  <script type="module" src="../scripts/site.mjs"></script>
+  <script type="module" src="../scripts/ad-report.mjs"></script>
+</body>
+</html>

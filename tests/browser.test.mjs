@@ -244,6 +244,43 @@ test("the flagship allocation renderer fails closed on invalid or unavailable ev
 });
 
 
+test("the monthly report leads with the fixed-budget decision and renders checked ad rows", async () => {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const { page } = await openCheckedPage(context, "labs/monthly-ad-report.html");
+  assert.equal(await page.locator("h1").innerText(), "Which ads should receive next month's fixed budget?");
+  assert.match(await page.locator(".page-hero").innerText(), /marketing agency|fixed monthly budget|break-even/i);
+  await page.waitForFunction(() => document.querySelector("[data-ad-report]")?.dataset.state === "ready");
+  assert.equal(await page.locator("[data-report-rows] tr").count(), 12);
+  assert.equal(await page.locator("[data-report-value='budget-difference']").innerText(), "$0.00");
+  assert.ok(await page.locator("[data-report-action]").count() >= 1);
+  assert.deepEqual(await page.locator("[data-budget-view]").allInnerTexts(), ["Current", "Recommended", "Compare"]);
+  assert.match(await page.locator("#check [data-report-value='baseline-mae']").innerText(), /^\d+\.\d{4}$/);
+  assert.match(await page.locator("#check [data-report-value='model-mae']").innerText(), /^\d+\.\d{4}$/);
+  await context.close();
+});
+
+
+test("the monthly report fails closed when evidence or dataset bytes are changed", async () => {
+  for (const intercept of [
+    async (page) => page.route("**/monthly-ad-report.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema: "ad-report-evidence/v2" }) })),
+    async (page) => page.route("**/monthly-ad-report.csv", (route) => route.fulfill({ status: 200, contentType: "text/csv", body: "changed" })),
+    async (page) => page.route("**/monthly-ad-report.json", (route) => route.abort())
+  ]) {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+    const page = await context.newPage();
+    await intercept(page);
+    await page.goto(`${baseUrl}/labs/monthly-ad-report.html`, { waitUntil: "networkidle" });
+    await page.getByRole("heading", { name: "Evidence unavailable" }).waitFor();
+    assert.equal(await page.locator("[data-report-content]:visible").count(), 0);
+    assert.equal(await page.locator("[data-report-recommendation]:visible").count(), 0);
+    assert.ok(await page.locator("a[href='data/monthly-ad-report.json']:visible").count() >= 1);
+    assert.ok(await page.locator("a[href='data/monthly-ad-report.csv']:visible").count() >= 1);
+    assert.ok(await page.locator("a[href='data/monthly-ad-report-methodology.md']:visible").count() >= 1);
+    await context.close();
+  }
+});
+
+
 test("worked-example heroes translate the decision before technical metrics", async () => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   for (const [path, heading, businessPhrase] of [

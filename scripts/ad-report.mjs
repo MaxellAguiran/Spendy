@@ -314,7 +314,8 @@ function number(value, digits = 2) {
 
 
 function setReportValue(root, key, value) {
-  root.querySelectorAll(`[data-report-value="${key}"]`).forEach((element) => { element.textContent = value; });
+  const page = root.ownerDocument ?? document;
+  page.querySelectorAll(`[data-report-value="${key}"]`).forEach((element) => { element.textContent = value; });
 }
 
 
