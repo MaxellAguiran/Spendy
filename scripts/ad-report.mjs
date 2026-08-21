@@ -366,6 +366,58 @@ function renderRows(root, view) {
 }
 
 
+function adSummary(ad) {
+  const displayAdName = ad.adName.replace(/^Generated\s+/i, "");
+  const goalRelation = ad.forecastHigh < ad.breakEvenRoas
+    ? "likely below your goal"
+    : ad.forecastLow > ad.breakEvenRoas ? "likely above your goal" : "could land on either side of your goal";
+  return {
+    displayAdName,
+    expected: `$${number(ad.forecastLow)}–$${number(ad.forecastHigh)} back for every $1 spent · ${goalRelation} of $${number(ad.breakEvenRoas)} back`,
+    nextBudget: ad.recommendedSpendCents === null ? "No plan" : moneyFromCents(ad.recommendedSpendCents)
+  };
+}
+
+
+function renderCards(root, view) {
+  const container = root.querySelector("[data-report-cards]");
+  if (!container) return;
+  container.replaceChildren();
+  view.ads.forEach((ad) => {
+    const summary = adSummary(ad);
+    const card = document.createElement("article");
+    card.className = "report-card";
+    card.dataset.reportAd = ad.adId;
+    const heading = document.createElement("h3");
+    heading.textContent = summary.displayAdName;
+    const platform = document.createElement("p");
+    platform.className = "report-card-platform";
+    platform.textContent = ad.platform;
+    const details = [
+      ["Current budget", moneyFromCents(ad.currentSpendCents)],
+      ["Expected result", summary.expected],
+      ["Next step", ad.action],
+      ["Next month's budget", summary.nextBudget]
+    ];
+    const list = document.createElement("dl");
+    details.forEach(([term, description]) => {
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+      dt.textContent = term;
+      dd.textContent = description;
+      if (term === "Next step") {
+        dd.dataset.reportAction = ad.action.toLowerCase();
+        dd.dataset.reportRecommendation = "";
+      }
+      if (term === "Next month's budget") dd.dataset.reportRecommendation = "";
+      list.append(dt, dd);
+    });
+    card.append(platform, heading, list);
+    container.append(card);
+  });
+}
+
+
 function renderBudgetChart(root, view) {
   const chart = root.querySelector('[data-chart="ad-budget-comparison"]');
   if (!chart) return;
@@ -431,6 +483,7 @@ function renderReport(root, view) {
   setReportValue(root, "development-days", String(view.developmentDays));
   setReportValue(root, "holdout-days", String(view.holdoutDays));
   renderRows(root, view);
+  renderCards(root, view);
   renderBudgetChart(root, view);
   const controls = [...root.querySelectorAll("[data-budget-view]")];
   if (view.recommendationStatus === "shown") {

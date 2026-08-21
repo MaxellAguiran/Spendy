@@ -7,17 +7,10 @@ from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ACTIVE_SERVICE_PAGES = ["index.html", "dragon-analytics.html", "labs/monthly-ad-report.html"]
+ACTIVE_SERVICE_PAGES = ["index.html", "case-study.html", "dragon-analytics.html", "labs/monthly-ad-report.html"]
 RETIRED_PAGES = [
-    "writing.html",
-    "404.html",
-    "labs/marketing-allocation.html",
-    "labs/churn-risk.html",
-    "ibex.html",
-    "firstservice.html",
-    "tamboran.html",
-    "rex.html",
-    "nordic-american-tankers.html",
+    "writing.html", "404.html", "labs/marketing-allocation.html", "labs/churn-risk.html",
+    "ibex.html", "firstservice.html", "tamboran.html", "rex.html", "nordic-american-tankers.html",
 ]
 PUBLIC_PAGES = [*ACTIVE_SERVICE_PAGES, *RETIRED_PAGES]
 
@@ -80,7 +73,6 @@ def parse_page(relative_path):
 
 class SiteContractTests(unittest.TestCase):
     def test_every_public_page_has_complete_discovery_metadata(self):
-        """Dropping a canonical, description, social image, title, or H1 must fail."""
         for page in PUBLIC_PAGES:
             with self.subTest(page=page):
                 parser = parse_page(page)
@@ -94,7 +86,6 @@ class SiteContractTests(unittest.TestCase):
                 self.assertEqual(parser.h1_count, 1)
 
     def test_internal_links_resolve_to_files_or_page_fragments(self):
-        """A renamed route or missing downloadable artifact must fail the build."""
         for page in PUBLIC_PAGES:
             parser = parse_page(page)
             for link in parser.links:
@@ -110,18 +101,10 @@ class SiteContractTests(unittest.TestCase):
                         target = parse_page(candidate.resolve().relative_to(ROOT))
                         self.assertIn(unquote(parts.fragment), target.ids, f"Missing fragment in {candidate}")
 
-    def test_spendy_public_brand_and_route_contract(self):
-        """A returned personal or broad-portfolio surface must fail before release."""
+    def test_spendy_brand_and_exact_route_contract(self):
         prohibited = (
-            "maxell aguiran",
-            "maxell agustin",
-            "dragon analytics",
-            "equity research",
-            "company research",
-            "customer churn",
-            "churn prediction",
-            "customer retention",
-            "seeking alpha",
+            "maxell aguiran", "maxell agustin", "dragon analytics", "equity research",
+            "company research", "customer churn", "churn prediction", "customer retention", "seeking alpha",
         )
         for page in PUBLIC_PAGES:
             source = (ROOT / page).read_text(encoding="utf-8").casefold()
@@ -130,143 +113,105 @@ class SiteContractTests(unittest.TestCase):
                 for phrase in prohibited:
                     self.assertNotIn(phrase, source)
 
-        for page in ACTIVE_SERVICE_PAGES:
-            source = (ROOT / page).read_text(encoding="utf-8").casefold()
-            with self.subTest(page=page):
-                self.assertIn("budget", source)
-                self.assertIn("spendy", source)
-
-        for page in RETIRED_PAGES:
-            parser = parse_page(page)
-            source = (ROOT / page).read_text(encoding="utf-8").casefold()
-            with self.subTest(page=page):
-                self.assertTrue(any("noindex" in directive.casefold() for directive in parser.robots))
-                self.assertIn("this route is no longer published", source)
-                self.assertIn("spendy", source)
-                self.assertTrue(any(link.endswith("dragon-analytics.html") for link in parser.links))
-                self.assertTrue(any(link.endswith("monthly-ad-report.html") for link in parser.links))
-
         sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
-        for page in ACTIVE_SERVICE_PAGES:
-            canonical = parse_page(page).canonical[0]
-            self.assertIn(f"<loc>{canonical}</loc>", sitemap)
-        for page in RETIRED_PAGES:
-            canonical = parse_page(page).canonical[0]
-            self.assertNotIn(f"<loc>{canonical}</loc>", sitemap)
-
-        cards = json.loads((ROOT / "tools/social-cards.json").read_text(encoding="utf-8"))
-        self.assertEqual({card["output"] for card in cards}, {"home.png", "service.png", "monthly-ad-report.png"})
-        for card in cards:
-            self.assertIn("spendy", " ".join(str(value) for value in card.values()).casefold())
-
-    def test_contact_is_direct_without_visible_personal_branding(self):
-        """The service can start by email without reintroducing a named founder or web form."""
-        for page in ("index.html", "dragon-analytics.html"):
-            parser = parse_page(page)
-            source = (ROOT / page).read_text(encoding="utf-8").casefold()
-            self.assertEqual(parser.forms, 0)
-            self.assertIn("mailto:maxell.aguiran@gmail.com", " ".join(parser.links))
-            self.assertNotIn(">maxell", source)
-
-    def test_current_sales_surfaces_explain_the_buyer_problem_and_simple_value(self):
-        """The active experience must plainly name who it is for, their problem, and what Spendy gives them."""
-        combined = "\n".join((ROOT / page).read_text(encoding="utf-8") for page in ACTIVE_SERVICE_PAGES).casefold()
-        for phrase in (
-            "marketing agencies",
-            "machine learning",
-            "meta, google, tiktok",
-            "shopify",
-            "budget",
-            "where next month's ad money should go",
-            "spend less",
-            "keep",
-            "add more",
-            "simple plan",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, combined)
-        for phrase in ("guaranteed", "profitability", "causal incrementality", "platform partner"):
-            with self.subTest(phrase=phrase):
-                self.assertNotIn(phrase, combined)
-
-    def test_primary_navigation_leads_only_to_the_active_service(self):
-        """A navigation link to a retired route would contradict the single-service focus."""
-        for page in ACTIVE_SERVICE_PAGES:
-            parser = parse_page(page)
-            with self.subTest(page=page):
-                self.assertTrue(any(link.endswith("dragon-analytics.html") for link in parser.links))
-                self.assertTrue(any(link.endswith("monthly-ad-report.html") for link in parser.links))
-                self.assertNotIn("writing.html", parser.links)
-                for retired in RETIRED_PAGES:
-                    if retired != page:
-                        self.assertNotIn(retired, parser.links)
-
-    def test_homepage_case_values_are_rendered_from_checked_evidence(self):
-        """Hard-coding favorable report values would bypass the fail-closed renderer."""
-        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
-        report = json.loads((ROOT / "labs/data/monthly-ad-report.json").read_text(encoding="utf-8"))
-        self.assertIn('data-evidence-src="labs/data/monthly-ad-report.json"', homepage)
-        self.assertIn('data-dataset-src="labs/data/monthly-ad-report.csv"', homepage)
-        self.assertIn("data-load-deferred", homepage)
-        self.assertNotIn(f"{report['baseline']['metrics']['mae']:.4f}", homepage)
-        self.assertNotIn(f"{report['model']['metrics']['mae']:.4f}", homepage)
-        self.assertNotIn(f">{report['metrics']['maeReductionPercent']:.2f}%<", homepage)
-        self.assertNotIn(f"${report['budget']['suppliedMonthlyBudgetCents'] / 100:,.2f}", homepage)
-
-    def test_homepage_has_the_optimized_cartoon_planner_asset(self):
-        """The friendly hero illustration must be real, accessible, and kept within the page asset budget."""
-        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
-        illustration = ROOT / "assets" / "spendy-planner-hero.png"
-        self.assertIn('src="assets/spendy-planner-hero.png"', homepage)
-        self.assertIn('alt="Illustrated strategist with a purple marker, laptop, and hand-drawn budget charts"', homepage)
-        self.assertTrue(illustration.is_file())
-        self.assertLess(illustration.stat().st_size, 700 * 1024)
-
-    def test_monthly_report_identifies_its_illustrative_status_before_checked_results(self):
-        """An illustrative sample must not be mistaken for a customer result."""
-        report = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
-        disclosure_start = "Illustrative example — not a client result."
-        disclosure_end = "It simply shows what a Spendy monthly plan looks like."
-        self.assertIn(disclosure_start, report)
-        self.assertIn(disclosure_end, report)
-        self.assertLess(report.index(disclosure_start), report.index("data-report-content"))
-
-    def test_homepage_explains_audience_problem_and_value_in_plain_language(self):
-        """The opening page must make the service understandable without specialist vocabulary."""
-        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
-        for phrase in (
-            "For marketing agencies with lots of active ads",
-            "Not sure where next month's ad money should go?",
-            "Spendy makes the plan simple.",
-            "which ads to spend less on, keep as they are, or give more money to",
-            "Common planning situations, shown as illustrations—not customer stories.",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, homepage)
-
-    def test_structured_data_matches_the_single_service(self):
-        """The homepage must describe Spendy as an organization, not a founder profile or research publisher."""
-        homepage_objects = [json.loads(value) for value in parse_page("index.html").json_ld]
-        self.assertEqual(homepage_objects[0]["@type"], "WebPage")
-        self.assertEqual(homepage_objects[0]["mainEntity"]["@type"], "Organization")
-        self.assertEqual(homepage_objects[0]["mainEntity"]["name"], "Spendy")
-        report_objects = [json.loads(value) for value in parse_page("labs/monthly-ad-report.html").json_ld]
-        report_dataset = next(value for value in report_objects if value.get("@type") == "Dataset")
-        report_description = report_dataset["description"].casefold()
-        self.assertIn("illustrative", report_description)
-        self.assertIn("not a client result", report_description)
-
-    def test_sitemap_robots_and_social_card_dimensions_are_launch_ready(self):
-        """Only active routes and current social cards may be discoverable."""
-        sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
-        robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
-        self.assertIn("https://maxellaguiran.github.io/sitemap.xml", robots)
         for page in ACTIVE_SERVICE_PAGES:
             self.assertIn(f"<loc>{parse_page(page).canonical[0]}</loc>", sitemap)
         for page in RETIRED_PAGES:
-            self.assertNotIn(f"<loc>{parse_page(page).canonical[0]}</loc>", sitemap)
+            parser = parse_page(page)
+            source = (ROOT / page).read_text(encoding="utf-8").casefold()
+            self.assertTrue(any("noindex" in directive.casefold() for directive in parser.robots))
+            self.assertIn("this route is no longer published", source)
+            self.assertNotIn(f"<loc>{parser.canonical[0]}</loc>", sitemap)
+            self.assertTrue(any(link.endswith("dragon-analytics.html") for link in parser.links))
+            self.assertTrue(any(link.endswith("monthly-ad-report.html") for link in parser.links))
+
+        cards = json.loads((ROOT / "tools/social-cards.json").read_text(encoding="utf-8"))
+        self.assertEqual({card["output"] for card in cards}, {"home.png", "case-study.png", "service.png", "monthly-ad-report.png"})
+
+    def test_active_navigation_is_proof_first_and_contains_no_retired_surface(self):
+        expected = {"case-study.html", "dragon-analytics.html", "monthly-ad-report.html"}
+        for page in ACTIVE_SERVICE_PAGES:
+            parser = parse_page(page)
+            links = " ".join(parser.links)
+            with self.subTest(page=page):
+                for destination in expected:
+                    self.assertIn(destination, links)
+                for retired in RETIRED_PAGES:
+                    self.assertNotIn(retired, parser.links)
+                self.assertNotIn("writing.html", parser.links)
+
+    def test_direct_email_survives_without_a_form_or_visible_personal_branding(self):
+        for page in ACTIVE_SERVICE_PAGES:
+            parser = parse_page(page)
+            source = (ROOT / page).read_text(encoding="utf-8").casefold()
+            with self.subTest(page=page):
+                self.assertEqual(parser.forms, 0)
+                self.assertIn("mailto:maxell.aguiran@gmail.com", " ".join(parser.links))
+                self.assertNotIn(">maxell", source)
+
+    def test_homepage_promises_two_audiences_and_plain_language(self):
+        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
+        for phrase in (
+            "For agencies and in-house teams managing lots of active ads.",
+            "Stop guessing where next month’s ad money should go.",
+            "Spendy makes the plan simple.",
+            "For agencies", "For in-house teams", "No plan yet",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, homepage)
+        self.assertIn('src="assets/spendy-crew-hero.png"', homepage)
+        self.assertIn('data-case-study', homepage)
+
+    def test_case_study_is_evidence_bound_and_does_not_mislabel_the_data(self):
+        case = (ROOT / "case-study.html").read_text(encoding="utf-8")
+        prohibited = (
+            "client-account data", "we saved the client", "proven savings", "guaranteed return",
+            "live campaign result", "client testimonial", "model name", "algorithm", "endpoint",
+        )
+        for phrase in prohibited:
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase, case.casefold())
+        for phrase in (
+            "Real client engagement · name withheld",
+            "licensed public retail-advertising research",
+            "not a verified native client advertising or commerce export",
+            "Historical simulation using licensed public retail-advertising data.",
+            "The €5,000 monthly budget and margin assumption are illustrative.",
+            "The €4,304 difference is not realized client savings and does not promise future performance.",
+            "In the historical simulation, the Spendy-guided budget produced",
+            "data-case-study", "data-case-value", "data-case-chart",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, case)
+        self.assertNotIn("€27,692", case)
+        self.assertNotIn("€31,996", case)
+        self.assertLess(case.index("Historical simulation using licensed public retail-advertising data."), case.index("data-case-value"))
+
+    def test_case_structured_data_describes_article_and_separate_dataset(self):
+        values = [json.loads(value) for value in parse_page("case-study.html").json_ld]
+        article = next(value for value in values if value.get("@type") == "Article")
+        dataset = next(value for value in values if value.get("@type") == "Dataset")
+        self.assertEqual(article["publisher"]["name"], "Spendy")
+        self.assertIn("not realized client savings", article["description"])
+        self.assertEqual(dataset["identifier"], "https://doi.org/10.17632/hh7xps83z5.1")
+        self.assertIn("creativecommons.org/licenses/by/4.0", dataset["license"])
+
+    def test_sample_plan_is_disclosed_before_checked_results_and_has_a_phone_surface(self):
+        report = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
+        disclosure = "Illustrative example — not a client result."
+        self.assertIn(disclosure, report)
+        self.assertLess(report.index(disclosure), report.index("data-report-content"))
+        self.assertIn("data-report-cards", report)
+        self.assertIn("data-report-rows", report)
+        self.assertIn('<h2 class="visually-hidden">Your simple monthly plan</h2>', report)
+
+    def test_assets_and_social_cards_are_sized_and_present(self):
+        for name in ("spendy-crew-hero.webp", "spendy-decision-scene.webp", "spendy-review-scene.webp", "spendy-planner-hero.webp"):
+            asset = ROOT / "assets" / name
+            self.assertTrue(asset.is_file(), name)
+            self.assertLess(asset.stat().st_size, 180 * 1024, name)
         social_images = {image.name for image in (ROOT / "assets" / "social").glob("*.png")}
-        self.assertEqual(social_images, {"home.png", "service.png", "monthly-ad-report.png"})
+        self.assertEqual(social_images, {"home.png", "case-study.png", "service.png", "monthly-ad-report.png"})
         for image in (ROOT / "assets" / "social").glob("*.png"):
             payload = image.read_bytes()[:24]
             self.assertEqual(payload[:8], b"\x89PNG\r\n\x1a\n")

@@ -1,0 +1,46 @@
+{
+  "artifacts": {
+    "historicalSimulationSha256": "4f36996060f0a19157200039f6accf29060862bf50e37e8066f0571d26b12526",
+    "periodsPath": "data/case-study-periods.csv",
+    "periodsSha256": "473194f8b0b9ba5dd265746e73c3f583ba5b2af4782410b3ca67ffd163fc3a8f",
+    "sourceManifestSha256": "bedccc1e483a7c86b15c9dc81eb597f1bce630f9f883684f1feeeba34dc9eb56"
+  },
+  "engagement": {
+    "displayName": "Anonymous e-commerce advertiser",
+    "identity": "withheld",
+    "kind": "real-client-engagement"
+  },
+  "limitations": [
+    "The budget and margin assumptions are illustrative.",
+    "The result is a historical simulation, not realized client savings.",
+    "The licensed public research source is not a verified native client advertising or commerce export.",
+    "The simulation does not promise future performance."
+  ],
+  "schema": "spendy-case-study-evidence/v1",
+  "simulation": {
+    "advantageCents": 430400,
+    "comparison": "equal-budget-split",
+    "coverage": {
+      "covered": 432,
+      "total": 432
+    },
+    "equalProfitCents": 2769200,
+    "illustrativeBudgetCents": 500000,
+    "illustrativeMarginBasisPoints": 6000,
+    "kind": "historical-simulation",
+    "periodCount": 12,
+    "realizedClientSavingsCents": null,
+    "spendyProfitCents": 3199600
+  },
+  "source": {
+    "authors": "Semeradova and Weinlich",
+    "doi": "10.17632/hh7xps83z5.1",
+    "kind": "licensed-public-research",
+    "license": "CC BY 4.0",
+    "nativeClientExportVerified": false,
+    "setupCount": 36,
+    "title": "Advertising Performance Based on Personalization Breadth and Depth",
+    "url": "https://data.mendeley.com/datasets/hh7xps83z5/1",
+    "weekCount": 52
+  }
+}

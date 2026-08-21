@@ -91,6 +91,11 @@ function setupDisclosures() {
     const summary = details.querySelector("summary");
     if (!summary) return;
     summary.setAttribute("aria-expanded", String(details.open));
+    summary.addEventListener("click", () => {
+      // The browser applies <details>' native toggle after the click event;
+      // keep the announced state in step with that pending native action.
+      summary.setAttribute("aria-expanded", String(!details.open));
+    });
     details.addEventListener("toggle", () => {
       summary.setAttribute("aria-expanded", String(details.open));
     });
@@ -98,7 +103,26 @@ function setupDisclosures() {
 }
 
 
+function setupReveals() {
+  const surfaces = [...document.querySelectorAll("[data-reveal]")];
+  if (!surfaces.length) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof window.IntersectionObserver !== "function") {
+    surfaces.forEach((surface) => surface.classList.add("is-visible"));
+    return;
+  }
+  const observer = new window.IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: .08 });
+  surfaces.forEach((surface) => observer.observe(surface));
+}
+
+
 setupNavigation();
 setupCopyEmail();
 setupReadingProgress();
 setupDisclosures();
+setupReveals();

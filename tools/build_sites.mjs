@@ -1,16 +1,18 @@
 import { cp, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = fileURLToPath(new URL("../", import.meta.url));
 const output = join(root, "dist");
 const publicFolders = ["assets"];
 const publicFiles = [
-  "index.html", "404.html", "writing.html", "dragon-analytics.html", "firstservice.html",
+  "index.html", "case-study.html", "404.html", "writing.html", "dragon-analytics.html", "firstservice.html",
   "ibex.html", "nordic-american-tankers.html", "rex.html", "tamboran.html", "styles.css",
   "robots.txt", "sitemap.xml",
   "labs/monthly-ad-report.html", "labs/marketing-allocation.html", "labs/churn-risk.html",
   "labs/data/monthly-ad-report.json", "labs/data/monthly-ad-report.csv", "labs/data/monthly-ad-report-methodology.md",
-  "scripts/site.mjs", "scripts/ad-report.mjs"
+  "data/case-study-evidence.json", "data/case-study-periods.csv",
+  "scripts/site.mjs", "scripts/ad-report.mjs", "scripts/case-study.mjs"
 ];
 
 const worker = `export default {

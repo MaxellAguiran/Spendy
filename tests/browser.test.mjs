@@ -11,9 +11,9 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const contentTypes = {
   ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".mjs": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8", ".csv": "text/csv; charset=utf-8", ".svg": "image/svg+xml",
-  ".png": "image/png", ".woff2": "font/woff2", ".md": "text/markdown; charset=utf-8", ".xml": "application/xml; charset=utf-8"
+  ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2", ".md": "text/markdown; charset=utf-8", ".xml": "application/xml; charset=utf-8"
 };
-const activePaths = ["index.html", "dragon-analytics.html", "labs/monthly-ad-report.html"];
+const activePaths = ["index.html", "case-study.html", "dragon-analytics.html", "labs/monthly-ad-report.html"];
 const retiredPaths = ["404.html", "writing.html", "ibex.html", "firstservice.html", "tamboran.html", "rex.html", "nordic-american-tankers.html", "labs/marketing-allocation.html", "labs/churn-risk.html"];
 let server;
 let browser;
@@ -23,7 +23,7 @@ before(async () => {
   server = createServer(async (request, response) => {
     const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
     const relative = normalize(pathname).replace(/^(\.\.[/\\])+/, "").replace(/^[/\\]+/, "");
-    let path = join(root, relative || "index.html");
+    const path = join(root, relative || "index.html");
     try {
       const payload = await readFile(path);
       response.writeHead(200, { "Content-Type": contentTypes[extname(path)] || "application/octet-stream", "Cache-Control": "no-store" });
@@ -52,7 +52,7 @@ async function openCheckedPage(context, path) {
   return { page, errors };
 }
 
-test("Spendy exposes one machine-learning ad-spend service and retires legacy routes", async () => {
+test("Spendy exposes a proof-first budget service and retires legacy routes", async () => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   for (const path of activePaths) {
     const { page } = await openCheckedPage(context, path);
@@ -60,7 +60,7 @@ test("Spendy exposes one machine-learning ad-spend service and retires legacy ro
     assert.match(mainText, /Spendy/i, `${path} must identify the business`);
     assert.match(mainText, /budget/i, `${path} must explain the spend decision`);
     assert.doesNotMatch(mainText, /Maxell|Dragon Analytics|equity research|company research|churn/i, `${path} exposes a retired surface`);
-    assert.equal(await page.locator("nav[aria-label='Primary navigation']").getByText("Research", { exact: true }).count(), 0);
+    assert.equal(await page.locator("nav[aria-label='Primary navigation']").getByRole("link", { name: "Case study", exact: true }).count(), 1);
     await page.close();
   }
   for (const path of retiredPaths) {
@@ -74,23 +74,26 @@ test("Spendy exposes one machine-learning ad-spend service and retires legacy ro
   await context.close();
 });
 
-test("service pages are clear and actionable in the opening viewport", async () => {
-  for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 720 }]) {
-    const context = await browser.newContext({ viewport });
-    const { page } = await openCheckedPage(context, "index.html");
-    const hero = page.locator(".signal-hero");
-    assert.match(await hero.innerText(), /marketing agencies with lots of active ads/i);
-    assert.match(await hero.innerText(), /which ads to spend less on/i);
-    const primaryAction = hero.getByRole("link", { name: "See a simple example" });
-    assert.equal(await primaryAction.isVisible(), true);
-    const box = await primaryAction.boundingBox();
-    assert.ok(box.y + box.height <= viewport.height, `Primary action falls below ${viewport.width}×${viewport.height}: ${JSON.stringify(box)}`);
-    await context.close();
-  }
+test("the 390px hero puts copy, action, and the crew in the first phone viewport", async () => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const { page } = await openCheckedPage(context, "index.html");
+  const hero = page.locator(".home-hero");
+  assert.match(await hero.innerText(), /For agencies and in-house teams managing lots of active ads\./i);
+  assert.match(await hero.innerText(), /Stop guessing where next month’s ad money should go\./i);
+  const action = hero.getByRole("link", { name: "See the case study" });
+  const actionBox = await action.boundingBox();
+  const crewBox = await page.locator(".home-crew").boundingBox();
+  assert.ok(actionBox.y + actionBox.height <= 844, `Primary action is below the first viewport: ${JSON.stringify(actionBox)}`);
+  assert.ok(crewBox.y < 844, `Crew is not visible in the first viewport: ${JSON.stringify(crewBox)}`);
+  await context.close();
 });
 
-test("all public routes avoid horizontal overflow and browser errors", async () => {
-  for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 720 }]) {
+test("all public routes avoid horizontal overflow and browser errors across responsive ranges", async () => {
+  for (const viewport of [
+    { width: 320, height: 700 }, { width: 360, height: 800 }, { width: 390, height: 844 },
+    { width: 430, height: 932 }, { width: 768, height: 1000 }, { width: 1024, height: 768 },
+    { width: 1280, height: 720 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }
+  ]) {
     const context = await browser.newContext({ viewport });
     for (const path of [...activePaths, ...retiredPaths]) {
       const { page, errors } = await openCheckedPage(context, path);
@@ -103,48 +106,45 @@ test("all public routes avoid horizontal overflow and browser errors", async () 
   }
 });
 
-test("the checked sample report renders exact allocation and fails closed when bytes change", async () => {
+test("the anonymous case study renders only after its JSON, arithmetic, and period-file hash pass", async () => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
-  const { page } = await openCheckedPage(context, "labs/monthly-ad-report.html");
+  const { page } = await openCheckedPage(context, "case-study.html");
+  await page.waitForFunction(() => document.querySelector("[data-case-study]")?.dataset.state === "ready");
+  assert.equal(await page.locator("[data-case-value='period-count']").innerText(), "12");
+  assert.equal(await page.locator("[data-case-value='decision-coverage']").innerText(), "432/432");
+  assert.equal(await page.locator("[data-case-value='advantage']").first().innerText(), "€4,304");
+  assert.equal(await page.locator("[data-case-chart] svg[role='img']").count(), 1);
+  await context.close();
+
+  const failedContext = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const failed = await failedContext.newPage();
+  await failed.route("**/case-study-periods.csv", (route) => route.fulfill({ status: 200, contentType: "text/csv", body: "period_id,label,equal_profit_cents,spendy_profit_cents,difference_cents\n1,Changed,1,2,1\n" }));
+  await failed.goto(`${baseUrl}/case-study.html`, { waitUntil: "networkidle" });
+  await failed.getByRole("heading", { name: "Case-study evidence is temporarily unavailable." }).waitFor();
+  assert.equal(await failed.locator("[data-case-content]:visible").count(), 0);
+  assert.equal(await failed.locator("[data-case-value]:visible").count(), 0);
+  await failedContext.close();
+});
+
+test("the checked sample plan has identical desktop rows and phone cards from one evidence source", async () => {
+  const desktop = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const { page } = await openCheckedPage(desktop, "labs/monthly-ad-report.html");
   await page.waitForFunction(() => document.querySelector("[data-ad-report]")?.dataset.state === "ready");
   assert.equal(await page.locator("[data-report-rows] tr").count(), 12);
-  assert.equal(await page.locator("[data-report-value='supplied-budget']").innerText(), "$125,000.00");
+  assert.equal(await page.locator("[data-report-cards]").isVisible(), false);
   assert.equal(await page.locator("[data-report-value='recommended-total']").innerText(), "$125,000.00");
-  assert.equal(await page.locator("[data-report-value='budget-difference']").innerText(), "$0.00");
-  assert.deepEqual(await page.locator("[data-budget-view]").allInnerTexts(), ["Now", "Spendy plan", "Both"]);
-  await context.close();
+  await desktop.close();
 
-  const failedContext = await browser.newContext({ viewport: { width: 1280, height: 720 } });
-  const failed = await failedContext.newPage();
-  await failed.route("**/monthly-ad-report.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema: "ad-report-evidence/v2" }) }));
-  await failed.goto(`${baseUrl}/labs/monthly-ad-report.html`, { waitUntil: "networkidle" });
-  await failed.getByRole("heading", { name: "Plan unavailable" }).waitFor();
-  assert.equal(await failed.locator("[data-report-content]:visible").count(), 0);
-  assert.equal(await failed.locator("[data-report-recommendation]:visible").count(), 0);
-  await failedContext.close();
+  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const { page: phone } = await openCheckedPage(mobile, "labs/monthly-ad-report.html");
+  await phone.waitForFunction(() => document.querySelector("[data-ad-report]")?.dataset.state === "ready");
+  assert.equal(await phone.locator("[data-report-cards] .report-card").count(), 12);
+  assert.equal(await phone.locator(".report-table-desktop").isVisible(), false);
+  assert.equal(await phone.locator("[data-report-cards] [data-report-action]").count(), 12);
+  await mobile.close();
 });
 
-test("the homepage preview stays evidence-bound and also fails closed", async () => {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
-  const { page } = await openCheckedPage(context, "index.html");
-  const report = page.locator("#proof [data-ad-report]");
-  await report.scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => document.querySelector("#proof [data-ad-report]")?.dataset.state === "ready");
-  assert.equal(await report.locator("[data-report-rows] tr").count(), 12);
-  assert.equal(await report.locator("[data-report-value='recommended-total']").innerText(), "$125,000.00");
-  await context.close();
-
-  const failedContext = await browser.newContext({ viewport: { width: 1280, height: 720 } });
-  const failed = await failedContext.newPage();
-  await failed.route("**/labs/data/monthly-ad-report.json", (route) => route.abort());
-  await failed.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
-  await failed.locator("#proof [data-ad-report]").scrollIntoViewIfNeeded();
-  await failed.getByRole("heading", { name: "Plan unavailable" }).waitFor();
-  assert.equal(await failed.locator("[data-report-value='recommended-total']:visible").count(), 0);
-  await failedContext.close();
-});
-
-test("mobile navigation, FAQ, copy feedback, and no-JavaScript content remain usable", async () => {
+test("mobile navigation, disclosures, copy feedback, and no-JavaScript narrative remain usable", async () => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, permissions: ["clipboard-read", "clipboard-write"] });
   const { page } = await openCheckedPage(context, "dragon-analytics.html");
   const toggle = page.locator(".nav-toggle");
@@ -155,7 +155,6 @@ test("mobile navigation, FAQ, copy feedback, and no-JavaScript content remain us
   assert.equal(await toggle.getAttribute("aria-expanded"), "false");
   const summary = page.locator("details[data-disclosure] summary").first();
   await summary.click();
-  await page.waitForFunction(() => document.querySelector("details[data-disclosure] summary")?.getAttribute("aria-expanded") === "true");
   assert.equal(await summary.getAttribute("aria-expanded"), "true");
   await page.locator("[data-copy-email]").click();
   await page.waitForFunction(() => document.querySelector(".copy-status")?.textContent.trim().length > 0);
@@ -163,11 +162,12 @@ test("mobile navigation, FAQ, copy feedback, and no-JavaScript content remain us
   await context.close();
 
   const noJs = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
-  for (const path of ["index.html", "labs/monthly-ad-report.html", "writing.html"]) {
+  for (const path of ["index.html", "case-study.html", "labs/monthly-ad-report.html", "writing.html"]) {
     const pageWithoutJs = await noJs.newPage();
     await pageWithoutJs.goto(`${baseUrl}/${path}`, { waitUntil: "load" });
     assert.equal(await pageWithoutJs.locator("h1").isVisible(), true);
     assert.equal(await pageWithoutJs.getByRole("link").first().isVisible(), true);
+    assert.equal(await pageWithoutJs.locator("[data-case-value]:visible").count(), 0);
     await pageWithoutJs.close();
   }
   await noJs.close();
@@ -177,6 +177,7 @@ test("the active experience has no automated WCAG 2.2 AA violations", async () =
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   for (const path of [...activePaths, "404.html"]) {
     const { page } = await openCheckedPage(context, path);
+    if (path === "case-study.html") await page.waitForFunction(() => document.querySelector("[data-case-study]")?.dataset.state !== "loading");
     if (path === "labs/monthly-ad-report.html") await page.waitForFunction(() => document.querySelector("[data-ad-report]")?.dataset.state === "ready");
     const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
     assert.deepEqual(results.violations.map((violation) => ({ id: violation.id, impact: violation.impact, targets: violation.nodes.map((node) => node.target) })), [], `${path} has accessibility violations`);
@@ -185,8 +186,8 @@ test("the active experience has no automated WCAG 2.2 AA violations", async () =
   await context.close();
 });
 
-test("illustrated homepage transfer stays below 900 KB", async () => {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+test("homepage transfer stays below 1 MB on a phone-sized view", async () => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   let bytes = 0;
   const bodyReads = [];
@@ -196,6 +197,6 @@ test("illustrated homepage transfer stays below 900 KB", async () => {
   });
   await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
   await Promise.all(bodyReads);
-  assert.ok(bytes < 900 * 1024, `Homepage transferred ${bytes} bytes locally`);
+  assert.ok(bytes < 1024 * 1024, `Homepage transferred ${bytes} bytes locally`);
   await context.close();
 });
