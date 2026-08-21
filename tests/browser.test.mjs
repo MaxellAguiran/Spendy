@@ -138,7 +138,7 @@ test("public-facing pages explain the work without unexplained analyst jargon", 
 });
 
 
-test("the homepage presents one flagship case before work, founder evidence, research, and contact", async () => {
+test("the homepage presents one flagship case before work, founder evidence, and contact", async () => {
   for (const expected of [
     { viewport: { width: 390, height: 844 }, maxHeight: 4800 },
     { viewport: { width: 1280, height: 720 }, maxHeight: 4200 }
@@ -148,15 +148,13 @@ test("the homepage presents one flagship case before work, founder evidence, res
     const structure = await page.evaluate(() => ({
       height: document.documentElement.scrollHeight,
       ids: [...document.querySelectorAll("main > section")].map((section) => section.id),
-      positions: Object.fromEntries(["proof", "services", "about", "research", "contact"].map((id) => [id, document.getElementById(id)?.offsetTop]))
+      positions: Object.fromEntries(["proof", "services", "about", "contact"].map((id) => [id, document.getElementById(id)?.offsetTop]))
     }));
-    assert.deepEqual(structure.ids, ["", "proof", "services", "about", "research", "contact"]);
+    assert.deepEqual(structure.ids, ["", "proof", "services", "about", "contact"]);
     assert.ok(structure.height < expected.maxHeight, `Homepage is still too long at ${expected.viewport.width}px: ${structure.height}px`);
     assert.ok(structure.positions.proof < structure.positions.about);
     assert.ok(structure.positions.proof < structure.positions.services);
     assert.ok(structure.positions.services < structure.positions.about);
-    assert.ok(structure.positions.about < structure.positions.research);
-    assert.ok(structure.positions.research < structure.positions.contact);
     if (expected.viewport.width === 1280) {
       assert.ok(structure.positions.proof < 760, `The flagship case does not approach the first desktop viewport: ${structure.positions.proof}px`);
     }
@@ -169,6 +167,33 @@ test("the homepage presents one flagship case before work, founder evidence, res
     assert.equal(await page.locator("#proof a[href='labs/churn-risk.html']").count(), 0, "Churn must not compete with the flagship case");
     await context.close();
   }
+});
+
+
+test("consultancy pages keep equity research behind one dedicated navigation tab", async () => {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const consultancyPages = ["index.html", "dragon-analytics.html", "labs/monthly-ad-report.html", "labs/marketing-allocation.html", "labs/churn-risk.html", "404.html"];
+  const articleRoutes = ["firstservice.html", "ibex.html", "tamboran.html", "rex.html", "nordic-american-tankers.html"];
+
+  for (const path of consultancyPages) {
+    const { page } = await openCheckedPage(context, path);
+    const mainText = await page.locator("main").innerText();
+    assert.doesNotMatch(mainText, /equity research|company research|price target|valuation|rating\b/i, `${path} mixes equity research into the consultancy`);
+    assert.equal(await page.locator("main #research, main .research-evidence, main .research-proof-list").count(), 0, `${path} embeds a research collection`);
+    for (const route of articleRoutes) {
+      assert.equal(await page.locator(`a[href$='${route}']`).count(), 0, `${path} links directly to ${route}`);
+    }
+    const researchTab = page.locator("nav[aria-label='Primary navigation'] a", { hasText: "Research" });
+    assert.equal(await researchTab.count(), 1, `${path} must expose one Research tab`);
+    assert.match(await researchTab.getAttribute("href"), /writing\.html$/, `${path} Research tab must open the dedicated hub`);
+    assert.equal(await page.locator("a[href$='writing.html']").count(), 1, `${path} must keep research in that tab only`);
+    await page.close();
+  }
+
+  const { page: hub } = await openCheckedPage(context, "writing.html");
+  assert.equal(await hub.locator("#reports a[href$='.html']").count(), 5, "The Research tab must retain all five reports");
+  await hub.close();
+  await context.close();
 });
 
 

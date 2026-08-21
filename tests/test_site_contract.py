@@ -151,6 +151,37 @@ class SiteContractTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, combined)
 
+    def test_consultancy_surfaces_do_not_publish_equity_research_content(self):
+        """Putting reports, ratings, or article links back on a sales page must fail."""
+        article_routes = {f'href="{page}"' for page in ARTICLE_PAGES}
+        prohibited_copy = (
+            "equity research",
+            "company research",
+            "price target",
+            "valuation",
+            "a second body of evidence",
+        )
+        for page in (
+            "index.html",
+            "dragon-analytics.html",
+            "labs/monthly-ad-report.html",
+            "labs/marketing-allocation.html",
+            "labs/churn-risk.html",
+            "404.html",
+        ):
+            source = (ROOT / page).read_text(encoding="utf-8").casefold()
+            with self.subTest(page=page):
+                self.assertNotIn('id="research"', source)
+                self.assertNotIn('class="section research-evidence"', source)
+                for phrase in prohibited_copy:
+                    self.assertNotIn(phrase, source)
+                for link in article_routes:
+                    self.assertNotIn(link, source)
+
+        research = (ROOT / "writing.html").read_text(encoding="utf-8")
+        for page in ARTICLE_PAGES:
+            self.assertIn(f'href="{page}"', research)
+
     def test_discovery_copy_and_primary_navigation_match_the_current_offer(self):
         """Old service positioning must not survive in previews or primary navigation."""
         homepage = (ROOT / "index.html").read_text(encoding="utf-8")
