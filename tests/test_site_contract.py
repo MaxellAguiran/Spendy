@@ -1,5 +1,4 @@
 import json
-import re
 import struct
 import unittest
 from html.parser import HTMLParser
@@ -8,12 +7,10 @@ from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PUBLIC_PAGES = [
-    "index.html",
-    "dragon-analytics.html",
+ACTIVE_SERVICE_PAGES = ["index.html", "dragon-analytics.html", "labs/monthly-ad-report.html"]
+RETIRED_PAGES = [
     "writing.html",
     "404.html",
-    "labs/monthly-ad-report.html",
     "labs/marketing-allocation.html",
     "labs/churn-risk.html",
     "ibex.html",
@@ -22,7 +19,7 @@ PUBLIC_PAGES = [
     "rex.html",
     "nordic-american-tankers.html",
 ]
-ARTICLE_PAGES = ["ibex.html", "firstservice.html", "tamboran.html", "rex.html", "nordic-american-tankers.html"]
+PUBLIC_PAGES = [*ACTIVE_SERVICE_PAGES, *RETIRED_PAGES]
 
 
 class ContractParser(HTMLParser):
@@ -113,124 +110,106 @@ class SiteContractTests(unittest.TestCase):
                         target = parse_page(candidate.resolve().relative_to(ROOT))
                         self.assertIn(unquote(parts.fragment), target.ids, f"Missing fragment in {candidate}")
 
-    def test_no_private_project_or_platform_names_are_published(self):
-        """Accidentally exposing a private project name must fail."""
-        prohibited = ["WorldQuant", "Seeking Alpha", "Football Pro", "Forex Prophet", "submission identifier"]
-        corpus = "\n".join((ROOT / page).read_text(encoding="utf-8") for page in PUBLIC_PAGES)
-        for phrase in prohibited:
-            self.assertNotIn(phrase.casefold(), corpus.casefold())
+    def test_spendy_public_brand_and_route_contract(self):
+        """A returned personal or broad-portfolio surface must fail before release."""
+        prohibited = (
+            "maxell aguiran",
+            "maxell agustin",
+            "dragon analytics",
+            "equity research",
+            "company research",
+            "customer churn",
+            "churn prediction",
+            "customer retention",
+            "seeking alpha",
+        )
+        for page in PUBLIC_PAGES:
+            source = (ROOT / page).read_text(encoding="utf-8").casefold()
+            with self.subTest(page=page):
+                self.assertIn("spendy", source)
+                for phrase in prohibited:
+                    self.assertNotIn(phrase, source)
 
-    def test_contact_is_direct_and_not_a_mailto_form_disguised_as_submission(self):
-        """Reintroducing the old data-collecting mailto form must fail."""
+        for page in ACTIVE_SERVICE_PAGES:
+            source = (ROOT / page).read_text(encoding="utf-8").casefold()
+            with self.subTest(page=page):
+                self.assertIn("machine-learning", source)
+                self.assertIn("fixed", source)
+                self.assertIn("budget", source)
+
+        for page in RETIRED_PAGES:
+            parser = parse_page(page)
+            source = (ROOT / page).read_text(encoding="utf-8").casefold()
+            with self.subTest(page=page):
+                self.assertTrue(any("noindex" in directive.casefold() for directive in parser.robots))
+                self.assertIn("this route is no longer published", source)
+                self.assertIn("spendy", source)
+                self.assertTrue(any(link.endswith("dragon-analytics.html") for link in parser.links))
+                self.assertTrue(any(link.endswith("monthly-ad-report.html") for link in parser.links))
+
+        sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
+        for page in ACTIVE_SERVICE_PAGES:
+            canonical = parse_page(page).canonical[0]
+            self.assertIn(f"<loc>{canonical}</loc>", sitemap)
+        for page in RETIRED_PAGES:
+            canonical = parse_page(page).canonical[0]
+            self.assertNotIn(f"<loc>{canonical}</loc>", sitemap)
+
+        cards = json.loads((ROOT / "tools/social-cards.json").read_text(encoding="utf-8"))
+        self.assertEqual({card["output"] for card in cards}, {"home.png", "service.png", "monthly-ad-report.png"})
+        for card in cards:
+            self.assertIn("spendy", " ".join(str(value) for value in card.values()).casefold())
+
+    def test_contact_is_direct_without_visible_personal_branding(self):
+        """The service can start by email without reintroducing a named founder or web form."""
         for page in ("index.html", "dragon-analytics.html"):
             parser = parse_page(page)
+            source = (ROOT / page).read_text(encoding="utf-8").casefold()
             self.assertEqual(parser.forms, 0)
             self.assertIn("mailto:maxell.aguiran@gmail.com", " ".join(parser.links))
+            self.assertNotIn(">maxell", source)
 
-    def test_current_sales_surfaces_state_the_monthly_ad_report_offer(self):
-        """The sales pages must name the buyer, inputs, monthly decision, and exact deliverable."""
-        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
-        work_page = (ROOT / "dragon-analytics.html").read_text(encoding="utf-8")
-        combined = f"{homepage}\n{work_page}".casefold()
+    def test_current_sales_surfaces_state_the_machine_learning_budget_offer(self):
+        """The active sales pages must name the buyer, forecast, input budget, and allocation output."""
+        combined = "\n".join((ROOT / page).read_text(encoding="utf-8") for page in ACTIVE_SERVICE_PAGES).casefold()
         for phrase in (
             "marketing agencies",
+            "machine-learning",
             "meta ads",
             "google ads",
             "tiktok ads",
             "shopify",
-            "fixed monthly ad budget",
+            "fixed",
+            "budget",
+            "break-even",
             "cut",
             "reduce",
             "keep",
             "increase",
-            "down to the cent",
+            "exact",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, combined)
-        for phrase in ("churn prediction", "customer retention", "accounts to contact"):
+        for phrase in ("guaranteed", "profitability", "causal incrementality", "platform partner"):
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, combined)
 
-    def test_consultancy_surfaces_do_not_publish_equity_research_content(self):
-        """Putting reports, ratings, or article links back on a sales page must fail."""
-        article_routes = {f'href="{page}"' for page in ARTICLE_PAGES}
-        prohibited_copy = (
-            "equity research",
-            "company research",
-            "price target",
-            "valuation",
-            "a second body of evidence",
-        )
-        for page in (
-            "index.html",
-            "dragon-analytics.html",
-            "labs/monthly-ad-report.html",
-            "labs/marketing-allocation.html",
-            "labs/churn-risk.html",
-            "404.html",
-        ):
-            source = (ROOT / page).read_text(encoding="utf-8").casefold()
+    def test_primary_navigation_leads_only_to_the_active_service(self):
+        """A navigation link to a retired route would contradict the single-service focus."""
+        for page in ACTIVE_SERVICE_PAGES:
+            parser = parse_page(page)
             with self.subTest(page=page):
-                self.assertNotIn('id="research"', source)
-                self.assertNotIn('class="section research-evidence"', source)
-                for phrase in prohibited_copy:
-                    self.assertNotIn(phrase, source)
-                for link in article_routes:
-                    self.assertNotIn(link, source)
-
-        research = (ROOT / "writing.html").read_text(encoding="utf-8")
-        for page in ARTICLE_PAGES:
-            self.assertIn(f'href="{page}"', research)
-
-    def test_discovery_copy_and_primary_navigation_match_the_current_offer(self):
-        """Old service positioning must not survive in previews or primary navigation."""
-        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
-        work_page = (ROOT / "dragon-analytics.html").read_text(encoding="utf-8")
-        report_page = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
-        cards = {card["output"]: card for card in json.loads((ROOT / "tools/social-cards.json").read_text())}
-
-        self.assertIn("Know which ads to cut—and exactly where next month's budget should go.", homepage)
-        self.assertIn("Monthly ad forecasting and exact budget plans for marketing agencies.", work_page)
-        self.assertIn("Which ads should receive next month's fixed budget?", report_page)
-        self.assertEqual(
-            cards["home.png"]["title"],
-            "Know which ads to cut—and exactly where next month's budget should go.",
-        )
-        self.assertEqual(
-            cards["dragon-analytics.png"]["title"],
-            "Monthly ad forecasting and exact budget plans for marketing agencies.",
-        )
-        self.assertEqual(
-            cards["monthly-ad-report.png"]["title"],
-            "Which ads should receive next month's fixed budget?",
-        )
-
-        for page in ("index.html", "dragon-analytics.html", "writing.html", "404.html"):
-            source = (ROOT / page).read_text(encoding="utf-8")
-            with self.subTest(page=page):
-                self.assertIn(">Work</a>", source)
-                self.assertIn(">Sample report</a>", source)
-                self.assertIn(">Research</a>", source)
-                self.assertIn(">About</a>", source)
-                self.assertIn(">Request a report</a>", source)
-                self.assertNotIn(">Case study</a>", source)
-                self.assertNotIn(">Start a conversation</a>", source)
-
-    def test_legacy_labs_are_preserved_but_not_sold_as_current_services(self):
-        """Old examples may remain available without confusing the current offer."""
-        churn = (ROOT / "labs/churn-risk.html").read_text(encoding="utf-8")
-        marketing = (ROOT / "labs/marketing-allocation.html").read_text(encoding="utf-8")
-        self.assertIn('name="robots" content="noindex,follow"', churn)
-        self.assertIn("Older generated analytics demonstration", churn)
-        self.assertIn("Earlier channel-level generated demonstration", marketing)
-        for page in ("index.html", "dragon-analytics.html"):
-            source = (ROOT / page).read_text(encoding="utf-8")
-            self.assertNotIn('href="labs/churn-risk.html"', source)
+                self.assertTrue(any(link.endswith("dragon-analytics.html") for link in parser.links))
+                self.assertTrue(any(link.endswith("monthly-ad-report.html") for link in parser.links))
+                self.assertNotIn("writing.html", parser.links)
+                for retired in RETIRED_PAGES:
+                    if retired != page:
+                        self.assertNotIn(retired, parser.links)
 
     def test_homepage_case_values_are_rendered_from_checked_evidence(self):
         """Hard-coding favorable report values would bypass the fail-closed renderer."""
         homepage = (ROOT / "index.html").read_text(encoding="utf-8")
-        report = json.loads((ROOT / "labs/data/monthly-ad-report.json").read_text())
+        report = json.loads((ROOT / "labs/data/monthly-ad-report.json").read_text(encoding="utf-8"))
         self.assertIn('data-evidence-src="labs/data/monthly-ad-report.json"', homepage)
         self.assertIn('data-dataset-src="labs/data/monthly-ad-report.csv"', homepage)
         self.assertIn("data-load-deferred", homepage)
@@ -239,42 +218,21 @@ class SiteContractTests(unittest.TestCase):
         self.assertNotIn(f">{report['metrics']['maeReductionPercent']:.2f}%<", homepage)
         self.assertNotIn(f"${report['budget']['suppliedMonthlyBudgetCents'] / 100:,.2f}", homepage)
 
-    def test_articles_expose_article_json_ld_and_source_review_state(self):
-        """Removing article identity or disguising unverified source links must fail."""
-        for page in ARTICLE_PAGES:
-            source = (ROOT / page).read_text(encoding="utf-8")
-            parser = parse_page(page)
-            objects = [json.loads(value) for value in parser.json_ld]
-            self.assertTrue(any(value.get("@type") == "Article" for value in objects))
-            self.assertIn('data-source-status="review"', source)
-            self.assertIn("data-reading-progress", source)
-            self.assertIn('class="article-toc"', source)
-
-    def test_labs_disclose_generated_non_client_status_before_results(self):
-        """A chart appearing before the plain-language non-client disclosure must fail."""
-        required = "Example built from generated data—not client work."
-        for page in ("labs/marketing-allocation.html", "labs/churn-risk.html"):
-            source = (ROOT / page).read_text(encoding="utf-8")
-            self.assertIn(required, source)
-            self.assertLess(source.index(required), source.index('id="results"'))
-
+    def test_monthly_report_discloses_synthetic_status_before_checked_results(self):
+        """A favorable sample must disclose generated data before any released values."""
         report = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
-        report_disclosure = "Generated example using synthetic advertising and sales data. It shows the report format and testing standard—not client performance."
-        self.assertIn(report_disclosure, report)
-        self.assertLess(report.index(report_disclosure), report.index("data-report-content"))
+        disclosure_start = "Generated example using synthetic advertising and sales data."
+        disclosure_end = "It shows the report format and testing standard—not client performance."
+        self.assertIn(disclosure_start, report)
+        self.assertIn(disclosure_end, report)
+        self.assertLess(report.index(disclosure_start), report.index("data-report-content"))
 
-    def test_profile_article_and_dataset_structured_data_match_visible_page_types(self):
-        """Mislabeling a lab as client work or losing the canonical author entity must fail."""
+    def test_structured_data_matches_the_single_service(self):
+        """The homepage must describe Spendy as an organization, not a founder profile or research publisher."""
         homepage_objects = [json.loads(value) for value in parse_page("index.html").json_ld]
-        self.assertEqual(homepage_objects[0]["@type"], "ProfilePage")
-        self.assertEqual(homepage_objects[0]["mainEntity"]["@type"], "Person")
-        self.assertNotIn("affiliation", homepage_objects[0]["mainEntity"])
-        for page in ("labs/marketing-allocation.html", "labs/churn-risk.html"):
-            objects = [json.loads(value) for value in parse_page(page).json_ld]
-            dataset = next(value for value in objects if value.get("@type") == "Dataset")
-            self.assertIn("generated", dataset["description"].casefold())
-            self.assertIn("non-client", dataset["description"].casefold())
-            self.assertIn("not a client engagement", dataset["isBasedOn"].casefold())
+        self.assertEqual(homepage_objects[0]["@type"], "WebPage")
+        self.assertEqual(homepage_objects[0]["mainEntity"]["@type"], "Organization")
+        self.assertEqual(homepage_objects[0]["mainEntity"]["name"], "Spendy")
         report_objects = [json.loads(value) for value in parse_page("labs/monthly-ad-report.html").json_ld]
         report_dataset = next(value for value in report_objects if value.get("@type") == "Dataset")
         report_description = report_dataset["description"].casefold()
@@ -283,19 +241,16 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("not client performance", report_description)
 
     def test_sitemap_robots_and_social_card_dimensions_are_launch_ready(self):
-        """A missing canonical route, root sitemap reference, or wrongly sized preview must fail."""
+        """Only active routes and current social cards may be discoverable."""
         sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
         robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
         self.assertIn("https://maxellaguiran.github.io/sitemap.xml", robots)
-        for page in PUBLIC_PAGES:
-            if page == "404.html":
-                continue
-            parser = parse_page(page)
-            canonical = parser.canonical[0]
-            if any("noindex" in directive.casefold() for directive in parser.robots):
-                self.assertNotIn(f"<loc>{canonical}</loc>", sitemap)
-            else:
-                self.assertIn(f"<loc>{canonical}</loc>", sitemap)
+        for page in ACTIVE_SERVICE_PAGES:
+            self.assertIn(f"<loc>{parse_page(page).canonical[0]}</loc>", sitemap)
+        for page in RETIRED_PAGES:
+            self.assertNotIn(f"<loc>{parse_page(page).canonical[0]}</loc>", sitemap)
+        social_images = {image.name for image in (ROOT / "assets" / "social").glob("*.png")}
+        self.assertEqual(social_images, {"home.png", "service.png", "monthly-ad-report.png"})
         for image in (ROOT / "assets" / "social").glob("*.png"):
             payload = image.read_bytes()[:24]
             self.assertEqual(payload[:8], b"\x89PNG\r\n\x1a\n")

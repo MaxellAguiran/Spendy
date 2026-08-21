@@ -1,16 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs>
-    <linearGradient id="f" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f0483c"/><stop offset="100%" stop-color="#9e0f16"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="13" fill="#0f0e0e"/>
-  <g transform="translate(32,34) scale(.29) translate(-98,-64)">
-    <path d="M118 52L142 46L192 8L150 62z" fill="#9e0f16"/>
-    <path d="M98 58L120 52L166 6L128 62z" fill="#c2151d"/>
-    <path d="M20 100L64 80L84 60L132 46L176 68L158 112L112 120L46 112z" fill="url(#f)"/>
-    <path d="M84 60L132 46L176 68L124 82z" fill="#ff6152" opacity=".5"/>
-    <path d="M24 102L114 108L108 118L30 110z" fill="#6d0b11"/>
-    <path d="M74 80L100 74L94 90z" fill="#0f0e0e"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><linearGradient id="s" x1="12" y1="12" x2="84" y2="84" gradientUnits="userSpaceOnUse"><stop stop-color="#d9ff51"/><stop offset="1" stop-color="#9b7bff"/></linearGradient></defs><rect width="96" height="96" rx="27" fill="#101b18"/><path d="M20 64c12 0 15-32 28-32 9 0 11 18 20 18 4 0 7-3 8-7" fill="none" stroke="url(#s)" stroke-width="11" stroke-linecap="round"/><circle cx="76" cy="43" r="7" fill="#d9ff51"/></svg>

@@ -2,7 +2,7 @@ document.documentElement.classList.add("js");
 
 
 function setupNavigation() {
-  const toggle = document.querySelector("[data-nav-toggle]");
+  const toggle = document.querySelector("[data-nav-toggle], .nav-toggle");
   const navigation = toggle && document.getElementById(toggle.getAttribute("aria-controls"));
   if (!toggle || !navigation) return;
 
