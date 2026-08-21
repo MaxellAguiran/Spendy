@@ -213,6 +213,7 @@ test("the homepage report renderer exposes checked ad values without duplicating
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const { page } = await openCheckedPage(context, "index.html");
   const report = page.locator("#proof [data-ad-report]");
+  await report.evaluate((element) => element.scrollIntoView({ block: "start" }));
   await page.waitForFunction(() => document.querySelector("#proof [data-ad-report]")?.dataset.state === "ready");
   assert.equal(await report.locator("[data-report-rows] tr").count(), 12);
   assert.equal(await report.locator("[data-report-value='supplied-budget']").innerText(), "$125,000.00");
@@ -235,6 +236,7 @@ test("the homepage report renderer fails closed on invalid or unavailable eviden
     const page = await context.newPage();
     await intercept(page);
     await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
+    await page.locator("#proof [data-ad-report]").evaluate((element) => element.scrollIntoView({ block: "start" }));
     await page.getByRole("heading", { name: "Evidence unavailable" }).waitFor();
     assert.equal(await page.locator("[data-series='recommended']:visible").count(), 0);
     assert.equal(await page.locator("[data-report-value='recommended-total']:visible").count(), 0);
@@ -258,6 +260,9 @@ test("the monthly report leads with the fixed-budget decision and renders checke
   assert.deepEqual(await page.locator("[data-budget-view]").allInnerTexts(), ["Current", "Recommended", "Compare"]);
   assert.match(await page.locator("#check [data-report-value='baseline-mae']").innerText(), /^\d+\.\d{4}$/);
   assert.match(await page.locator("#check [data-report-value='model-mae']").innerText(), /^\d+\.\d{4}$/);
+  const forecastText = await page.locator("[data-report-rows] tr").first().locator("td").nth(2).innerText();
+  assert.match(forecastText, /per \$1 spent.*break-even/i);
+  assert.doesNotMatch(forecastText, /ROAS/i);
   const overflowingAdNames = await page.locator("[data-report-rows] th[scope='row']").evaluateAll((cells) =>
     cells.filter((cell) => cell.scrollWidth > cell.clientWidth + 1).map((cell) => cell.textContent)
   );

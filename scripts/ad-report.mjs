@@ -338,11 +338,14 @@ function renderRows(root, view) {
   view.ads.forEach((ad) => {
     const row = document.createElement("tr");
     row.dataset.reportAd = ad.adId;
+    const breakEvenRelation = ad.forecastHigh < ad.breakEvenRoas
+      ? "below"
+      : ad.forecastLow > ad.breakEvenRoas ? "above" : "spans";
     const values = [
       ad.platform,
       `${ad.adName} · ${ad.adId}`,
       moneyFromCents(ad.currentSpendCents),
-      `${number(ad.forecastLow)}–${number(ad.forecastHigh)} forecast ROAS · ${number(ad.breakEvenRoas)} break-even`,
+      `Forecast return: $${number(ad.forecastLow)}–$${number(ad.forecastHigh)} per $1 spent · ${breakEvenRelation} the $${number(ad.breakEvenRoas)} break-even`,
       ad.action,
       ad.recommendedSpendCents === null ? "Withheld" : moneyFromCents(ad.recommendedSpendCents)
     ];
@@ -481,7 +484,22 @@ async function loadReport(root) {
 
 
 export async function loadAdReports() {
-  await Promise.all([...document.querySelectorAll("[data-ad-report]")].map(loadReport));
+  const loads = [...document.querySelectorAll("[data-ad-report]")].map((root) => {
+    if (!root.hasAttribute("data-load-deferred")) return loadReport(root);
+    return new Promise((resolve) => {
+      if (typeof window.IntersectionObserver !== "function") {
+        loadReport(root).finally(resolve);
+        return;
+      }
+      const observer = new window.IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        loadReport(root).finally(resolve);
+      }, { rootMargin: "0px 0px -45% 0px" });
+      observer.observe(root);
+    });
+  });
+  await Promise.all(loads);
 }
 
 

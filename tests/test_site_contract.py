@@ -202,6 +202,7 @@ class SiteContractTests(unittest.TestCase):
         report = json.loads((ROOT / "labs/data/monthly-ad-report.json").read_text())
         self.assertIn('data-evidence-src="labs/data/monthly-ad-report.json"', homepage)
         self.assertIn('data-dataset-src="labs/data/monthly-ad-report.csv"', homepage)
+        self.assertIn("data-load-deferred", homepage)
         self.assertNotIn(f"{report['baseline']['metrics']['mae']:.4f}", homepage)
         self.assertNotIn(f"{report['model']['metrics']['mae']:.4f}", homepage)
         self.assertNotIn(f">{report['metrics']['maeReductionPercent']:.2f}%<", homepage)

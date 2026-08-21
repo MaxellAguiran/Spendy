@@ -1,8 +1,8 @@
 # Dragon Analytics Monthly Ad Forecasting Redesign
 
-**Status:** Approved direction, ready for implementation planning  
-**Date:** 2026-08-21  
-**Branch:** `codex/quietly-exceptional-redesign`  
+**Status:** Approved direction, ready for implementation planning
+**Date:** 2026-08-21
+**Branch:** `codex/quietly-exceptional-redesign`
 **Publication boundary:** Local preview only until Maxell approves publication
 
 ## 1. Executive decision
