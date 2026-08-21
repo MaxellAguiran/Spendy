@@ -85,7 +85,7 @@ test("service pages are clear and actionable in the opening viewport", async () 
     const primaryAction = hero.getByRole("link", { name: "Inspect the sample" });
     assert.equal(await primaryAction.isVisible(), true);
     const box = await primaryAction.boundingBox();
-    assert.ok(box.y + box.height <= viewport.height, `Primary action falls below ${viewport.width}×${viewport.height}`);
+    assert.ok(box.y + box.height <= viewport.height, `Primary action falls below ${viewport.width}×${viewport.height}: ${JSON.stringify(box)}`);
     await context.close();
   }
 });
@@ -186,7 +186,7 @@ test("the active experience has no automated WCAG 2.2 AA violations", async () =
   await context.close();
 });
 
-test("initial homepage transfer stays below 500 KB", async () => {
+test("illustrated homepage transfer stays below 900 KB", async () => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const page = await context.newPage();
   let bytes = 0;
@@ -197,6 +197,6 @@ test("initial homepage transfer stays below 500 KB", async () => {
   });
   await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
   await Promise.all(bodyReads);
-  assert.ok(bytes < 500 * 1024, `Homepage transferred ${bytes} bytes locally`);
+  assert.ok(bytes < 900 * 1024, `Homepage transferred ${bytes} bytes locally`);
   await context.close();
 });

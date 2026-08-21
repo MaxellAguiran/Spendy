@@ -218,6 +218,15 @@ class SiteContractTests(unittest.TestCase):
         self.assertNotIn(f">{report['metrics']['maeReductionPercent']:.2f}%<", homepage)
         self.assertNotIn(f"${report['budget']['suppliedMonthlyBudgetCents'] / 100:,.2f}", homepage)
 
+    def test_homepage_has_the_optimized_cartoon_planner_asset(self):
+        """The friendly hero illustration must be real, accessible, and kept within the page asset budget."""
+        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
+        illustration = ROOT / "assets" / "spendy-planner-hero.png"
+        self.assertIn('src="assets/spendy-planner-hero.png"', homepage)
+        self.assertIn('alt="Illustrated strategist with a purple marker, laptop, and hand-drawn budget charts"', homepage)
+        self.assertTrue(illustration.is_file())
+        self.assertLess(illustration.stat().st_size, 700 * 1024)
+
     def test_monthly_report_discloses_synthetic_status_before_checked_results(self):
         """A favorable sample must disclose generated data before any released values."""
         report = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
