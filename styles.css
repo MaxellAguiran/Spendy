@@ -614,11 +614,17 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 .report-totals span { display: block; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
 .report-totals strong { display: block; margin-top: .25rem; font-size: clamp(1.35rem,2.5vw,2rem); font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
 .report-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-small); background: var(--surface); box-shadow: var(--shadow-small); }
-.report-table { width: 100%; min-width: 980px; border-collapse: collapse; font-size: .78rem; }
+.report-table { width: 100%; min-width: 1080px; border-collapse: collapse; table-layout: fixed; font-size: .78rem; }
 .report-table caption { padding: 1rem; color: var(--ink); font-weight: 850; text-align: left; }
-.report-table th, .report-table td { padding: .85rem .75rem; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.report-table th, .report-table td { padding: .85rem .75rem; border-top: 1px solid var(--line); text-align: left; vertical-align: top; white-space: normal; }
+.report-table tr > :nth-child(1) { width: 9%; }
+.report-table tr > :nth-child(2) { width: 24%; }
+.report-table tr > :nth-child(3) { width: 11%; }
+.report-table tr > :nth-child(4) { width: 28%; }
+.report-table tr > :nth-child(5) { width: 10%; }
+.report-table tr > :nth-child(6) { width: 18%; }
 .report-table thead th { background: var(--surface-sage); color: var(--muted); font-size: .66rem; letter-spacing: .04em; text-transform: uppercase; }
-.report-table tbody th { max-width: 230px; font-weight: 750; }
+.report-table tbody th { font-weight: 750; overflow-wrap: anywhere; }
 .report-table td:nth-child(3), .report-table td:nth-child(6) { font-variant-numeric: tabular-nums; font-weight: 800; white-space: nowrap; }
 .report-table [data-report-action] { font-weight: 850; }
 .report-table [data-report-action="cut"], .report-table [data-report-action="reduce"] { color: #994235; }

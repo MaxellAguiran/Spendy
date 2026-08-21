@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const base = process.env.LIGHTHOUSE_BASE_URL || "http://127.0.0.1:4173";
-const routes = ["index.html", "dragon-analytics.html", "labs/marketing-allocation.html", "ibex.html"];
+const routes = ["index.html", "dragon-analytics.html", "writing.html", "ibex.html"];
 const outputDirectory = join(root, ".lighthouse");
 await mkdir(outputDirectory, { recursive: true });
 

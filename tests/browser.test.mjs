@@ -257,6 +257,10 @@ test("the monthly report leads with the fixed-budget decision and renders checke
   assert.deepEqual(await page.locator("[data-budget-view]").allInnerTexts(), ["Current", "Recommended", "Compare"]);
   assert.match(await page.locator("#check [data-report-value='baseline-mae']").innerText(), /^\d+\.\d{4}$/);
   assert.match(await page.locator("#check [data-report-value='model-mae']").innerText(), /^\d+\.\d{4}$/);
+  const overflowingAdNames = await page.locator("[data-report-rows] th[scope='row']").evaluateAll((cells) =>
+    cells.filter((cell) => cell.scrollWidth > cell.clientWidth + 1).map((cell) => cell.textContent)
+  );
+  assert.deepEqual(overflowingAdNames, [], "Ad names must wrap inside their table column instead of overlapping spend values");
   await context.close();
 });
 
