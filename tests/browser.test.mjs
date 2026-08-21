@@ -172,7 +172,7 @@ test("the homepage presents one flagship case before work, founder evidence, res
 });
 
 
-test("Dragon Analytics is a compact work-with-me page with decision, stop conditions, contact, and five FAQs or fewer", async () => {
+test("Dragon Analytics is a compact monthly-report page with preserved compatibility anchors", async () => {
   for (const expected of [
     { viewport: { width: 390, height: 844 }, maxHeight: 6500, maxContact: 5000 },
     { viewport: { width: 1280, height: 720 }, maxHeight: 4200, maxContact: 3200 }
@@ -185,18 +185,25 @@ test("Dragon Analytics is a compact work-with-me page with decision, stop condit
       contact: document.getElementById("contact").offsetTop,
       faq: document.getElementById("faq").offsetTop
     }));
-    assert.deepEqual(measurements.ids, ["", "marketing", "churn", "process", "fit", "contact", "faq"]);
+    assert.deepEqual(measurements.ids, ["", "marketing", "report", "process", "fit", "churn", "contact", "faq"]);
     assert.ok(measurements.height < expected.maxHeight, `Dragon Analytics is still too long at ${expected.viewport.width}px: ${measurements.height}px`);
     assert.ok(measurements.contact < measurements.faq, "Contact must appear before FAQ");
     assert.ok(measurements.contact < expected.maxContact, `Contact appears too late at ${measurements.contact}px`);
     assert.equal(await page.locator(".hero .instrument-card").count(), 0);
     assert.equal(await page.locator("img[src*='dragon-mascot']").count(), 1);
-    assert.match(await page.locator("h1").innerText(), /bring me the decision/i);
-    assert.doesNotMatch(await page.locator("main").innerText(), /two focused analytics services/i);
-    assert.equal(await page.locator("#marketing dt").allTextContents().then((labels) => labels.includes("When I stop")), true);
-    assert.equal(await page.locator("#churn dt").allTextContents().then((labels) => labels.includes("When I stop")), true);
+    assert.equal(await page.locator("h1").innerText(), "Forecast next month's ads. Allocate the budget before the month begins.");
+    const firstScreen = await page.locator(".work-hero").innerText();
+    assert.match(firstScreen, /marketing agencies/i);
+    assert.match(firstScreen, /next month/i);
+    assert.match(firstScreen, /break-even/i);
+    assert.match(firstScreen, /exact/i);
+    assert.match(firstScreen, /Request a report/i);
+    assert.doesNotMatch(await page.locator("main").innerText(), /two focused analytics services|churn prediction|customer retention/i);
+    assert.match(await page.locator("#churn").innerText(), /Older generated analytics demonstration/i);
+    assert.equal(await page.locator("#churn a[href='labs/churn-risk.html']").count(), 0);
+    assert.match(await page.locator("#fit").innerText(), /stop|withheld|not enough/i);
     const faqCount = await page.locator("details[data-disclosure]").count();
-    assert.ok(faqCount >= 4 && faqCount <= 5, `Expected 4–5 concise FAQs, found ${faqCount}`);
+    assert.equal(faqCount, 5, `Expected exactly five concise FAQs, found ${faqCount}`);
     await context.close();
   }
 });

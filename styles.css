@@ -586,6 +586,16 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 .founder-note > p { margin-top: 0; color: var(--ink); font-weight: 750; }
 .founder-note ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
 .founder-note li + li { margin-top: .45rem; }
+.report-work-hero h1 { max-width: 17ch; font-size: clamp(2.8rem,4.9vw,4.55rem); }
+.report-work-hero .hero-copy > p { max-width: 70ch; }
+.report-process-list { grid-template-columns: repeat(3,1fr); margin-bottom: 1rem; }
+.process-signature { display: flex; gap: .85rem; align-items: center; max-width: 680px; padding-top: 1rem; border-top: 1px solid var(--line); }
+.process-signature img { flex: 0 0 auto; }
+.process-signature p { margin: 0; color: var(--muted); font-size: .82rem; font-weight: 700; }
+.legacy-work { padding-block: 1.2rem !important; }
+.legacy-note { display: flex; gap: 1rem 2rem; align-items: baseline; padding: 1rem 0; border-block: 1px solid var(--line); }
+.legacy-note strong { flex: 0 0 auto; color: var(--green-dark); font-size: .8rem; }
+.legacy-note p { margin: 0; color: var(--muted); font-size: .8rem; }
 .report-hero { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(280px,.55fr); gap: clamp(2rem,6vw,6rem); align-items: center; }
 .report-hero h1 { max-width: 14ch; }
 .report-hero-summary { padding: 1.35rem; border: 1px solid var(--line-dark); border-radius: var(--radius-small); background: var(--surface); box-shadow: var(--shadow-small); }
@@ -639,6 +649,10 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 }
 
 @media (max-width: 760px) {
+  .report-process-list { grid-template-columns: 1fr; }
+  .report-process-list li { border-right: 0; border-bottom: 1px solid var(--line); }
+  .report-process-list li:last-child { border-bottom: 0; }
+  .legacy-note { display: grid; gap: .35rem; }
   .report-chart-heading { display: grid; align-items: start; }
   .report-chart-heading .allocation-controls { width: 100%; }
   .report-chart-heading .allocation-controls button { flex: 1; }
