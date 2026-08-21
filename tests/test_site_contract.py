@@ -30,6 +30,7 @@ class ContractParser(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.title_count = 0
         self.description_count = 0
+        self.robots = []
         self.canonical = []
         self.og_image = []
         self.h1_count = 0
@@ -48,6 +49,8 @@ class ContractParser(HTMLParser):
             self.title_count += 1
         elif tag == "meta" and attributes.get("name") == "description":
             self.description_count += 1
+        elif tag == "meta" and attributes.get("name") == "robots":
+            self.robots.append(attributes.get("content", ""))
         elif tag == "link" and attributes.get("rel") == "canonical":
             self.canonical.append(attributes.get("href"))
         elif tag == "meta" and attributes.get("property") == "og:image":
@@ -148,6 +151,40 @@ class SiteContractTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertNotIn(phrase, combined)
 
+    def test_discovery_copy_and_primary_navigation_match_the_current_offer(self):
+        """Old service positioning must not survive in previews or primary navigation."""
+        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
+        work_page = (ROOT / "dragon-analytics.html").read_text(encoding="utf-8")
+        report_page = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
+        cards = {card["output"]: card for card in json.loads((ROOT / "tools/social-cards.json").read_text())}
+
+        self.assertIn("Know which ads to cut—and exactly where next month's budget should go.", homepage)
+        self.assertIn("Monthly ad forecasting and exact budget plans for marketing agencies.", work_page)
+        self.assertIn("Which ads should receive next month's fixed budget?", report_page)
+        self.assertEqual(
+            cards["home.png"]["title"],
+            "Know which ads to cut—and exactly where next month's budget should go.",
+        )
+        self.assertEqual(
+            cards["dragon-analytics.png"]["title"],
+            "Monthly ad forecasting and exact budget plans for marketing agencies.",
+        )
+        self.assertEqual(
+            cards["monthly-ad-report.png"]["title"],
+            "Which ads should receive next month's fixed budget?",
+        )
+
+        for page in ("index.html", "dragon-analytics.html", "writing.html", "404.html"):
+            source = (ROOT / page).read_text(encoding="utf-8")
+            with self.subTest(page=page):
+                self.assertIn(">Work</a>", source)
+                self.assertIn(">Sample report</a>", source)
+                self.assertIn(">Research</a>", source)
+                self.assertIn(">About</a>", source)
+                self.assertIn(">Request a report</a>", source)
+                self.assertNotIn(">Case study</a>", source)
+                self.assertNotIn(">Start a conversation</a>", source)
+
     def test_legacy_labs_are_preserved_but_not_sold_as_current_services(self):
         """Old examples may remain available without confusing the current offer."""
         churn = (ROOT / "labs/churn-risk.html").read_text(encoding="utf-8")
@@ -220,8 +257,12 @@ class SiteContractTests(unittest.TestCase):
         for page in PUBLIC_PAGES:
             if page == "404.html":
                 continue
-            canonical = parse_page(page).canonical[0]
-            self.assertIn(f"<loc>{canonical}</loc>", sitemap)
+            parser = parse_page(page)
+            canonical = parser.canonical[0]
+            if any("noindex" in directive.casefold() for directive in parser.robots):
+                self.assertNotIn(f"<loc>{canonical}</loc>", sitemap)
+            else:
+                self.assertIn(f"<loc>{canonical}</loc>", sitemap)
         for image in (ROOT / "assets" / "social").glob("*.png"):
             payload = image.read_bytes()[:24]
             self.assertEqual(payload[:8], b"\x89PNG\r\n\x1a\n")

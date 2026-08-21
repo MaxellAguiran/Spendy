@@ -1,6 +1,7 @@
 [
-  {"output":"home.png","kicker":"Dragon Analytics","title":"Budget optimization and churn prediction for marketing agencies.","subtitle":"Clear client budget plans · Accounts to contact first"},
-  {"output":"dragon-analytics.png","kicker":"Dragon Analytics · Work with Maxell","title":"Bring me the decision, not a request for AI.","subtitle":"Budget optimization · Churn prediction","mascot":true},
+  {"output":"home.png","kicker":"Dragon Analytics · For marketing agencies","title":"Know which ads to cut—and exactly where next month's budget should go.","subtitle":"Next-month forecast · Exact per-ad budget plan"},
+  {"output":"dragon-analytics.png","kicker":"Work directly with Maxell","title":"Monthly ad forecasting and exact budget plans for marketing agencies.","subtitle":"Meta · Google · TikTok · Shopify","mascot":true},
+  {"output":"monthly-ad-report.png","kicker":"Generated monthly report example","title":"Which ads should receive next month's fixed budget?","subtitle":"Cut · Reduce · Keep · Increase","signal":"allocation"},
   {"output":"research.png","kicker":"Company research by Maxell Aguiran","title":"Five reports with price targets and clear reasons conclusions could change.","subtitle":"Company sources · Possible outcomes · What could change"},
   {"output":"marketing-allocation.png","kicker":"Worked example using generated data","title":"Can the same weekly budget work harder?","subtitle":"Fixed budget · Later-week check · Simple comparison","signal":"allocation"},
   {"output":"churn-risk.png","kicker":"Worked example using generated data","title":"Which accounts deserve the first outreach?","subtitle":"100-customer call list · Separate final group · Cost of wrong calls","signal":"churn"},
