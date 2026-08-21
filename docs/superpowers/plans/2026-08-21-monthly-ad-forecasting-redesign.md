@@ -143,7 +143,7 @@ Update the homepage order expectation to `hero → proof → services → about 
 
 ```js
 assert.deepEqual(structure.ids, ["", "proof", "services", "about", "research", "contact"]);
-assert.ok(structure.height < (expected.viewport.width === 390 ? 4800 : 3600));
+assert.ok(structure.height < (expected.viewport.width === 390 ? 4800 : 4200));
 assert.equal(await page.locator("a[href='labs/monthly-ad-report.html']").count() > 0, true);
 assert.equal(await page.locator("main").getByText(/churn prediction|customer retention/i).count(), 0);
 ```

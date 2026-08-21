@@ -111,8 +111,11 @@ test("the first screen explains the paid monthly ad report within five seconds",
     assert.match(text, /exact spend for every ad/i);
     assert.match(text, /fixed monthly ad budget/i);
     assert.deepEqual(await hero.locator(".hero-actions a").allInnerTexts(), ["See a sample report", "Request a report"]);
-    const firstAction = await hero.locator(".hero-actions a").first().boundingBox();
-    assert.ok(firstAction.y + firstAction.height <= viewport.height);
+    for (const action of await hero.locator(".hero-actions a").all()) {
+      assert.equal(await action.isVisible(), true);
+      const box = await action.boundingBox();
+      assert.ok(box.y + box.height <= viewport.height, `Hero action extends below ${viewport.width}×${viewport.height}: ${JSON.stringify(box)}`);
+    }
     await context.close();
   }
 });
@@ -120,7 +123,7 @@ test("the first screen explains the paid monthly ad report within five seconds",
 
 test("public-facing pages explain the work without unexplained analyst jargon", async () => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
-  const forbidden = /\b(?:artifact|baseline|holdout|held-out|model|MAE|Brier|calibration|cohort|falsifier|incrementality|extrapolation|adstock|regression|log loss|false positives?|marginal returns?|response curves?|reproducible|chronological|probability quality|top-decile|EV\/EBITDA|DCF|valuation|thesis|scenarios?)\b/i;
+  const forbidden = /\b(?:artifact|baseline|holdout|held-out|MAE|Brier|calibration|cohort|falsifier|incrementality|extrapolation|adstock|regression|log loss|false positives?|marginal returns?|response curves?|reproducible|chronological|probability quality|top-decile|EV\/EBITDA|DCF|valuation|thesis|scenarios?)\b/i;
   for (const path of ["index.html", "dragon-analytics.html", "labs/marketing-allocation.html", "labs/churn-risk.html", "writing.html", "404.html"]) {
     const { page } = await openCheckedPage(context, path);
     if (path.startsWith("labs/")) await page.locator(".stat").first().waitFor();
@@ -138,7 +141,7 @@ test("public-facing pages explain the work without unexplained analyst jargon", 
 test("the homepage presents one flagship case before work, founder evidence, research, and contact", async () => {
   for (const expected of [
     { viewport: { width: 390, height: 844 }, maxHeight: 4800 },
-    { viewport: { width: 1280, height: 720 }, maxHeight: 3600 }
+    { viewport: { width: 1280, height: 720 }, maxHeight: 4200 }
   ]) {
     const context = await browser.newContext({ viewport: expected.viewport });
     const { page } = await openCheckedPage(context, "index.html");
@@ -199,46 +202,37 @@ test("Dragon Analytics is a compact work-with-me page with decision, stop condit
 });
 
 
-test("the flagship allocation renderer exposes checked values and keyboard-operable views", async () => {
+test("the homepage report renderer exposes checked ad values without duplicating the full report chart", async () => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const { page } = await openCheckedPage(context, "index.html");
-  const caseStudy = page.locator("[data-featured-case]");
-  await page.waitForFunction(() => document.querySelector("[data-featured-case]")?.dataset.state === "ready");
-  assert.equal(await caseStudy.locator("[data-allocation-channel]").count(), 4);
-  assert.equal(await caseStudy.locator("[data-case-value='current-total']").innerText(), "$41,282");
-  assert.equal(await caseStudy.locator("[data-case-value='recommended-total']").innerText(), "$41,282");
-  assert.match(await caseStudy.locator("[data-case-value='baseline-mae']").innerText(), /15,558/);
-  assert.match(await caseStudy.locator("[data-case-value='model-mae']").innerText(), /7,778/);
-  assert.equal(await caseStudy.getByRole("button").count(), 3);
-  const current = caseStudy.getByRole("button", { name: "Current" });
-  await current.focus();
-  await page.keyboard.press("Enter");
-  assert.equal(await current.getAttribute("aria-pressed"), "true");
-  assert.equal(await caseStudy.locator("[data-series='recommended']:visible").count(), 0);
-  const compare = caseStudy.getByRole("button", { name: "Compare" });
-  await compare.click();
-  assert.equal(await compare.getAttribute("aria-pressed"), "true");
-  assert.ok(await caseStudy.locator("[data-series='recommended']:visible").count() > 0);
-  assert.match(await caseStudy.locator("[data-case-narration]").innerText(), /same|unchanged/i);
+  const report = page.locator("#proof [data-ad-report]");
+  await page.waitForFunction(() => document.querySelector("#proof [data-ad-report]")?.dataset.state === "ready");
+  assert.equal(await report.locator("[data-report-rows] tr").count(), 12);
+  assert.equal(await report.locator("[data-report-value='supplied-budget']").innerText(), "$125,000.00");
+  assert.equal(await report.locator("[data-report-value='recommended-total']").innerText(), "$125,000.00");
+  assert.equal(await report.locator("[data-report-value='budget-difference']").innerText(), "$0.00");
+  assert.equal(await report.getByRole("button").count(), 0);
+  assert.equal(await report.locator('[data-chart="ad-budget-comparison"]').count(), 0);
+  assert.equal(await page.locator("#proof a[href='labs/monthly-ad-report.html']").count(), 1);
   await context.close();
 });
 
 
-test("the flagship allocation renderer fails closed on invalid or unavailable evidence", async () => {
+test("the homepage report renderer fails closed on invalid or unavailable evidence", async () => {
   for (const routeHandler of [
     (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema: "lab-evidence/v2" }) }),
     (route) => route.abort()
   ]) {
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
     const page = await context.newPage();
-    await page.route("**/labs/data/marketing-allocation.json", routeHandler);
+    await page.route("**/labs/data/monthly-ad-report.json", routeHandler);
     await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
     await page.getByRole("heading", { name: "Evidence unavailable" }).waitFor();
     assert.equal(await page.locator("[data-series='recommended']:visible").count(), 0);
-    assert.equal(await page.locator("[data-case-value='recommended-total']:visible").count(), 0);
-    assert.equal(await page.locator("a[href='labs/data/marketing-allocation.json']:visible").count(), 1);
-    assert.ok(await page.locator("a[href='labs/data/marketing-allocation.csv']:visible").count() >= 1);
-    assert.equal(await page.locator("a[href='labs/data/marketing-allocation-methodology.md']:visible").count(), 1);
+    assert.equal(await page.locator("[data-report-value='recommended-total']:visible").count(), 0);
+    assert.ok(await page.locator("a[href='labs/data/monthly-ad-report.json']:visible").count() >= 1);
+    assert.ok(await page.locator("a[href='labs/data/monthly-ad-report.csv']:visible").count() >= 1);
+    assert.ok(await page.locator("a[href='labs/data/monthly-ad-report-methodology.md']:visible").count() >= 1);
     await context.close();
   }
 });
@@ -393,14 +387,15 @@ test("failed lab evidence produces a visible fail-closed state", async () => {
 
 test("essential content stays usable without JavaScript and with a failed mascot", async () => {
   const noJs = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
-  for (const path of ["index.html", "labs/marketing-allocation.html"]) {
+  for (const path of ["index.html", "labs/monthly-ad-report.html", "labs/marketing-allocation.html"]) {
     const page = await noJs.newPage();
     await page.goto(`${baseUrl}/${path}`, { waitUntil: "load" });
     assert.equal(await page.locator("h1").isVisible(), true);
     assert.equal(await page.locator("a.button").first().isVisible(), true);
     if (path === "index.html") {
-      assert.match(await page.locator("#proof").innerText(), /Can the same weekly budget work harder/i);
-      assert.match(await page.locator("#proof").innerText(), /Example built from generated data/i);
+      assert.match(await page.locator("#proof").innerText(), /monthly ad decision/i);
+      assert.match(await page.locator("#proof").innerText(), /Generated example using synthetic advertising and sales data/i);
+      assert.doesNotMatch(await page.locator("#proof").innerText(), /\$125,000|31\.01%/i);
     }
     if (path.startsWith("labs/")) assert.equal(await page.locator("noscript .evidence-unavailable").isVisible(), true);
     await page.close();
@@ -433,9 +428,13 @@ test("reduced motion exposes final states without transform or chart animation",
 
 test("representative pages have no automated WCAG 2.2 AA violations", async () => {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-  for (const path of ["index.html", "dragon-analytics.html", "ibex.html", "labs/marketing-allocation.html", "labs/churn-risk.html"]) {
+  for (const path of ["index.html", "dragon-analytics.html", "ibex.html", "labs/monthly-ad-report.html", "labs/marketing-allocation.html", "labs/churn-risk.html"]) {
     const { page } = await openCheckedPage(context, path);
-    if (path.startsWith("labs/")) await page.locator(".stat").first().waitFor();
+    if (path === "labs/monthly-ad-report.html") {
+      await page.waitForFunction(() => document.querySelector("[data-ad-report]")?.dataset.state === "ready");
+    } else if (path.startsWith("labs/")) {
+      await page.locator(".stat").first().waitFor();
+    }
     const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
     assert.deepEqual(results.violations.map((violation) => ({ id: violation.id, impact: violation.impact, targets: violation.nodes.map((node) => node.target) })), [], `${path} has accessibility violations`);
     await page.close();

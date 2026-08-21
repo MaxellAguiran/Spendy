@@ -555,6 +555,37 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 }
 
 /* Monthly ad report */
+.ad-offer-hero { padding-block: 2.2rem; }
+.ad-offer-hero h1 { max-width: 18ch; font-size: clamp(3rem,5.2vw,4.8rem); }
+.home-page main > .section { padding-block: 2.2rem; }
+.ad-offer-hero .hero-copy > p { max-width: 66ch; }
+.hero-honesty { margin: 1rem 0 0; color: var(--muted); font-size: .78rem !important; font-weight: 650; }
+.offer-summary { align-self: center; padding: 1.35rem; border: 1px solid var(--line-dark); border-radius: var(--radius-small); background: var(--surface); box-shadow: var(--shadow-small); }
+.offer-summary-top { display: flex; justify-content: space-between; gap: .75rem; padding-bottom: .75rem; border-bottom: 1px solid var(--line); color: var(--green-dark); font-size: .67rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+.offer-summary h2 { margin: 1rem 0 .65rem; font-family: var(--sans); font-size: 1.3rem; }
+.offer-summary ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: .82rem; }
+.offer-summary li + li { margin-top: .45rem; }
+.report-case-intro { margin-bottom: .25rem; }
+.report-case-intro h2 { max-width: 18ch; font-size: clamp(2.2rem,4vw,3.75rem); }
+.home-report { margin-top: 1.25rem; }
+.home-report .report-totals { border-color: #476055; }
+.home-report .report-totals > div { border-color: #476055; }
+.home-report .report-totals span { color: #b7c9bf; }
+.home-report .report-totals strong { color: var(--surface); }
+.home-report-table { max-height: 460px; }
+.home-report-chart { color: var(--ink); }
+.home-report-chart .ad-budget-chart { min-height: 470px; max-height: 470px; overflow-y: auto; padding-right: .35rem; }
+.report-process { margin: 0 0 1.1rem; padding: 0; border-block: 1px solid var(--line-dark); list-style: none; }
+.report-process li { display: grid; grid-template-columns: 52px 1fr; gap: 1rem; padding: 1.15rem 0; border-bottom: 1px solid var(--line); }
+.report-process li:last-child { border-bottom: 0; }
+.report-process > li > span { color: #994235; font-size: .74rem; font-weight: 850; }
+.report-process h3 { margin: 0 0 .25rem; font-size: 1rem; }
+.report-process p { max-width: 78ch; margin: 0; color: var(--muted); font-size: .86rem; }
+.section-note { max-width: 76ch; color: var(--muted); font-size: .8rem; }
+.founder-note { padding-top: 1rem; border-top: 3px solid var(--sage-strong); }
+.founder-note > p { margin-top: 0; color: var(--ink); font-weight: 750; }
+.founder-note ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
+.founder-note li + li { margin-top: .45rem; }
 .report-hero { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(280px,.55fr); gap: clamp(2rem,6vw,6rem); align-items: center; }
 .report-hero h1 { max-width: 14ch; }
 .report-hero-summary { padding: 1.35rem; border: 1px solid var(--line-dark); border-radius: var(--radius-small); background: var(--surface); box-shadow: var(--shadow-small); }
@@ -601,6 +632,8 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 .report-evidence-grid strong { display: block; margin-top: .35rem; font-variant-numeric: tabular-nums; }
 
 @media (max-width: 980px) {
+  .ad-offer-hero { grid-template-columns: 1fr; }
+  .offer-summary { width: min(100%,720px); }
   .report-hero { grid-template-columns: 1fr; }
   .report-hero-summary { width: min(100%,720px); }
 }
@@ -616,6 +649,28 @@ th { color: var(--muted); font-size: .68rem; letter-spacing: .05em; text-transfo
 }
 
 @media (max-width: 520px) {
+  .ad-offer-hero { gap: 1rem; padding-block: 1.2rem; }
+  .ad-offer-hero h1 { font-size: clamp(2.35rem,9.7vw,3.05rem); line-height: 1; }
+  .ad-offer-hero .hero-copy > p { font-size: .94rem; line-height: 1.5; }
+  .ad-offer-hero .hero-actions { margin-top: 1rem; }
+  .ad-offer-hero .hero-honesty { font-size: .72rem; line-height: 1.4; }
+  .ad-offer-hero .offer-summary { display: none; }
+  .home-report-table { max-height: 370px; }
+  .report-process li { grid-template-columns: 36px 1fr; gap: .65rem; padding-block: .9rem; }
+  .home-page .report-process p { font-size: .78rem; line-height: 1.45; }
+  .home-page .section-note { margin-bottom: .75rem; font-size: .74rem; }
+  .home-page #services, .home-page #research, .home-page #contact { padding-block: 1rem; }
+  .home-page .lean-heading { gap: .55rem; margin-bottom: 1rem; }
+  .home-page .lean-heading h2 { font-size: 1.85rem; line-height: 1.08; }
+  .home-page .lean-heading p { font-size: .82rem; }
+  .home-page .founder-section { gap: 1.25rem; padding-block: 1.6rem; }
+  .home-page .founder-statement h2 { font-size: 2rem; line-height: 1.03; }
+  .home-page .founder-statement p, .home-page .founder-note { font-size: .84rem; }
+  .home-page .research-proof-list a { padding-block: .72rem; }
+  .home-page .contact-panel { gap: 1.1rem; padding: 1.35rem; }
+  .home-page .contact-panel h2 { font-size: 1.9rem; }
+  .home-page .contact-panel p, .home-page .contact-brief { font-size: .8rem; }
+  .home-page .site-footer { gap: .8rem; }
   .report-hero { padding-block: 2rem; }
   .report-hero h1 { font-size: clamp(2.35rem,10vw,3rem); }
   .report-hero-summary { padding: 1rem; }

@@ -160,13 +160,14 @@ class SiteContractTests(unittest.TestCase):
             self.assertNotIn('href="labs/churn-risk.html"', source)
 
     def test_homepage_case_values_are_rendered_from_checked_evidence(self):
-        """Hard-coding favorable case values would bypass the fail-closed renderer."""
+        """Hard-coding favorable report values would bypass the fail-closed renderer."""
         homepage = (ROOT / "index.html").read_text(encoding="utf-8")
-        marketing = json.loads((ROOT / "labs/data/marketing-allocation.json").read_text())
-        self.assertIn('data-evidence-src="labs/data/marketing-allocation.json"', homepage)
-        self.assertNotIn(f"${marketing['baseline']['metrics']['mae']:,.0f}", homepage)
-        self.assertNotIn(f"${marketing['model']['metrics']['mae']:,.0f}", homepage)
-        self.assertNotIn(f">{marketing['metrics']['maeReductionPercent']:.0f}%<", homepage)
+        report = json.loads((ROOT / "labs/data/monthly-ad-report.json").read_text())
+        self.assertIn('data-evidence-src="labs/data/monthly-ad-report.json"', homepage)
+        self.assertNotIn(f"{report['baseline']['metrics']['mae']:.4f}", homepage)
+        self.assertNotIn(f"{report['model']['metrics']['mae']:.4f}", homepage)
+        self.assertNotIn(f">{report['metrics']['maeReductionPercent']:.2f}%<", homepage)
+        self.assertNotIn(f"${report['budget']['suppliedMonthlyBudgetCents'] / 100:,.2f}", homepage)
 
     def test_articles_expose_article_json_ld_and_source_review_state(self):
         """Removing article identity or disguising unverified source links must fail."""
