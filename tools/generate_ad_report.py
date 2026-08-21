@@ -27,18 +27,18 @@ START_DATE = date(2026, 1, 4)
 
 
 AD_CONFIG = (
-    ("SYN-META-01", "Generated prospecting concept A", "Meta Ads", 1.13, -0.04, 46000),
-    ("SYN-META-02", "Generated prospecting concept B", "Meta Ads", 1.34, 0.02, 39000),
-    ("SYN-META-03", "Generated retargeting concept A", "Meta Ads", 1.48, 0.04, 34000),
-    ("SYN-META-04", "Generated retargeting concept B", "Meta Ads", 1.69, 0.08, 30000),
-    ("SYN-GOOG-01", "Generated search group A", "Google Ads", 1.17, -0.03, 52000),
-    ("SYN-GOOG-02", "Generated search group B", "Google Ads", 1.36, 0.02, 48000),
-    ("SYN-GOOG-03", "Generated shopping group A", "Google Ads", 1.50, 0.05, 41000),
-    ("SYN-GOOG-04", "Generated shopping group B", "Google Ads", 1.72, 0.07, 36000),
-    ("SYN-TIKT-01", "Generated short-form concept A", "TikTok Ads", 1.11, -0.02, 33000),
-    ("SYN-TIKT-02", "Generated short-form concept B", "TikTok Ads", 1.33, 0.03, 31000),
-    ("SYN-TIKT-03", "Generated creator concept A", "TikTok Ads", 1.49, 0.05, 28000),
-    ("SYN-TIKT-04", "Generated creator concept B", "TikTok Ads", 1.70, 0.09, 25000),
+    ("SYN-META-01", "Prospecting concept A", "Meta Ads", 1.13, -0.04, 46000),
+    ("SYN-META-02", "Prospecting concept B", "Meta Ads", 1.34, 0.02, 39000),
+    ("SYN-META-03", "Retargeting concept A", "Meta Ads", 1.48, 0.04, 34000),
+    ("SYN-META-04", "Retargeting concept B", "Meta Ads", 1.69, 0.08, 30000),
+    ("SYN-GOOG-01", "Search group A", "Google Ads", 1.17, -0.03, 52000),
+    ("SYN-GOOG-02", "Search group B", "Google Ads", 1.36, 0.02, 48000),
+    ("SYN-GOOG-03", "Shopping group A", "Google Ads", 1.50, 0.05, 41000),
+    ("SYN-GOOG-04", "Shopping group B", "Google Ads", 1.72, 0.07, 36000),
+    ("SYN-TIKT-01", "Short-form concept A", "TikTok Ads", 1.11, -0.02, 33000),
+    ("SYN-TIKT-02", "Short-form concept B", "TikTok Ads", 1.33, 0.03, 31000),
+    ("SYN-TIKT-03", "Creator concept A", "TikTok Ads", 1.49, 0.05, 28000),
+    ("SYN-TIKT-04", "Creator concept B", "TikTok Ads", 1.70, 0.09, 25000),
 )
 
 
@@ -311,52 +311,36 @@ def build_forecast_rows(rows, evaluation, gate_passed):
 
 
 def methodology_text(evidence):
-    return f"""# Monthly ad report methodology
+    return f"""# How this sample plan works
 
-## What this is
+## A quick note
 
-This is a deterministic synthetic demonstration, not client work or a claim of realised advertising performance. It shows the format, testing rule, and budget-reconciliation standard used by the public example.
+This is an illustrative sample, not customer work or a promise of results. It shows the kind of clear monthly plan Spendy can make.
 
-## Generated inputs
+## What is in the sample
 
-- Seed: `{REPORT_SEED}`
-- Platforms: Meta Ads, Google Ads, and TikTok Ads (names describe generated export formats and do not imply affiliation)
-- Ads: 12 generated ads, four per platform
-- History: {TOTAL_DAYS} daily observations per ad
-- Outcome: generated Shopify-style attributed revenue divided by advertising spend
-- Break-even definition: revenue-to-spend ratio of {BREAK_EVEN_ROAS:.2f}
+- 12 example ads across Meta, Google, and TikTok
+- Past daily ad and sales information for each ad
+- One monthly budget: ${SUPPLIED_BUDGET_CENTS / 100:,.2f}
+- A simple next step for every ad: spend less, keep it as it is, or add more
 
-The process includes different ad strengths, platform effects, weekly and monthly patterns, slow movement, saturation, lagged performance, and seeded noise. The generated data is cleaner than real advertising and sales exports.
+## How Spendy checks the plan
 
-## Forecast check
+Spendy looks at the earlier part of the example information. Then it checks its answer on later days it did not see. Smaller numbers below mean the check was closer to what happened.
 
-The regularized regression uses only the first {DEVELOPMENT_DAYS} days. It is compared with each ad's trailing 30-day average using the final {HOLDOUT_DAYS} days, which are not used to fit the model. Both are measured by mean absolute error (MAE) in revenue-to-spend ratio units.
+- Simple check: {evidence['baseline']['metrics']['mae']:.4f}
+- Spendy check: {evidence['model']['metrics']['mae']:.4f}
+- Plan status: {evidence['model']['recommendationStatus']}
 
-- Simple comparison MAE: {evidence['baseline']['metrics']['mae']:.4f}
-- Model MAE: {evidence['model']['metrics']['mae']:.4f}
-- Recommendation status: {evidence['model']['recommendationStatus']}
+Spendy only shows a plan when its check is better than the simple check. The expected-result ranges are helpful estimates, not guarantees.
 
-A recommendation is released only when model MAE is lower than simple-comparison MAE. Forecast ranges use a 90% residual-based interval from the development period; they are estimates, not guarantees.
+## How the money is split
 
-## Exact-cent budget allocation
+The sample starts with one total budget. Ads that look weaker get less money. Ads that look steady keep their amount. Ads that look stronger can get more. Every line in the plan adds up to the same monthly total.
 
-The example starts with a fixed total monthly budget of ${SUPPLIED_BUDGET_CENTS / 100:,.2f}. Cut ads receive a small fraction of their prior spend, Reduce ads receive less, Keep ads retain their prior spend, and the released budget is distributed across Increase ads in proportion to their current spend and forecast. Remaining cents are assigned by largest fractional remainder with stable ad IDs as the final tie-breaker.
+## What can change
 
-Exact-cent reconciliation means the recommended line items add to the supplied budget. It does not mean the performance forecast is exact.
-
-## Limits
-
-- Attributed revenue does not establish causal incrementality.
-- Generated platform data does not represent an integration or relationship with Meta, Google, TikTok, or Shopify.
-- The example does not support spending outside its generated range.
-- Real ad identity, tracking, promotions, inventory, prices, attribution, and market conditions can change.
-- A real report can be withheld when history or later-period evidence is inadequate.
-
-## Reproduce
-
-```bash
-python3 tools/generate_ad_report.py --output-dir labs/data
-```
+Real advertising is messier than this example. New offers, tracking changes, price changes, stock, and changes in the market can all change the outcome. When the past information is not good enough, Spendy can say “no plan yet.”
 """
 
 

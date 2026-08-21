@@ -133,9 +133,8 @@ class SiteContractTests(unittest.TestCase):
         for page in ACTIVE_SERVICE_PAGES:
             source = (ROOT / page).read_text(encoding="utf-8").casefold()
             with self.subTest(page=page):
-                self.assertIn("machine-learning", source)
-                self.assertIn("fixed", source)
                 self.assertIn("budget", source)
+                self.assertIn("spendy", source)
 
         for page in RETIRED_PAGES:
             parser = parse_page(page)
@@ -169,24 +168,20 @@ class SiteContractTests(unittest.TestCase):
             self.assertIn("mailto:maxell.aguiran@gmail.com", " ".join(parser.links))
             self.assertNotIn(">maxell", source)
 
-    def test_current_sales_surfaces_state_the_machine_learning_budget_offer(self):
-        """The active sales pages must name the buyer, forecast, input budget, and allocation output."""
+    def test_current_sales_surfaces_explain_the_buyer_problem_and_simple_value(self):
+        """The active experience must plainly name who it is for, their problem, and what Spendy gives them."""
         combined = "\n".join((ROOT / page).read_text(encoding="utf-8") for page in ACTIVE_SERVICE_PAGES).casefold()
         for phrase in (
             "marketing agencies",
-            "machine-learning",
-            "meta ads",
-            "google ads",
-            "tiktok ads",
+            "machine learning",
+            "meta, google, tiktok",
             "shopify",
-            "fixed",
             "budget",
-            "break-even",
-            "cut",
-            "reduce",
+            "where next month's ad money should go",
+            "spend less",
             "keep",
-            "increase",
-            "exact",
+            "add more",
+            "simple plan",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, combined)
@@ -227,14 +222,27 @@ class SiteContractTests(unittest.TestCase):
         self.assertTrue(illustration.is_file())
         self.assertLess(illustration.stat().st_size, 700 * 1024)
 
-    def test_monthly_report_discloses_synthetic_status_before_checked_results(self):
-        """A favorable sample must disclose generated data before any released values."""
+    def test_monthly_report_identifies_its_illustrative_status_before_checked_results(self):
+        """An illustrative sample must not be mistaken for a customer result."""
         report = (ROOT / "labs/monthly-ad-report.html").read_text(encoding="utf-8")
-        disclosure_start = "Generated example using synthetic advertising and sales data."
-        disclosure_end = "It shows the report format and testing standard—not client performance."
+        disclosure_start = "Illustrative example — not a client result."
+        disclosure_end = "It simply shows what a Spendy monthly plan looks like."
         self.assertIn(disclosure_start, report)
         self.assertIn(disclosure_end, report)
         self.assertLess(report.index(disclosure_start), report.index("data-report-content"))
+
+    def test_homepage_explains_audience_problem_and_value_in_plain_language(self):
+        """The opening page must make the service understandable without specialist vocabulary."""
+        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
+        for phrase in (
+            "For marketing agencies with lots of active ads",
+            "Not sure where next month's ad money should go?",
+            "Spendy makes the plan simple.",
+            "which ads to spend less on, keep as they are, or give more money to",
+            "Common planning situations, shown as illustrations—not customer stories.",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, homepage)
 
     def test_structured_data_matches_the_single_service(self):
         """The homepage must describe Spendy as an organization, not a founder profile or research publisher."""
@@ -245,9 +253,8 @@ class SiteContractTests(unittest.TestCase):
         report_objects = [json.loads(value) for value in parse_page("labs/monthly-ad-report.html").json_ld]
         report_dataset = next(value for value in report_objects if value.get("@type") == "Dataset")
         report_description = report_dataset["description"].casefold()
-        self.assertIn("generated", report_description)
-        self.assertIn("synthetic", report_description)
-        self.assertIn("not client performance", report_description)
+        self.assertIn("illustrative", report_description)
+        self.assertIn("not a client result", report_description)
 
     def test_sitemap_robots_and_social_card_dimensions_are_launch_ready(self):
         """Only active routes and current social cards may be discoverable."""

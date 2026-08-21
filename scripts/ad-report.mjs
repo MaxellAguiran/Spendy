@@ -338,16 +338,17 @@ function renderRows(root, view) {
   view.ads.forEach((ad) => {
     const row = document.createElement("tr");
     row.dataset.reportAd = ad.adId;
-    const breakEvenRelation = ad.forecastHigh < ad.breakEvenRoas
-      ? "below"
-      : ad.forecastLow > ad.breakEvenRoas ? "above" : "spans";
+    const displayAdName = ad.adName.replace(/^Generated\s+/i, "");
+    const goalRelation = ad.forecastHigh < ad.breakEvenRoas
+      ? "likely below your goal"
+      : ad.forecastLow > ad.breakEvenRoas ? "likely above your goal" : "could land on either side of your goal";
     const values = [
       ad.platform,
-      `${ad.adName} · ${ad.adId}`,
+      displayAdName,
       moneyFromCents(ad.currentSpendCents),
-      `Forecast return: $${number(ad.forecastLow)}–$${number(ad.forecastHigh)} per $1 spent · ${breakEvenRelation} the $${number(ad.breakEvenRoas)} break-even`,
+      `Expected: $${number(ad.forecastLow)}–$${number(ad.forecastHigh)} back for every $1 spent · ${goalRelation} of $${number(ad.breakEvenRoas)} back`,
       ad.action,
-      ad.recommendedSpendCents === null ? "Withheld" : moneyFromCents(ad.recommendedSpendCents)
+      ad.recommendedSpendCents === null ? "No plan" : moneyFromCents(ad.recommendedSpendCents)
     ];
     values.forEach((value, index) => {
       const cell = document.createElement(index === 1 ? "th" : "td");
@@ -379,8 +380,8 @@ function renderBudgetChart(root, view) {
     const tracks = document.createElement("div");
     tracks.className = "ad-budget-tracks";
     const series = [
-      ["current", ad.currentSpendCents, "Current"],
-      ["recommended", ad.recommendedSpendCents, "Recommended"]
+      ["current", ad.currentSpendCents, "Budget now"],
+      ["recommended", ad.recommendedSpendCents, "Spendy plan"]
     ];
     series.forEach(([name, cents, seriesLabel]) => {
       if (cents === null) return;
@@ -388,7 +389,7 @@ function renderBudgetChart(root, view) {
       bar.className = `ad-budget-bar ad-budget-bar-${name}`;
       bar.dataset.series = name;
       bar.style.setProperty("--ad-budget-width", `${100 * cents / maximum}%`);
-      bar.setAttribute("aria-label", `${seriesLabel} ${ad.adName}: ${moneyFromCents(cents)}`);
+      bar.setAttribute("aria-label", `${seriesLabel} ${ad.adName.replace(/^Generated\s+/i, "")}: ${moneyFromCents(cents)}`);
       const value = document.createElement("span");
       value.textContent = moneyFromCents(cents);
       bar.append(value);
@@ -409,9 +410,9 @@ function setBudgetView(root, viewName, view) {
   const narration = root.querySelector("[data-report-narration]");
   if (!narration) return;
   const total = moneyFromCents(view.suppliedBudgetCents);
-  if (viewName === "current") narration.textContent = `Current view: the supplied ${total} monthly budget using the generated current ad mix.`;
-  if (viewName === "recommended") narration.textContent = `Recommended view: the same ${total} monthly budget, reallocated across individual ads.`;
-  if (viewName === "compare") narration.textContent = `Compare view: terracotta shows current spend and green shows recommended spend. Both totals equal ${total}.`;
+  if (viewName === "current") narration.textContent = `Now: this is how the ${total} budget is split today.`;
+  if (viewName === "recommended") narration.textContent = `Spendy plan: the same ${total} budget, moved to the ads that need it most.`;
+  if (viewName === "compare") narration.textContent = `Both: lavender is your budget now. Purple is the Spendy plan. Both add up to ${total}.`;
 }
 
 
@@ -422,8 +423,8 @@ function renderReport(root, view) {
   setReportValue(root, "forecast-month", view.forecastMonth);
   setReportValue(root, "supplied-budget", moneyFromCents(view.suppliedBudgetCents));
   setReportValue(root, "current-total", moneyFromCents(view.currentTotalCents));
-  setReportValue(root, "recommended-total", view.recommendedTotalCents === null ? "Withheld" : moneyFromCents(view.recommendedTotalCents));
-  setReportValue(root, "budget-difference", view.reconciliationDifferenceCents === null ? "Withheld" : moneyFromCents(view.reconciliationDifferenceCents));
+  setReportValue(root, "recommended-total", view.recommendedTotalCents === null ? "No plan" : moneyFromCents(view.recommendedTotalCents));
+  setReportValue(root, "budget-difference", view.reconciliationDifferenceCents === null ? "No plan" : moneyFromCents(view.reconciliationDifferenceCents));
   setReportValue(root, "baseline-mae", number(view.baselineMae, 4));
   setReportValue(root, "model-mae", number(view.modelMae, 4));
   setReportValue(root, "error-reduction", `${number(view.errorReductionPercent, 2)}%`);
@@ -450,7 +451,7 @@ function renderUnavailable(root, errors) {
   if (!unavailable) return;
   unavailable.hidden = false;
   const details = unavailable.querySelector("[data-report-errors]");
-  if (details) details.textContent = errors.length ? "The evidence file is missing, incomplete, or inconsistent." : "The evidence could not be checked.";
+  if (details) details.textContent = errors.length ? "We could not check this example, so we are not showing a plan." : "We could not check this example.";
 }
 
 

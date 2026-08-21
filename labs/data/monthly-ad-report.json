@@ -3,7 +3,7 @@
     {
       "action": "Cut",
       "adId": "SYN-META-01",
-      "adName": "Generated prospecting concept A",
+      "adName": "Prospecting concept A",
       "breakEvenRoas": 1.45,
       "changeCents": -1180997,
       "currentSpendCents": 1283692,
@@ -16,7 +16,7 @@
     {
       "action": "Cut",
       "adId": "SYN-META-02",
-      "adName": "Generated prospecting concept B",
+      "adName": "Prospecting concept B",
       "breakEvenRoas": 1.45,
       "changeCents": -1008148,
       "currentSpendCents": 1095813,
@@ -29,7 +29,7 @@
     {
       "action": "Reduce",
       "adId": "SYN-META-03",
-      "adName": "Generated retargeting concept A",
+      "adName": "Retargeting concept A",
       "breakEvenRoas": 1.45,
       "changeCents": -367141,
       "currentSpendCents": 966158,
@@ -42,7 +42,7 @@
     {
       "action": "Increase",
       "adId": "SYN-META-04",
-      "adName": "Generated retargeting concept B",
+      "adName": "Retargeting concept B",
       "breakEvenRoas": 1.45,
       "changeCents": 2246295,
       "currentSpendCents": 842702,
@@ -55,7 +55,7 @@
     {
       "action": "Cut",
       "adId": "SYN-GOOG-01",
-      "adName": "Generated search group A",
+      "adName": "Search group A",
       "breakEvenRoas": 1.45,
       "changeCents": -1367146,
       "currentSpendCents": 1486028,
@@ -68,7 +68,7 @@
     {
       "action": "Cut",
       "adId": "SYN-GOOG-02",
-      "adName": "Generated search group B",
+      "adName": "Search group B",
       "breakEvenRoas": 1.45,
       "changeCents": -1245655,
       "currentSpendCents": 1353972,
@@ -81,7 +81,7 @@
     {
       "action": "Keep",
       "adId": "SYN-GOOG-03",
-      "adName": "Generated shopping group A",
+      "adName": "Shopping group A",
       "breakEvenRoas": 1.45,
       "changeCents": 0,
       "currentSpendCents": 1171953,
@@ -94,7 +94,7 @@
     {
       "action": "Increase",
       "adId": "SYN-GOOG-04",
-      "adName": "Generated shopping group B",
+      "adName": "Shopping group B",
       "breakEvenRoas": 1.45,
       "changeCents": 2691955,
       "currentSpendCents": 1005742,
@@ -107,7 +107,7 @@
     {
       "action": "Cut",
       "adId": "SYN-TIKT-01",
-      "adName": "Generated short-form concept A",
+      "adName": "Short-form concept A",
       "breakEvenRoas": 1.45,
       "changeCents": -846484,
       "currentSpendCents": 920091,
@@ -120,7 +120,7 @@
     {
       "action": "Cut",
       "adId": "SYN-TIKT-02",
-      "adName": "Generated short-form concept B",
+      "adName": "Short-form concept B",
       "breakEvenRoas": 1.45,
       "changeCents": -813464,
       "currentSpendCents": 884199,
@@ -133,7 +133,7 @@
     {
       "action": "Keep",
       "adId": "SYN-TIKT-03",
-      "adName": "Generated creator concept A",
+      "adName": "Creator concept A",
       "breakEvenRoas": 1.45,
       "changeCents": 0,
       "currentSpendCents": 790273,
@@ -146,7 +146,7 @@
     {
       "action": "Increase",
       "adId": "SYN-TIKT-04",
-      "adName": "Generated creator concept B",
+      "adName": "Creator concept B",
       "breakEvenRoas": 1.45,
       "changeCents": 1890785,
       "currentSpendCents": 699377,
@@ -159,7 +159,7 @@
   ],
   "artifactHashes": {
     "datasetSha256": "ee98113e0cf3a4dd6764a351ac8ffc0a132eaacbcca97ea44149e0881c80294d",
-    "generatorSha256": "5b1431333b225f4fff8cec51ba8182faa85216094583f83a489d8c0a79e497a2"
+    "generatorSha256": "ab1df0b630a6c2081aabfecf3f6f2f8567c1867f3c2d238494f07bd1f07199ca"
   },
   "baseline": {
     "metrics": {

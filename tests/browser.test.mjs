@@ -58,7 +58,6 @@ test("Spendy exposes one machine-learning ad-spend service and retires legacy ro
     const { page } = await openCheckedPage(context, path);
     const mainText = await page.locator("main").innerText();
     assert.match(mainText, /Spendy/i, `${path} must identify the business`);
-    assert.match(mainText, /machine-learning/i, `${path} must explain the service`);
     assert.match(mainText, /budget/i, `${path} must explain the spend decision`);
     assert.doesNotMatch(mainText, /Maxell|Dragon Analytics|equity research|company research|churn/i, `${path} exposes a retired surface`);
     assert.equal(await page.locator("nav[aria-label='Primary navigation']").getByText("Research", { exact: true }).count(), 0);
@@ -80,9 +79,9 @@ test("service pages are clear and actionable in the opening viewport", async () 
     const context = await browser.newContext({ viewport });
     const { page } = await openCheckedPage(context, "index.html");
     const hero = page.locator(".signal-hero");
-    assert.match(await hero.innerText(), /machine-learning ad spend forecasts/i);
-    assert.match(await hero.innerText(), /fixed ad budget/i);
-    const primaryAction = hero.getByRole("link", { name: "Inspect the sample" });
+    assert.match(await hero.innerText(), /marketing agencies with lots of active ads/i);
+    assert.match(await hero.innerText(), /which ads to spend less on/i);
+    const primaryAction = hero.getByRole("link", { name: "See a simple example" });
     assert.equal(await primaryAction.isVisible(), true);
     const box = await primaryAction.boundingBox();
     assert.ok(box.y + box.height <= viewport.height, `Primary action falls below ${viewport.width}×${viewport.height}: ${JSON.stringify(box)}`);
@@ -112,14 +111,14 @@ test("the checked sample report renders exact allocation and fails closed when b
   assert.equal(await page.locator("[data-report-value='supplied-budget']").innerText(), "$125,000.00");
   assert.equal(await page.locator("[data-report-value='recommended-total']").innerText(), "$125,000.00");
   assert.equal(await page.locator("[data-report-value='budget-difference']").innerText(), "$0.00");
-  assert.deepEqual(await page.locator("[data-budget-view]").allInnerTexts(), ["Current", "Recommended", "Compare"]);
+  assert.deepEqual(await page.locator("[data-budget-view]").allInnerTexts(), ["Now", "Spendy plan", "Both"]);
   await context.close();
 
   const failedContext = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const failed = await failedContext.newPage();
   await failed.route("**/monthly-ad-report.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema: "ad-report-evidence/v2" }) }));
   await failed.goto(`${baseUrl}/labs/monthly-ad-report.html`, { waitUntil: "networkidle" });
-  await failed.getByRole("heading", { name: "Evidence unavailable" }).waitFor();
+  await failed.getByRole("heading", { name: "Plan unavailable" }).waitFor();
   assert.equal(await failed.locator("[data-report-content]:visible").count(), 0);
   assert.equal(await failed.locator("[data-report-recommendation]:visible").count(), 0);
   await failedContext.close();
@@ -140,7 +139,7 @@ test("the homepage preview stays evidence-bound and also fails closed", async ()
   await failed.route("**/labs/data/monthly-ad-report.json", (route) => route.abort());
   await failed.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
   await failed.locator("#proof [data-ad-report]").scrollIntoViewIfNeeded();
-  await failed.getByRole("heading", { name: "Evidence unavailable" }).waitFor();
+  await failed.getByRole("heading", { name: "Plan unavailable" }).waitFor();
   assert.equal(await failed.locator("[data-report-value='recommended-total']:visible").count(), 0);
   await failedContext.close();
 });
