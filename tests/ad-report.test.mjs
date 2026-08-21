@@ -123,6 +123,16 @@ test("rejects reversed forecast intervals and inconsistent break-even values", a
 });
 
 
+test("rejects actions that contradict the forecast or the final spend direction", async () => {
+  await assertRejected((artifact) => { artifact.ads[0].action = "Increase"; }, /action.*forecast|forecast.*action/i);
+  await assertRejected((artifact) => {
+    const keep = artifact.ads.find((ad) => ad.action === "Keep");
+    keep.recommendedSpendCents = keep.currentSpendCents + 1;
+    keep.changeCents = 1;
+  }, /action.*spend|spend.*action|line items/i);
+});
+
+
 test("rejects chart values that contradict ad rows", async () => {
   await assertRejected((artifact) => { artifact.chartSeries[0].series[0].values[0] += 1; }, /chart/i);
 });

@@ -110,6 +110,19 @@ class AdReportGenerationTests(unittest.TestCase):
                     self.assertIsInstance(ad["recommendedSpendCents"], int)
                     self.assertIsInstance(ad["changeCents"], int)
                     self.assertGreaterEqual(ad["recommendedSpendCents"], 0)
+                    expected_action = (
+                        "Cut" if ad["forecastHigh"] < ad["breakEvenRoas"]
+                        else "Reduce" if ad["forecastRoas"] < ad["breakEvenRoas"]
+                        else "Increase" if ad["forecastLow"] > ad["breakEvenRoas"]
+                        else "Keep"
+                    )
+                    self.assertEqual(ad["action"], expected_action)
+                    if ad["action"] in {"Cut", "Reduce"}:
+                        self.assertLess(ad["recommendedSpendCents"], ad["currentSpendCents"])
+                    elif ad["action"] == "Keep":
+                        self.assertEqual(ad["recommendedSpendCents"], ad["currentSpendCents"])
+                    else:
+                        self.assertGreater(ad["recommendedSpendCents"], ad["currentSpendCents"])
                 recommended_total = sum(ad["recommendedSpendCents"] for ad in ads)
                 self.assertEqual(recommended_total, evidence["budget"]["suppliedMonthlyBudgetCents"])
                 self.assertEqual(recommended_total, evidence["budget"]["recommendedTotalCents"])

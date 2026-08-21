@@ -27,7 +27,7 @@ A recommendation is released only when model MAE is lower than simple-comparison
 
 ## Exact-cent budget allocation
 
-The example starts with a fixed total monthly budget of $125,000.00. Cut, Reduce, Keep, and Increase factors change the relative continuous weights. The weights are scaled back to the fixed total, floored to integer cents, and remaining cents are assigned by largest fractional remainder with stable ad IDs as the final tie-breaker.
+The example starts with a fixed total monthly budget of $125,000.00. Cut ads receive a small fraction of their prior spend, Reduce ads receive less, Keep ads retain their prior spend, and the released budget is distributed across Increase ads in proportion to their current spend and forecast. Remaining cents are assigned by largest fractional remainder with stable ad IDs as the final tie-breaker.
 
 Exact-cent reconciliation means the recommended line items add to the supplied budget. It does not mean the performance forecast is exact.
 

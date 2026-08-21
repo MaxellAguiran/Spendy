@@ -226,13 +226,14 @@ test("the homepage report renderer exposes checked ad values without duplicating
 
 
 test("the homepage report renderer fails closed on invalid or unavailable evidence", async () => {
-  for (const routeHandler of [
-    (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema: "lab-evidence/v2" }) }),
-    (route) => route.abort()
+  for (const intercept of [
+    async (page) => page.route("**/labs/data/monthly-ad-report.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema: "lab-evidence/v2" }) })),
+    async (page) => page.route("**/labs/data/monthly-ad-report.csv", (route) => route.fulfill({ status: 200, contentType: "text/csv", body: "changed" })),
+    async (page) => page.route("**/labs/data/monthly-ad-report.json", (route) => route.abort())
   ]) {
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
     const page = await context.newPage();
-    await page.route("**/labs/data/monthly-ad-report.json", routeHandler);
+    await intercept(page);
     await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
     await page.getByRole("heading", { name: "Evidence unavailable" }).waitFor();
     assert.equal(await page.locator("[data-series='recommended']:visible").count(), 0);

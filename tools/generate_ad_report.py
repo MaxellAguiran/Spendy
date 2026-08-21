@@ -283,14 +283,25 @@ def build_forecast_rows(rows, evaluation, gate_passed):
 
     recommended = None
     if gate_passed:
-        action_factor = {"Cut": 0.08, "Reduce": 0.62, "Keep": 1.0, "Increase": 1.38}
-        raw = {
-            ad["adId"]: ad["currentSpendCents"]
-            * action_factor[ad["action"]]
-            * max(0.25, ad["forecastRoas"] / BREAK_EVEN_ROAS)
-            for ad in forecasts
-        }
-        recommended = reconcile_cents(raw, SUPPLIED_BUDGET_CENTS)
+        recommended = {}
+        increase_weights = {}
+        for ad in forecasts:
+            current_spend = ad["currentSpendCents"]
+            if ad["action"] == "Cut":
+                recommended[ad["adId"]] = math.floor(current_spend * 0.08)
+            elif ad["action"] == "Reduce":
+                recommended[ad["adId"]] = math.floor(current_spend * 0.62)
+            else:
+                recommended[ad["adId"]] = current_spend
+            if ad["action"] == "Increase":
+                increase_weights[ad["adId"]] = current_spend * ad["forecastRoas"] / BREAK_EVEN_ROAS
+
+        remaining = SUPPLIED_BUDGET_CENTS - sum(recommended.values())
+        if remaining <= 0 or not increase_weights:
+            raise ValueError("A fixed-budget recommendation requires positive budget to move to at least one Increase ad")
+        increase_additions = reconcile_cents(increase_weights, remaining)
+        for ad_id, addition in increase_additions.items():
+            recommended[ad_id] += addition
 
     for ad in forecasts:
         amount = recommended[ad["adId"]] if recommended else None
@@ -329,7 +340,7 @@ A recommendation is released only when model MAE is lower than simple-comparison
 
 ## Exact-cent budget allocation
 
-The example starts with a fixed total monthly budget of ${SUPPLIED_BUDGET_CENTS / 100:,.2f}. Cut, Reduce, Keep, and Increase factors change the relative continuous weights. The weights are scaled back to the fixed total, floored to integer cents, and remaining cents are assigned by largest fractional remainder with stable ad IDs as the final tie-breaker.
+The example starts with a fixed total monthly budget of ${SUPPLIED_BUDGET_CENTS / 100:,.2f}. Cut ads receive a small fraction of their prior spend, Reduce ads receive less, Keep ads retain their prior spend, and the released budget is distributed across Increase ads in proportion to their current spend and forecast. Remaining cents are assigned by largest fractional remainder with stable ad IDs as the final tie-breaker.
 
 Exact-cent reconciliation means the recommended line items add to the supplied budget. It does not mean the performance forecast is exact.
 
@@ -363,7 +374,6 @@ def generate_report(output_dir):
         csv_rows.append({
             "date": row["date"],
             "ad_id": row["ad_id"],
-            "ad_name": row["ad_name"],
             "platform": row["platform"],
             "cohort": row["cohort"],
             "spend_cents": row["spend_cents"],

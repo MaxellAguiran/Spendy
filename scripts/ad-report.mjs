@@ -193,6 +193,18 @@ function validateAdsAndBudget(artifact, expectedGate, errors) {
       errors.push(`${label} forecast interval is reversed.`);
     }
     if (breakEven !== null && ad.breakEvenRoas !== breakEven) errors.push(`${label} has an inconsistent break-even value.`);
+    if (low !== null && point !== null && high !== null && breakEven !== null) {
+      const expectedAction = high < breakEven ? "Cut" : point < breakEven ? "Reduce" : low > breakEven ? "Increase" : "Keep";
+      if (ad.action !== expectedAction) errors.push(`${label} action contradicts its forecast and break-even point.`);
+    }
+    if (expectedGate && current !== null && recommended !== null) {
+      const directionMatches = (
+        ((ad.action === "Cut" || ad.action === "Reduce") && recommended < current)
+        || (ad.action === "Keep" && recommended === current)
+        || (ad.action === "Increase" && recommended > current)
+      );
+      if (!directionMatches) errors.push(`${label} action contradicts its current and recommended spend.`);
+    }
     if (current !== null) currentSum += current;
     if (recommended !== null) recommendedSum += recommended;
   });
