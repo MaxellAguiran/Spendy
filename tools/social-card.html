@@ -21,6 +21,7 @@
     .visual { position: relative; display: grid; place-items: end center; min-width: 0; }
     .visual::before { position: absolute; right: 12px; bottom: 18px; width: 320px; height: 320px; border: 1px solid #d8cec8; border-radius: 50%; content: ""; }
     .visual img { position: relative; z-index: 1; width: 450px; height: 385px; object-fit: contain; object-position: center bottom; }
+    .visual img.is-background { border: 1px solid #d8cec8; border-radius: 8px; object-fit: cover; object-position: 72% center; }
   </style>
 </head>
 <body>
@@ -33,7 +34,7 @@
         <p class="subtitle" id="subtitle"></p>
       </div>
     </div>
-    <div class="visual"><img src="../assets/spendy-crew-hero.webp" alt=""></div>
+    <div class="visual"><img id="visual" src="../assets/spendy-crew-hero.webp" alt=""></div>
   </main>
   <script>
     const data = new URLSearchParams(location.search);
@@ -42,6 +43,12 @@
     document.getElementById('title').textContent = title;
     document.getElementById('title').classList.toggle('long', title.length > 54);
     document.getElementById('subtitle').textContent = data.get('subtitle') || '';
+    const visual = document.getElementById('visual');
+    const visualSource = data.get('visual');
+    if (visualSource) {
+      visual.src = visualSource;
+      visual.classList.toggle('is-background', visualSource.includes('evidence-preview-background'));
+    }
   </script>
 </body>
 </html>

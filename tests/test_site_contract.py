@@ -8,12 +8,13 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTIVE_SERVICE_PAGES = ["index.html", "case-study.html", "labs/monthly-ad-report.html"]
+QUALIFICATION_PAGES = ["fit-check.html", "fit-check-thanks.html"]
 POLICY_PAGES = ["privacy.html", "audit-terms.html"]
 RETIRED_PAGES = [
     "dragon-analytics.html", "writing.html", "404.html", "labs/marketing-allocation.html", "labs/churn-risk.html",
     "ibex.html", "firstservice.html", "tamboran.html", "rex.html", "nordic-american-tankers.html",
 ]
-PUBLIC_PAGES = [*ACTIVE_SERVICE_PAGES, *POLICY_PAGES, *RETIRED_PAGES]
+PUBLIC_PAGES = [*ACTIVE_SERVICE_PAGES, *QUALIFICATION_PAGES, *POLICY_PAGES, *RETIRED_PAGES]
 
 
 class ContractParser(HTMLParser):
@@ -117,7 +118,7 @@ class SiteContractTests(unittest.TestCase):
         sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
         for page in ACTIVE_SERVICE_PAGES:
             self.assertIn(f"<loc>{parse_page(page).canonical[0]}</loc>", sitemap)
-        for page in [*POLICY_PAGES, *(page for page in RETIRED_PAGES if page != "dragon-analytics.html")]:
+        for page in [*QUALIFICATION_PAGES, *POLICY_PAGES, *(page for page in RETIRED_PAGES if page != "dragon-analytics.html")]:
             parser = parse_page(page)
             self.assertTrue(any("noindex" in directive.casefold() for directive in parser.robots))
             self.assertNotIn(f"<loc>{parser.canonical[0]}</loc>", sitemap)
@@ -132,30 +133,37 @@ class SiteContractTests(unittest.TestCase):
         self.assertEqual(dragon_parser.canonical, ["https://maxellaguiran.github.io/"])
         self.assertNotIn("https://maxellaguiran.github.io/dragon-analytics.html", sitemap)
 
-    def test_homepage_is_a_roas_audit_funnel_with_a_single_qualification_form(self):
+    def test_public_conversion_links_use_the_dedicated_fit_check(self):
+        for page in PUBLIC_PAGES:
+            source = (ROOT / page).read_text(encoding="utf-8")
+            with self.subTest(page=page):
+                self.assertNotIn("index.html#contact", source)
+                self.assertNotIn("../index.html#contact", source)
+                self.assertNotIn('href="#contact"', source)
+
+    def test_homepage_is_an_agency_first_evidence_qualified_fit_check_funnel(self):
         homepage = (ROOT / "index.html").read_text(encoding="utf-8")
         parser = parse_page("index.html")
         for phrase in (
-            "Spendy — Improve ROAS and Optimize Your Ad Budget",
-            "For agencies and in-house growth teams",
-            "Improve ROAS with a smarter ad budget.",
-            "Spendy audits up to two ad platforms and Shopify to find where spend should increase, hold, reduce, or stop—so the same budget can support stronger returns and more profitable growth.",
-            "Every ad reviewed", "Up to 100 ads", "2 ad platforms + Shopify", "€1,500 total",
-            "Delivered within 3 business days after accepted exports", "Check if your account is a fit",
-            "See the evidence", "No plan yet is a valid answer.", "Know what to change before the next budget cycle.",
-            "What is evidence—and what is not.", "A decision pack built for the budget meeting.",
-            "From fit check to finished audit.", "One fixed audit. €1,500 total.",
-            "Check if your account is a fit.", "For agencies", "For in-house teams",
+            "Spendy — Evidence-qualified ad budget decisions",
+            "For European performance marketing agencies",
+            "Know what your ad evidence actually supports.",
+            "A €1,500 ROAS Budget Audit for European performance marketing agencies.",
+            "Up to 100 ads", "2 compatible ad platforms", "aggregate Shopify inputs",
+            "PDF decision report + working workbook within 3 business days after exports are accepted.",
+            "Check if your data fits", "Two minutes. No files required.",
+            "Built for a specific budget decision", "Exactly what €1,500 buys",
+            "The audit answers one question", "See the work before you buy",
+            "From fit check to report", "One audit. €1,500.",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, homepage)
-        for fragment in ("deliverable", "evidence", "process", "price", "contact"):
+        for fragment in ("fit", "deliverable", "decision", "evidence", "process", "price"):
             self.assertIn(fragment, parser.ids)
-        self.assertEqual(parser.forms, 1)
-        self.assertIn('id="spendy-qualification"', homepage)
-        self.assertIn('action="mailto:maxell.aguiran@gmail.com', homepage)
+        self.assertEqual(parser.forms, 0)
+        self.assertIn('href="fit-check.html"', homepage)
         self.assertIn('scripts/qualification.mjs', homepage)
-        self.assertIn('src="assets/spendy-crew-hero.png"', homepage)
+        self.assertNotIn('src="assets/spendy-crew-hero.png"', homepage)
         self.assertIn('data-case-study', homepage)
         self.assertIn('data-ad-report', homepage)
         for prohibited in (
@@ -165,23 +173,27 @@ class SiteContractTests(unittest.TestCase):
             with self.subTest(prohibited=prohibited):
                 self.assertNotIn(prohibited, homepage.casefold())
 
-    def test_qualification_form_collects_only_the_approved_fit_information(self):
-        homepage = (ROOT / "index.html").read_text(encoding="utf-8")
+    def test_fit_check_collects_only_the_approved_fit_information(self):
+        fit_check = (ROOT / "fit-check.html").read_text(encoding="utf-8")
         for field in (
-            "full_name", "work_email", "company", "team_type", "website", "platform_one", "platform_two",
-            "monthly_spend", "ad_count", "uses_shopify", "primary_outcome", "budget_problem", "privacy_consent",
+            "email", "agency", "website", "monthly_spend_band", "shopify_status",
+            "ad_count_band", "decision_needed", "privacy_acknowledged", "_gotcha",
         ):
             with self.subTest(field=field):
-                self.assertIn(f'name="{field}"', homepage)
+                self.assertIn(f'name="{field}"', fit_check)
+        self.assertIn('data-platform="Meta Ads"', fit_check)
         for phrase in (
             "Under €5,000", "€5,000–€9,999", "€10,000–€24,999", "€25,000–€49,999",
             "€50,000–€99,999", "€100,000+", "Prefer not to say", "More than 100",
-            "Prepare review email", "Email Spendy directly", "privacy.html", "audit-terms.html",
-            "No files, passwords, API keys, or customer-level Shopify exports belong in this form.",
+            "Send fit check", "Privacy", "Audit Terms",
+            "Do not upload files, send credentials, or include customer-level data here.",
         ):
             with self.subTest(phrase=phrase):
-                self.assertIn(phrase, homepage)
-        self.assertNotIn('type="file"', homepage)
+                self.assertIn(phrase, fit_check)
+        self.assertIn('action="https://formspree.io/f/REPLACE_WITH_FORM_ID"', fit_check)
+        self.assertNotIn('type="file"', fit_check)
+        self.assertNotIn('name="full_name"', fit_check)
+        self.assertNotIn('name="primary_outcome"', fit_check)
 
     def test_homepage_structured_data_describes_the_fixed_fee_service(self):
         values = [json.loads(value) for value in parse_page("index.html").json_ld]
@@ -214,7 +226,7 @@ class SiteContractTests(unittest.TestCase):
                 self.assertIn(phrase, case)
         self.assertLess(case.index("Public-data historical simulation"), case.index("data-case-value"))
         self.assertLess(case.index("Historical simulation using licensed public retail-advertising data."), case.index("data-case-value"))
-        self.assertIn('href="index.html#contact"', case)
+        self.assertIn('href="fit-check.html"', case)
 
     def test_case_structured_data_describes_article_and_separate_dataset(self):
         values = [json.loads(value) for value in parse_page("case-study.html").json_ld]
@@ -233,23 +245,34 @@ class SiteContractTests(unittest.TestCase):
         self.assertIn("data-report-cards", report)
         self.assertIn("data-report-rows", report)
         self.assertIn('<h2 class="visually-hidden">Your simple monthly plan</h2>', report)
-        self.assertIn('href="../index.html#contact"', report)
+        self.assertIn('href="../fit-check.html"', report)
 
     def test_policy_pages_publish_the_operational_data_and_audit_terms(self):
         privacy = (ROOT / "privacy.html").read_text(encoding="utf-8")
         terms = (ROOT / "audit-terms.html").read_text(encoding="utf-8")
         for phrase in (
-            "The public qualification form prepares an email in your mail app.",
-            "passwords", "API keys", "customer-level Shopify exports", "30 calendar days", "maxell.aguiran@gmail.com",
+            "business email, agency or company, website, monthly ad-spend band, platforms, Shopify use, ad-count band",
+            "Formspree", "Plausible", "no fit-check field values", "passwords", "API keys",
+            "customer-level Shopify exports", "90 calendar days", "30 calendar days", "maxell.aguiran@gmail.com",
         ):
             with self.subTest(privacy=phrase):
                 self.assertIn(phrase, privacy)
         for phrase in (
-            "€1,500 total", "three business days", "No plan yet", "14 calendar days", "30 calendar days",
-            "No follow-up call", "separate quote",
+            "€1,500", "applicable tax treatment", "three business days", "No plan yet", "14 calendar days",
+            "30 calendar days", "No follow-up call", "separate quote",
         ):
             with self.subTest(terms=phrase):
                 self.assertIn(phrase, terms)
+
+    def test_lead_funnel_handoff_has_owner_actions_and_a_triage_schema(self):
+        handoff = (ROOT / "docs" / "lead-funnel-operating-model.md").read_text(encoding="utf-8")
+        for phrase in (
+            "SPENDY_RELEASE_BUILD=1", "SPENDY_FORMSPREE_FORM_ID", "SPENDY_PLAUSIBLE_DOMAIN",
+            "Do not invent a Formspree form ID", "One business day", "Lead stage", "Next action date",
+            "fit_check_submit", "Primary CTA click-through rate", "Do not enter raw exports",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, handoff)
 
     def test_assets_and_social_cards_are_sized_and_present(self):
         for name in ("spendy-crew-hero.webp", "spendy-decision-scene.webp", "spendy-review-scene.webp"):
@@ -268,10 +291,14 @@ class SiteContractTests(unittest.TestCase):
         home_card = next(card for card in cards if card["output"] == "home.png")
         self.assertEqual(home_card, {
             "output": "home.png",
-            "kicker": "Spendy · ROAS Budget Audit",
-            "title": "Improve ROAS with a smarter ad budget.",
-            "subtitle": "Clear budget moves for stronger returns and more profitable growth.",
+            "visual": "../assets/social/evidence-preview-background-v1.jpg",
+            "kicker": "Spendy · Evidence-qualified budget decisions",
+            "title": "Know what your ad evidence actually supports.",
+            "subtitle": "A fixed €1,500 ROAS Budget Audit for European performance marketing agencies.",
         })
+        generated_visual = ROOT / "assets" / "social" / "evidence-preview-background-v1.jpg"
+        self.assertTrue(generated_visual.is_file())
+        self.assertLess(generated_visual.stat().st_size, 500 * 1024)
 
 
 if __name__ == "__main__":

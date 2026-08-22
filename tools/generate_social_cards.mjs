@@ -6,7 +6,7 @@ import { chromium } from "playwright";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const cards = JSON.parse(await readFile(new URL("./social-cards.json", import.meta.url), "utf8"));
-const contentTypes = { ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".webp": "image/webp", ".woff2": "font/woff2" };
+const contentTypes = { ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".webp": "image/webp", ".jpg": "image/jpeg", ".woff2": "font/woff2" };
 
 const server = createServer(async (request, response) => {
   try {
