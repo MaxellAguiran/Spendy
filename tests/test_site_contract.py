@@ -149,16 +149,31 @@ class SiteContractTests(unittest.TestCase):
                 self.assertIn("mailto:maxell.aguiran@gmail.com", " ".join(parser.links))
                 self.assertNotIn(">maxell", source)
 
-    def test_homepage_promises_two_audiences_and_plain_language(self):
+    def test_homepage_promises_roas_optimization_without_guaranteeing_results(self):
         homepage = (ROOT / "index.html").read_text(encoding="utf-8")
         for phrase in (
-            "For agencies and in-house teams managing lots of active ads.",
-            "Stop guessing where next month’s ad money should go.",
-            "Spendy makes the plan simple.",
+            "Spendy — Improve ROAS and Optimize Your Ad Budget",
+            "Spendy helps agencies and in-house teams turn past ad performance into clear budget moves designed to improve ROAS and support more profitable growth.",
+            "Improve ROAS with a clearer ad budget plan.",
+            "Return on ad spend optimization",
+            "ROAS optimization for agencies and in-house teams.",
+            "Improve your ROAS.",
+            "Put your ad budget where it can work hardest.",
+            "Spendy turns past ad performance into a clear increase, keep, reduce, or cut decision for every active ad—helping the same fixed budget support stronger returns and more profitable growth.",
+            "Evidence for smarter ad allocation",
+            "A historical simulation shows the profit impact of reallocating the same budget.",
+            "Improve your next budget cycle",
+            "Find where your ad budget can work harder.",
+            "Send where you run ads, what you spend, and the outcome you track—ROAS, revenue, or profit. Spendy will check whether the evidence supports a useful reallocation plan.",
+            "Start a ROAS review",
+            "subject=Spendy%20ROAS%20review",
             "For agencies", "For in-house teams", "No plan yet",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, homepage)
+        for prohibited in ("guaranteed ROAS", "guaranteed profit", "will increase profit"):
+            with self.subTest(prohibited=prohibited):
+                self.assertNotIn(prohibited.casefold(), homepage.casefold())
         self.assertIn('src="assets/spendy-crew-hero.png"', homepage)
         self.assertIn('data-case-study', homepage)
 
@@ -217,6 +232,14 @@ class SiteContractTests(unittest.TestCase):
             self.assertEqual(payload[:8], b"\x89PNG\r\n\x1a\n")
             width, height = struct.unpack(">II", payload[16:24])
             self.assertEqual((width, height), (1200, 630), image.name)
+        cards = json.loads((ROOT / "tools/social-cards.json").read_text(encoding="utf-8"))
+        home_card = next(card for card in cards if card["output"] == "home.png")
+        self.assertEqual(home_card, {
+            "output": "home.png",
+            "kicker": "Spendy · ROAS optimization",
+            "title": "Improve ROAS with a smarter ad budget.",
+            "subtitle": "Clear budget moves for stronger returns and more profitable growth.",
+        })
 
 
 if __name__ == "__main__":

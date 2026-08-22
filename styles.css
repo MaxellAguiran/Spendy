@@ -72,6 +72,7 @@ main { width: min(calc(100% - 2.5rem), var(--content)); margin-inline: auto; }
 
 .hero, .page-hero { display: grid; grid-template-columns: minmax(0, 1.03fr) minmax(420px, .97fr); gap: clamp(2rem, 5vw, 5.8rem); align-items: center; min-height: clamp(535px, 68vh, 740px); padding-block: clamp(2.8rem, 6vw, 5rem); }
 .hero-copy { position: relative; z-index: 1; }
+.home-hero h1 { font-size: clamp(2.6rem, 6.4vw, 5.25rem); }
 .hero-note { max-width: 56ch; margin-top: 1.5rem; padding-left: 1rem; border-left: 3px solid var(--orange); color: var(--ink-soft); font-size: .82rem; font-weight: 650; }
 .scene-frame { position: relative; margin: 0; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 1.6rem; background: linear-gradient(145deg, #eee3ff, #cdb5ff); box-shadow: var(--shadow-large); }
 .scene-frame::after { position: absolute; inset: .7rem; border: 1px dashed rgba(63,19,130,.35); border-radius: 1.05rem; pointer-events: none; content: ""; }

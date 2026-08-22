@@ -74,18 +74,40 @@ test("Spendy exposes a proof-first budget service and retires legacy routes", as
   await context.close();
 });
 
-test("the 390px hero puts copy, action, and the crew in the first phone viewport", async () => {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const { page } = await openCheckedPage(context, "index.html");
-  const hero = page.locator(".home-hero");
-  assert.match(await hero.innerText(), /For agencies and in-house teams managing lots of active ads\./i);
-  assert.match(await hero.innerText(), /Stop guessing where next month’s ad money should go\./i);
-  const action = hero.getByRole("link", { name: "See the case study" });
-  const actionBox = await action.boundingBox();
-  const crewBox = await page.locator(".home-crew").boundingBox();
-  assert.ok(actionBox.y + actionBox.height <= 844, `Primary action is below the first viewport: ${JSON.stringify(actionBox)}`);
-  assert.ok(crewBox.y < 844, `Crew is not visible in the first viewport: ${JSON.stringify(crewBox)}`);
-  await context.close();
+test("the homepage puts the ROAS promise and actions in the first relevant viewport", async () => {
+  for (const { viewport, requireBothActions, requireCrew } of [
+    { viewport: { width: 390, height: 844 }, requireBothActions: false, requireCrew: true },
+    { viewport: { width: 430, height: 932 }, requireBothActions: true, requireCrew: false },
+    { viewport: { width: 1440, height: 900 }, requireBothActions: false, requireCrew: false }
+  ]) {
+    const context = await browser.newContext({ viewport });
+    const { page } = await openCheckedPage(context, "index.html");
+    const hero = page.locator(".home-hero");
+    const heroText = await hero.innerText();
+    assert.match(heroText, /ROAS optimization for agencies and in-house teams\./i);
+    assert.match(heroText, /Improve your ROAS\./i);
+    assert.match(heroText, /Put your ad budget where it can work hardest\./i);
+    assert.match(heroText, /clear increase, keep, reduce, or cut decision for every active ad/i);
+
+    const headlineBox = await hero.locator("h1").boundingBox();
+    const ledeBox = await hero.locator(".lede").boundingBox();
+    const primaryAction = hero.getByRole("link", { name: "See the evidence" });
+    const primaryActionBox = await primaryAction.boundingBox();
+    assert.ok(headlineBox.y + headlineBox.height <= viewport.height, `Headline is below the first viewport at ${viewport.width}px: ${JSON.stringify(headlineBox)}`);
+    assert.ok(ledeBox.y + ledeBox.height <= viewport.height, `Supporting copy is below the first viewport at ${viewport.width}px: ${JSON.stringify(ledeBox)}`);
+    assert.ok(primaryActionBox.y + primaryActionBox.height <= viewport.height, `Primary action is below the first viewport at ${viewport.width}px: ${JSON.stringify(primaryActionBox)}`);
+
+    if (requireBothActions) {
+      const secondaryAction = hero.getByRole("link", { name: "Get a budget plan" });
+      const secondaryActionBox = await secondaryAction.boundingBox();
+      assert.ok(secondaryActionBox.y + secondaryActionBox.height <= viewport.height, `Secondary action is below the first viewport at ${viewport.width}px: ${JSON.stringify(secondaryActionBox)}`);
+    }
+    if (requireCrew) {
+      const crewBox = await page.locator(".home-crew").boundingBox();
+      assert.ok(crewBox.y < viewport.height, `Crew is not visible in the first viewport at ${viewport.width}px: ${JSON.stringify(crewBox)}`);
+    }
+    await context.close();
+  }
 });
 
 test("all public routes avoid horizontal overflow and browser errors across responsive ranges", async () => {
