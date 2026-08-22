@@ -14,6 +14,7 @@ const contentTypes = {
   ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2", ".md": "text/markdown; charset=utf-8", ".xml": "application/xml; charset=utf-8"
 };
 const activePaths = ["index.html", "case-study.html", "labs/monthly-ad-report.html"];
+const funnelPaths = ["fit-check.html", "fit-check-thanks.html"];
 const policyPaths = ["privacy.html", "audit-terms.html"];
 const retiredPaths = ["404.html", "dragon-analytics.html", "writing.html", "ibex.html", "firstservice.html", "tamboran.html", "rex.html", "nordic-american-tankers.html", "labs/marketing-allocation.html", "labs/churn-risk.html"];
 let server;
@@ -61,7 +62,7 @@ test("Spendy exposes a fixed-fee ROAS audit and retires the duplicate service ro
     assert.match(mainText, /Spendy/i, `${path} must identify the business`);
     assert.match(mainText, /budget/i, `${path} must explain the spend decision`);
     assert.doesNotMatch(mainText, /Maxell|Dragon Analytics|equity research|company research|churn/i, `${path} exposes a retired surface`);
-    assert.equal(await page.locator("nav[aria-label='Primary navigation']").getByRole("link", { name: "Request a review", exact: true }).count(), 1);
+    assert.equal(await page.locator("nav[aria-label='Primary navigation']").getByRole("link", { name: "Check fit", exact: true }).count(), 1);
     await page.close();
   }
   for (const path of retiredPaths) {
@@ -80,60 +81,78 @@ test("Spendy exposes a fixed-fee ROAS audit and retires the duplicate service ro
   await context.close();
 });
 
-test("the ROAS hero keeps its promise, commercial facts, and actions visible at approved viewports", async () => {
-  for (const { viewport, requireBothActions } of [
-    { viewport: { width: 390, height: 844 }, requireBothActions: false },
-    { viewport: { width: 430, height: 932 }, requireBothActions: true },
-    { viewport: { width: 1440, height: 900 }, requireBothActions: false },
+test("the agency-first hero keeps its evidence promise, commercial facts, and primary action visible", async () => {
+  for (const { viewport, requirePreview } of [
+    { viewport: { width: 390, height: 844 }, requirePreview: false },
+    { viewport: { width: 430, height: 932 }, requirePreview: false },
+    { viewport: { width: 1440, height: 900 }, requirePreview: true },
   ]) {
     const context = await browser.newContext({ viewport });
     const { page } = await openCheckedPage(context, "index.html");
     const hero = page.locator(".home-hero");
     const heroText = await hero.innerText();
-    assert.match(heroText, /For agencies and in-house growth teams/i);
-    assert.match(heroText, /Improve ROAS with a smarter ad budget\./i);
-    assert.match(heroText, /Spendy audits up to two ad platforms and Shopify/i);
-    assert.match(heroText, /€1,500 total/i);
+    assert.match(heroText, /For European performance marketing agencies/i);
+    assert.match(heroText, /Know what your ad evidence actually supports\./i);
+    assert.match(heroText, /2 compatible ad platforms/i);
+    assert.match(heroText, /€1,500 ROAS Budget Audit/i);
     const headline = await hero.locator("h1").boundingBox();
-    const primary = hero.getByRole("link", { name: "Check if your account is a fit" });
+    const primary = hero.getByRole("link", { name: "Check if your data fits" });
     const primaryBox = await primary.boundingBox();
     assert.ok(headline.y + headline.height <= viewport.height, `Headline is below the first viewport at ${viewport.width}px: ${JSON.stringify(headline)}`);
     assert.ok(primaryBox.y + primaryBox.height <= viewport.height, `Primary action is below the first viewport at ${viewport.width}px: ${JSON.stringify(primaryBox)}`);
-    if (requireBothActions) {
-      const secondary = hero.getByRole("link", { name: "See the evidence" });
-      const secondaryBox = await secondary.boundingBox();
-      assert.ok(secondaryBox.y + secondaryBox.height <= viewport.height, `Secondary action is below the first viewport at ${viewport.width}px: ${JSON.stringify(secondaryBox)}`);
-    }
+    assert.equal(await primary.getAttribute("href"), "fit-check.html");
     const preview = await page.locator("[data-deliverable-preview]").boundingBox();
-    assert.ok(preview.y < viewport.height, `Decision preview does not begin in the first viewport at ${viewport.width}px: ${JSON.stringify(preview)}`);
+    if (requirePreview) assert.ok(preview.y < viewport.height, `Decision preview does not begin in the first viewport at ${viewport.width}px: ${JSON.stringify(preview)}`);
     await context.close();
   }
 });
 
-test("the qualification form produces a review-email draft without accepting files", async () => {
+test("the fit check collects only the approved context, requires a platform, and blocks an unconfigured endpoint", async () => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  const { page } = await openCheckedPage(context, "index.html");
-  const form = page.locator("#spendy-qualification");
+  const { page } = await openCheckedPage(context, "fit-check.html");
+  const form = page.locator("#spendy-fit-check");
   assert.equal(await form.locator('input[type="file"]').count(), 0);
-  assert.notEqual(await form.getByLabel("Full name").evaluate((field) => getComputedStyle(field).borderColor), "rgb(139, 47, 43)", "An untouched field must not look like an error");
-  await form.getByLabel("Full name").fill("Ana Example");
-  await form.getByLabel("Work email").fill("ana@example.com");
-  await form.getByLabel("Company or team").fill("Northstar Studio");
-  await form.getByLabel("I am applying as").selectOption("Agency");
+  assert.notEqual(await form.getByLabel("Business email").evaluate((field) => getComputedStyle(field).borderColor), "rgb(139, 47, 43)", "An untouched field must not look like an error");
+  assert.equal(await form.locator('[name="full_name"], [name="api_key"], [name="upload"]').count(), 0);
+  await form.getByLabel("Business email").fill("ana@example.com");
+  await form.getByLabel("Agency or company").fill("Northstar Studio");
   await form.getByLabel("Website").fill("https://northstar.example");
-  await form.getByLabel("First advertising platform").selectOption("Meta Ads");
   await form.getByLabel("Combined monthly ad spend").selectOption("€25,000–€49,999");
   await form.getByLabel("Approximate total ads").selectOption("51–100");
   await form.getByLabel("Do you use Shopify?").selectOption("Yes");
-  await form.getByLabel("Primary outcome").selectOption("ROAS");
   await form.getByLabel("What allocation decision do you need to make?").fill("We need a clearer allocation decision before next month.");
-  await form.getByLabel(/I have read the Privacy page/i).check();
-  await form.getByRole("button", { name: "Prepare review email" }).click();
-  const draft = form.locator("[data-qualification-email]");
-  await draft.waitFor();
-  const href = await draft.getAttribute("href");
-  assert.match(href, /^mailto:maxell\.aguiran@gmail\.com\?subject=Spendy%20ROAS%20audit%20qualification/);
-  assert.match(decodeURIComponent(href), /Company: Northstar Studio/);
+  await form.getByLabel(/I have read the Privacy/i).check();
+  await form.getByRole("button", { name: "Send fit check" }).click();
+  await page.waitForFunction(() => document.querySelector("[data-fit-check-status]")?.textContent.includes("Complete the required"));
+  await form.locator('input[data-platform="Meta Ads"]').check();
+  await form.getByRole("button", { name: "Send fit check" }).click();
+  await page.waitForFunction(() => document.querySelector("[data-fit-check-status]")?.textContent.includes("being configured"));
+  assert.match(await form.locator("[data-fit-check-status]").innerText(), /do not attach files/i);
+  assert.match(await form.getByRole("link", { name: "Email Spendy directly" }).getAttribute("href"), /^mailto:/);
+  await context.close();
+});
+
+test("limited conversion analytics emits only approved event context", async () => {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await context.addInitScript(() => {
+    window.__spendyPlausibleCalls = [];
+    window.plausible = (name, options) => window.__spendyPlausibleCalls.push({ name, options });
+  });
+  const { page } = await openCheckedPage(context, "index.html");
+  await page.waitForFunction(() => window.__spendyPlausibleCalls?.some((event) => event.name === "landing_view"));
+  const heroCta = page.getByRole("link", { name: "Check if your data fits" }).first();
+  await heroCta.evaluate((element) => element.addEventListener("click", (event) => event.preventDefault(), { once: true }));
+  await heroCta.click();
+  const faq = page.locator("details[data-disclosure]").first();
+  await faq.locator("summary").click();
+  await page.waitForFunction(() => window.__spendyPlausibleCalls?.some((event) => event.name === "faq_open"));
+  const events = await page.evaluate(() => window.__spendyPlausibleCalls);
+  assert.deepEqual(events, [
+    { name: "landing_view", options: { props: { page_type: "landing" } } },
+    { name: "primary_cta_click", options: { props: { cta_location: "hero", page_type: "landing" } } },
+    { name: "faq_open", options: { props: { page_type: "landing" } } },
+  ]);
+  assert.doesNotMatch(JSON.stringify(events), /email|agency|website|decision/i);
   await context.close();
 });
 
@@ -144,7 +163,7 @@ test("all public routes avoid horizontal overflow and browser errors across resp
     { width: 1280, height: 720 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }
   ]) {
     const context = await browser.newContext({ viewport });
-    for (const path of [...activePaths, ...policyPaths, ...retiredPaths]) {
+    for (const path of [...activePaths, ...funnelPaths, ...policyPaths, ...retiredPaths]) {
       const { page, errors } = await openCheckedPage(context, path);
       const dimensions = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }));
       assert.ok(dimensions.scrollWidth <= dimensions.clientWidth + 1, `${path} overflows at ${viewport.width}px: ${JSON.stringify(dimensions)}`);
@@ -193,8 +212,8 @@ test("the checked sample plan has identical desktop rows and phone cards from on
   await mobile.close();
 });
 
-test("mobile navigation, disclosures, copy feedback, and no-JavaScript narrative remain usable", async () => {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, permissions: ["clipboard-read", "clipboard-write"] });
+test("mobile navigation, disclosures, and no-JavaScript narrative remain usable", async () => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const { page } = await openCheckedPage(context, "index.html");
   const toggle = page.locator(".nav-toggle");
   await toggle.focus();
@@ -205,13 +224,10 @@ test("mobile navigation, disclosures, copy feedback, and no-JavaScript narrative
   const summary = page.locator("details[data-disclosure] summary").first();
   await summary.click();
   assert.equal(await summary.getAttribute("aria-expanded"), "true");
-  await page.locator("[data-copy-email]").click();
-  await page.waitForFunction(() => document.querySelector(".copy-status")?.textContent.trim().length > 0);
-  assert.match(await page.locator(".copy-status").innerText(), /copied|select the email/i);
   await context.close();
 
   const noJs = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
-  for (const path of ["index.html", "case-study.html", "labs/monthly-ad-report.html", "privacy.html", "audit-terms.html", "writing.html"]) {
+  for (const path of ["index.html", "fit-check.html", "fit-check-thanks.html", "case-study.html", "labs/monthly-ad-report.html", "privacy.html", "audit-terms.html", "writing.html"]) {
     const pageWithoutJs = await noJs.newPage();
     await pageWithoutJs.goto(`${baseUrl}/${path}`, { waitUntil: "load" });
     assert.equal(await pageWithoutJs.locator("h1").isVisible(), true);
@@ -224,7 +240,7 @@ test("mobile navigation, disclosures, copy feedback, and no-JavaScript narrative
 
 test("the active experience has no automated WCAG 2.2 AA violations", async () => {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-  for (const path of [...activePaths, ...policyPaths, "404.html"]) {
+  for (const path of [...activePaths, ...funnelPaths, ...policyPaths, "404.html"]) {
     const { page } = await openCheckedPage(context, path);
     if (path === "case-study.html") await page.waitForFunction(() => document.querySelector("[data-case-study]")?.dataset.state !== "loading");
     if (path === "labs/monthly-ad-report.html") await page.waitForFunction(() => document.querySelector("[data-ad-report]")?.dataset.state === "ready");
