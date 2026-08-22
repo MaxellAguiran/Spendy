@@ -6,13 +6,13 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const output = join(root, "dist");
 const publicFolders = ["assets"];
 const publicFiles = [
-  "index.html", "case-study.html", "404.html", "writing.html", "dragon-analytics.html", "firstservice.html",
+  "index.html", "case-study.html", "privacy.html", "audit-terms.html", "404.html", "writing.html", "dragon-analytics.html", "firstservice.html",
   "ibex.html", "nordic-american-tankers.html", "rex.html", "tamboran.html", "styles.css",
   "robots.txt", "sitemap.xml",
   "labs/monthly-ad-report.html", "labs/marketing-allocation.html", "labs/churn-risk.html",
   "labs/data/monthly-ad-report.json", "labs/data/monthly-ad-report.csv", "labs/data/monthly-ad-report-methodology.md",
   "data/case-study-evidence.json", "data/case-study-periods.csv",
-  "scripts/site.mjs", "scripts/ad-report.mjs", "scripts/case-study.mjs"
+  "scripts/site.mjs", "scripts/qualification.mjs", "scripts/ad-report.mjs", "scripts/case-study.mjs"
 ];
 
 const worker = `export default {
