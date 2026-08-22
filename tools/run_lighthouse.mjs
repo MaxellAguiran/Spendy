@@ -6,7 +6,8 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const base = process.env.LIGHTHOUSE_BASE_URL || "http://127.0.0.1:4173";
-const routes = ["index.html", "case-study.html", "dragon-analytics.html", "labs/monthly-ad-report.html", "404.html"];
+const routes = ["index.html", "case-study.html", "labs/monthly-ad-report.html", "privacy.html", "audit-terms.html", "dragon-analytics.html", "404.html"];
+const nonIndexableRoutes = new Set(["privacy.html", "audit-terms.html", "dragon-analytics.html", "404.html"]);
 const outputDirectory = join(root, ".lighthouse");
 await mkdir(outputDirectory, { recursive: true });
 
@@ -37,7 +38,7 @@ for (const route of routes) {
     await rm(output, { force: true });
     console.log(`${route}: ${JSON.stringify(scores)}`);
     for (const [name, score] of Object.entries(scores)) {
-      const minimum = name === "performance" ? 90 : name === "accessibility" ? 100 : route === "404.html" && name === "seo" ? 0 : 95;
+      const minimum = name === "performance" ? 90 : name === "accessibility" ? 100 : name === "seo" && nonIndexableRoutes.has(route) ? 0 : 95;
       if (score < minimum) throw new Error(`${route} ${name} score ${score} is below ${minimum}`);
     }
   } finally {
