@@ -87,6 +87,8 @@ test("the media-buying tab presents Spendy as a clearly disclosed portfolio proj
   assert.equal(await page.getByText("Portfolio example: not client performance.", { exact: true }).count(), 1);
   assert.equal(await page.getByRole("heading", { name: "Bold Decisions", exact: true }).count(), 1);
   assert.equal(await page.getByText("Client work", { exact: true }).count(), 1);
+  assert.equal(await page.getByText("Meta Ads, Google Ads, and Shopify", { exact: true }).count(), 1);
+  assert.equal(await page.getByText("PDF analysis with monthly budget recommendations", { exact: true }).count(), 1);
   assert.equal(await page.getByRole("link", { name: "Open the sample monthly plan", exact: true }).first().getAttribute("href"), "labs/monthly-ad-report.html");
   assert.equal(await page.getByText("Dragon Analytics", { exact: true }).count(), 1);
   assert.deepEqual(errors, []);
