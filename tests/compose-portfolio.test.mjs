@@ -85,7 +85,7 @@ test("the media-buying tab presents Spendy as a clearly disclosed portfolio proj
   assert.equal(await page.title(), "Maxell Aguiran | Media Buying Portfolio");
   assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "Media-buying work built around evidence before budget decisions.");
   assert.equal(await page.getByText("Portfolio example: not client performance.", { exact: true }).count(), 1);
-  assert.equal(await page.getByRole("heading", { name: "Benediktas", exact: true }).count(), 1);
+  assert.equal(await page.getByRole("heading", { name: "Bold Decisions", exact: true }).count(), 1);
   assert.equal(await page.getByText("Client work", { exact: true }).count(), 1);
   assert.equal(await page.getByRole("link", { name: "Open the sample monthly plan", exact: true }).first().getAttribute("href"), "labs/monthly-ad-report.html");
   assert.equal(await page.getByText("Dragon Analytics", { exact: true }).count(), 1);
