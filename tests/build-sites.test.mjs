@@ -27,43 +27,38 @@ async function listFiles(directory, relativePath = "") {
   return files.flat();
 }
 
-test("build packages the finance-writing portfolio, its three samples, and hosting metadata without retired service pages", async () => {
+test("build packages the finance-writing and media-buying portfolios with a static asset mapping", async () => {
   const result = await runBuild();
   assert.equal(result.code, 0, result.output);
 
   for (const path of [
-    "index.html", "404.html", "styles.css", "scripts/site.mjs", ".openai/hosting.json",
-    "articles/how-to-read-a-10-k.html", "articles/free-cash-flow.html", "articles/dividend-yield-vs-total-return.html",
-    "assets/social/maxell-finance-portfolio.png",
+    "assets/index.html", "assets/media-buying.html", "assets/404.html", "assets/styles.css", "assets/scripts/site.mjs", "assets/scripts/ad-report.mjs", ".openai/hosting.json", "server/wrangler.json",
+    "assets/articles/how-to-read-a-10-k.html", "assets/articles/free-cash-flow.html", "assets/articles/dividend-yield-vs-total-return.html",
+    "assets/labs/monthly-ad-report.html", "assets/labs/data/monthly-ad-report.json", "assets/assets/social/maxell-finance-portfolio.png", "assets/assets/social/monthly-ad-report.png",
   ]) {
     await access(join(root, "dist", path));
   }
-  await assert.rejects(access(join(root, "dist", "fit-check.html")));
-  await assert.rejects(access(join(root, "dist", "case-study.html")));
-  await assert.rejects(access(join(root, "dist", "labs", "monthly-ad-report.html")));
-  await assert.rejects(access(join(root, "dist", "assets", "spend-signal-mark.svg")));
+  await assert.rejects(access(join(root, "dist", "assets", "fit-check.html")));
+  await assert.rejects(access(join(root, "dist", "assets", "case-study.html")));
 
-  const homepage = await readFile(join(root, "dist", "index.html"), "utf8");
+  const homepage = await readFile(join(root, "dist", "assets", "index.html"), "utf8");
   assert.match(homepage, /Maxell Aguiran \| Finance &amp; Investing Writer/);
   assert.doesNotMatch(homepage, /Spendy/i);
 
-  assert.deepEqual((await listFiles(join(root, "dist"))).sort(), [
-    ".openai/hosting.json",
-    "404.html",
-    "articles/dividend-yield-vs-total-return.html",
-    "articles/free-cash-flow.html",
-    "articles/how-to-read-a-10-k.html",
-    "assets/favicon.svg",
-    "assets/fonts/fraunces-latin-variable.woff2",
-    "assets/fonts/manrope-latin-variable.woff2",
-    "assets/social/maxell-finance-portfolio.png",
-    "index.html",
-    "robots.txt",
-    "scripts/site.mjs",
-    "server/index.js",
-    "sitemap.xml",
-    "styles.css",
-  ]);
+  const mediaBuying = await readFile(join(root, "dist", "assets", "media-buying.html"), "utf8");
+  assert.match(mediaBuying, /Bold Decisions/);
+  assert.match(mediaBuying, /PDF analysis with monthly budget recommendations/);
+
+  const wrangler = JSON.parse(await readFile(join(root, "dist", "server", "wrangler.json"), "utf8"));
+  assert.equal(wrangler.main, "index.js");
+  assert.deepEqual(wrangler.assets, { directory: "../assets", binding: "ASSETS" });
+
+  const builtFiles = new Set(await listFiles(join(root, "dist")));
+  assert.ok(builtFiles.has("assets/assets/favicon.svg"));
+  assert.ok(builtFiles.has("assets/assets/fonts/fraunces-latin-variable.woff2"));
+  assert.ok(builtFiles.has("assets/assets/fonts/manrope-latin-variable.woff2"));
+  assert.ok(builtFiles.has("assets/labs/data/monthly-ad-report.csv"));
+  assert.ok(builtFiles.has("assets/labs/data/monthly-ad-report-methodology.md"));
 
   const workerModuleUrl = `${pathToFileURL(join(root, "dist", "server", "index.js")).href}?test=${Date.now()}`;
   const { default: worker } = await import(workerModuleUrl);

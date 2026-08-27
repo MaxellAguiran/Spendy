@@ -4,12 +4,11 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const output = join(root, "dist");
+const staticOutput = join(output, "assets");
 const publicFiles = [
-  "index.html", "404.html", "styles.css", "robots.txt", "sitemap.xml", "scripts/site.mjs",
-  "assets/favicon.svg", "assets/fonts/fraunces-latin-variable.woff2", "assets/fonts/manrope-latin-variable.woff2",
-  "assets/social/maxell-finance-portfolio.png",
+  "index.html", "media-buying.html", "404.html", "styles.css", "robots.txt", "sitemap.xml",
 ];
-const publicFolders = ["articles"];
+const publicFolders = ["articles", "assets", "labs", "scripts"];
 
 const worker = `export default {
   async fetch(request, env) {
@@ -22,18 +21,29 @@ const worker = `export default {
   }
 };\n`;
 
+const wranglerConfig = {
+  main: "index.js",
+  compatibility_date: "2026-08-27",
+  assets: {
+    directory: "../assets",
+    binding: "ASSETS",
+  },
+};
+
 await rm(output, { recursive: true, force: true });
 await mkdir(join(output, "server"), { recursive: true });
+await mkdir(staticOutput, { recursive: true });
 
 for (const file of publicFiles) {
-  const destination = join(output, file);
+  const destination = join(staticOutput, file);
   await mkdir(dirname(destination), { recursive: true });
   await cp(join(root, file), destination);
 }
 
-for (const folder of publicFolders) await cp(join(root, folder), join(output, folder), { recursive: true });
+for (const folder of publicFolders) await cp(join(root, folder), join(staticOutput, folder), { recursive: true });
 await mkdir(join(output, ".openai"), { recursive: true });
 await cp(join(root, ".openai", "hosting.json"), join(output, ".openai", "hosting.json"));
 await writeFile(join(output, "server", "index.js"), worker, "utf8");
+await writeFile(join(output, "server", "wrangler.json"), `${JSON.stringify(wranglerConfig, null, 2)}\n`, "utf8");
 
 console.log("Built the Maxell Aguiran finance-writing portfolio for Sites hosting.");
