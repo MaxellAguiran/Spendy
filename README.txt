@@ -1,31 +1,19 @@
-SPENDY
+MAXELL AGUIRAN — FINANCE & INVESTING WRITER
 
-Static public site for a single fixed-fee service: an evidence-qualified ROAS
-Budget Audit for European performance marketing agencies.
+Static portfolio for freelance finance and investing content work, shaped for
+editorial teams that need a clear, source-led writing sample.
 
-ACTIVE ROUTES
-- /                                  landing page
-- /fit-check.html                     no-files fit-check form
-- /fit-check-thanks.html              submission confirmation
-- /case-study.html                    evidence boundary and historical simulation
-- /labs/monthly-ad-report.html        generated, checked illustrative sample report
+PUBLIC ROUTES
+- /                                                   portfolio homepage
+- /articles/how-to-read-a-10-k.html                  company-research sample
+- /articles/free-cash-flow.html                       fundamentals sample
+- /articles/dividend-yield-vs-total-return.html       investing-basics sample
 
-RETIRED ROUTES
-Former public routes remain reachable as short noindex retirement pages. They
-lead visitors back to the active Spendy service and are excluded from the
-sitemap and primary navigation.
-
-INTEGRITY
-The public case study and sample report release favorable values only after
-their respective evidence checks pass. They are separate from the anonymous
-real engagement and do not promise client performance.
-
-The fit check sends only a small business-context payload after a release build
-has been configured with the owner-provided form ID. Local previews intentionally
-block submission. See `docs/lead-funnel-operating-model.md` for the required
-production settings and lead-triage workflow.
+CONTENT PRINCIPLES
+The three portfolio articles are original educational samples. They link to
+regulatory or investor-education sources, explain their limits, and never make
+specific investment recommendations or performance claims.
 
 LOCAL CHECKS
 npm test
-npm run generate:social
 npm run build
