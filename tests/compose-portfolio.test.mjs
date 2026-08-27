@@ -106,7 +106,32 @@ test("the media-buying tab presents Spendy as a clearly disclosed portfolio proj
   assert.equal(await plan.locator('[data-report-value="recommended-total"]').innerText(), "$125,000.00");
   assert.equal(await plan.locator('[data-report-value="budget-difference"]').innerText(), "$0.00");
   assert.equal(await plan.locator("[data-report-rows] tr").count(), 12);
-  assert.equal(await plan.getByRole("button", { name: "Both" }).getAttribute("aria-pressed"), "true");
+  const currentButton = plan.getByRole("button", { name: "Current" });
+  const proposedButton = plan.getByRole("button", { name: "Proposed" });
+  const bothButton = plan.getByRole("button", { name: "Both" });
+  const currentBar = plan.locator('[data-series="current"]').first();
+  const proposedBar = plan.locator('[data-series="recommended"]').first();
+
+  assert.equal(await bothButton.getAttribute("aria-pressed"), "true");
+  assert.equal(await currentBar.isVisible(), true);
+  assert.equal(await proposedBar.isVisible(), true);
+
+  await currentButton.click();
+  assert.equal(await currentButton.getAttribute("aria-pressed"), "true");
+  assert.equal(await currentBar.isVisible(), true);
+  assert.equal(await proposedBar.isHidden(), true);
+  assert.match(await plan.locator("[data-report-narration]").innerText(), /^Now:/);
+
+  await proposedButton.click();
+  assert.equal(await proposedButton.getAttribute("aria-pressed"), "true");
+  assert.equal(await currentBar.isHidden(), true);
+  assert.equal(await proposedBar.isVisible(), true);
+  assert.match(await plan.locator("[data-report-narration]").innerText(), /^Spendy plan:/);
+
+  await bothButton.click();
+  assert.equal(await bothButton.getAttribute("aria-pressed"), "true");
+  assert.equal(await currentBar.isVisible(), true);
+  assert.equal(await proposedBar.isVisible(), true);
   assert.deepEqual(errors, []);
 
   await context.close();

@@ -206,6 +206,7 @@ h3 { font-size: clamp(1.45rem, 2.2vw, 1.95rem); }
 .ad-budget-row > strong { color: var(--ink-muted); font-size: .65rem; letter-spacing: .04em; }
 .ad-budget-tracks { display: grid; gap: .28rem; }
 .ad-budget-bar { display: flex; align-items: center; justify-content: flex-end; width: max(4.5rem, var(--ad-budget-width)); min-height: 1.25rem; padding-inline: .45rem; border-radius: .18rem; transition: width .35s ease, opacity .2s ease; }
+.ad-budget-bar[hidden] { display: none !important; }
 .ad-budget-bar span { color: var(--ink); font-size: .57rem; font-weight: 800; font-variant-numeric: tabular-nums; }
 .ad-budget-bar-current { background: #d8d0e6; }
 .ad-budget-bar-recommended { background: #6f4a7d; }
