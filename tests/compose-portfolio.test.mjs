@@ -83,14 +83,30 @@ test("the media-buying tab presents Spendy as a clearly disclosed portfolio proj
 
   assert.equal(response.status(), 200);
   assert.equal(await page.title(), "Maxell Aguiran | Media Buying Portfolio");
-  assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "Media-buying work built around evidence before budget decisions.");
+  assert.match(await page.locator("body").getAttribute("class"), /spendy-brand-page/);
+  assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "Know what your ad evidence actually supports.");
+  assert.equal(await page.getByRole("banner").getByRole("link", { name: "Spendy Media buying portfolio" }).locator("img").getAttribute("src"), "assets/spend-signal-mark.svg");
+  assert.equal(await page.locator(".deliverable-preview").count(), 1);
+  assert.equal(await page.locator('img[src="assets/spendy-crew-hero.webp"]').count(), 1);
   assert.equal(await page.getByText("Portfolio example: not client performance.", { exact: true }).count(), 1);
   assert.equal(await page.getByRole("heading", { name: "Bold Decisions", exact: true }).count(), 1);
   assert.equal(await page.getByText("Client work", { exact: true }).count(), 1);
   assert.equal(await page.getByText("Meta Ads, Google Ads, and Shopify", { exact: true }).count(), 1);
   assert.equal(await page.getByText("PDF analysis with monthly budget recommendations", { exact: true }).count(), 1);
-  assert.equal(await page.getByRole("link", { name: "Open the sample monthly plan", exact: true }).first().getAttribute("href"), "labs/monthly-ad-report.html");
+  assert.equal(await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Sample Plan" }).getAttribute("href"), "#sample-plan");
+  assert.equal(await page.getByRole("link", { name: "See the sample monthly plan", exact: true }).getAttribute("href"), "#sample-plan");
   assert.equal(await page.getByText("Dragon Analytics", { exact: true }).count(), 1);
+
+  const plan = page.locator("#sample-plan [data-ad-report]");
+  await plan.waitFor({ state: "visible" });
+  await page.waitForFunction(() => document.querySelector("#sample-plan [data-ad-report]")?.dataset.state === "ready");
+  assert.equal(await plan.getAttribute("data-evidence-src"), "labs/data/monthly-ad-report.json");
+  assert.equal(await plan.getByText("Illustrative portfolio example: not a client result.", { exact: true }).count(), 1);
+  assert.equal(await plan.locator('[data-report-value="supplied-budget"]').innerText(), "$125,000.00");
+  assert.equal(await plan.locator('[data-report-value="recommended-total"]').innerText(), "$125,000.00");
+  assert.equal(await plan.locator('[data-report-value="budget-difference"]').innerText(), "$0.00");
+  assert.equal(await plan.locator("[data-report-rows] tr").count(), 12);
+  assert.equal(await plan.getByRole("button", { name: "Both" }).getAttribute("aria-pressed"), "true");
   assert.deepEqual(errors, []);
 
   await context.close();
