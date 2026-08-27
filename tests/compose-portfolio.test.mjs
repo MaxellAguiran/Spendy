@@ -66,11 +66,40 @@ test("the homepage introduces Maxell as a finance and investing writer and leads
   assert.equal(await page.title(), "Maxell Aguiran | Finance & Investing Writer");
   assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "Clear finance writing for readers who want to invest with context.");
   assert.equal(await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Work" }).count(), 1);
+  assert.equal(await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Media Buying" }).getAttribute("href"), "media-buying.html");
   assert.equal(await page.getByRole("link", { name: "View writing samples" }).count(), 1);
   assert.ok(await page.getByRole("link", { name: "Email Maxell" }).count() >= 1);
   assert.equal(await page.getByRole("link", { name: "Email Maxell" }).first().getAttribute("href"), "mailto:maxell.aguiran@gmail.com?subject=Freelance%20writing%20enquiry");
   assert.equal(await page.locator("[data-sample-card]").count(), 3);
   assert.deepEqual(await page.locator("[data-sample-card] h3 a").evaluateAll((links) => links.map((link) => link.getAttribute("href"))), samples);
+  assert.deepEqual(errors, []);
+
+  await context.close();
+});
+
+test("the media-buying tab presents Spendy as a clearly disclosed portfolio project", async () => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const { page, errors, response } = await openPage(context, "media-buying.html");
+
+  assert.equal(response.status(), 200);
+  assert.equal(await page.title(), "Maxell Aguiran | Media Buying Portfolio");
+  assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "Media-buying work built around evidence before budget decisions.");
+  assert.equal(await page.getByText("Portfolio example: not client performance.", { exact: true }).count(), 1);
+  assert.equal(await page.getByRole("link", { name: "Open the sample monthly plan", exact: true }).first().getAttribute("href"), "labs/monthly-ad-report.html");
+  assert.equal(await page.getByText("Dragon Analytics", { exact: true }).count(), 1);
+  assert.deepEqual(errors, []);
+
+  await context.close();
+});
+
+test("the sample monthly plan remains available as a synthetic portfolio demonstration", async () => {
+  const context = await browser.newContext({ viewport: { width: 1024, height: 768 } });
+  const { page, errors, response } = await openPage(context, "labs/monthly-ad-report.html");
+
+  assert.equal(response.status(), 200);
+  assert.equal(await page.title(), "Spendy Sample Monthly Plan | Maxell Aguiran");
+  assert.equal(await page.getByText("Illustrative portfolio example: not a client result.", { exact: true }).count(), 1);
+  assert.equal(await page.getByRole("link", { name: "Back to media-buying portfolio" }).getAttribute("href"), "../media-buying.html");
   assert.deepEqual(errors, []);
 
   await context.close();
@@ -84,7 +113,7 @@ test("each writing sample is a readable finance article with an educational disc
 
     assert.equal(response.status(), 200, `${path} must be published`);
     assert.equal(await article.count(), 1, `${path} must expose one readable article`);
-    assert.equal(await article.getByText("Educational only — not investment advice.", { exact: true }).count(), 1);
+    assert.equal(await article.getByText("Educational only: not investment advice.", { exact: true }).count(), 1);
     assert.equal(await article.getByRole("heading", { name: "Sources", exact: true }).count(), 1);
     assert.ok(await article.locator('a[href^="https://"]').count() >= 2, `${path} needs a reader-verifiable source list`);
     assert.equal(await page.locator('meta[property="og:type"]').getAttribute("content"), "article");
@@ -95,9 +124,9 @@ test("each writing sample is a readable finance article with an educational disc
   await context.close();
 });
 
-test("the portfolio navigation remains usable and the new public pages do not overflow on a phone", async () => {
+test("the portfolio navigation remains usable and the public pages do not overflow on a phone", async () => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  for (const path of ["index.html", ...samples]) {
+  for (const path of ["index.html", "media-buying.html", ...samples]) {
     const { page, errors } = await openPage(context, path);
     const dimensions = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }));
     assert.ok(dimensions.scrollWidth <= dimensions.clientWidth + 1, `${path} overflows on mobile: ${JSON.stringify(dimensions)}`);
@@ -117,10 +146,10 @@ test("the portfolio navigation remains usable and the new public pages do not ov
 
 test("retired Spendy routes return the portfolio's not-found page instead of resurfacing the old service", async () => {
   const context = await browser.newContext({ viewport: { width: 1024, height: 768 } });
-  for (const path of ["fit-check.html", "case-study.html", "privacy.html", "writing.html", "labs/monthly-ad-report.html"]) {
+  for (const path of ["fit-check.html", "case-study.html", "privacy.html", "writing.html"]) {
     const { page, response } = await openPage(context, path);
     assert.equal(response.status(), 404, `${path} must not be served as an active page`);
-    assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "This page has moved—or never existed.");
+    assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "This page has moved or never existed.");
     await page.close();
   }
   await context.close();
